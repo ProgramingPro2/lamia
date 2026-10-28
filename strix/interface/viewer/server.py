@@ -28,6 +28,7 @@ from urllib.parse import parse_qs, unquote, urlencode, urlsplit
 
 from strix.core.paths import run_record_path
 from strix.interface.viewer import auth
+from strix.interface.viewer.access_map import build_access_map
 from strix.interface.viewer.transcript import (
     build_run_state,
     primary_target,
@@ -283,6 +284,8 @@ def _make_handler(state: _ViewerState) -> type[BaseHTTPRequestHandler]:
                 self._send_json(HTTPStatus.OK, {"markdown": read_report_markdown(run_dir)})
             elif path == "/api/transcript":
                 self._send_json(HTTPStatus.OK, build_run_state(run_dir))
+            elif path == "/api/access-map":
+                self._send_json(HTTPStatus.OK, build_access_map(run_dir))
             else:
                 self._send_json(HTTPStatus.NOT_FOUND, {"error": "unknown endpoint"})
 

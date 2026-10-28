@@ -72,6 +72,39 @@ export function parseMcpConnectionStatus(raw: Record<string, unknown>): McpConne
   });
 }
 
+export interface AccessSource {
+  kind: string;
+  id: string;
+}
+
+/** One device, role, or data store derived from the run's records. */
+export interface AccessNodeRecord {
+  id: string;
+  type: string;
+  label: string;
+  in_scope: boolean;
+  sources: AccessSource[];
+}
+
+/** One access, trust-boundary, or proof-gap arrow. The finding holds the detail. */
+export interface AccessEdgeRecord {
+  id: string;
+  type: string;
+  source: string;
+  target: string;
+  label: string;
+  finding_id: string | null;
+  coverage_id?: string | null;
+  status: string;
+}
+
+export interface AccessMapData {
+  nodes: AccessNodeRecord[];
+  edges: AccessEdgeRecord[];
+}
+
+export const EMPTY_ACCESS_MAP: AccessMapData = { nodes: [], edges: [] };
+
 export interface LoadedRun {
   summary: ParsedRunSummary;
   /** Whole raw run record (for llm_usage, targets_info details, etc.). */
@@ -80,6 +113,7 @@ export interface LoadedRun {
   vulnerabilities: Vulnerability[];
   reportMarkdown: string | null;
   transcript: Transcript;
+  accessMap: AccessMapData;
 }
 
 async function getJson(path: string): Promise<unknown> {
@@ -126,15 +160,30 @@ export async function fetchTranscript(runName?: string | null): Promise<Transcri
   };
 }
 
+function asAccessMap(value: unknown): AccessMapData {
+  if (!value || typeof value !== "object") return EMPTY_ACCESS_MAP;
+  const record = value as Partial<AccessMapData>;
+  return {
+    nodes: Array.isArray(record.nodes) ? record.nodes : [],
+    edges: Array.isArray(record.edges) ? record.edges : [],
+  };
+}
+
+/** Devices and access edges derived from the run's findings, coverage, notes, and threat model. */
+export async function fetchAccessMap(runName?: string | null): Promise<AccessMapData> {
+  return asAccessMap(await getJson("/api/access-map" + runQuery(runName)));
+}
+
 /** One-shot fetch of every endpoint (used on mount and on final settle). */
 export async function fetchAll(runName?: string | null): Promise<LoadedRun> {
   const { summary, raw, finished } = await fetchRunSummary(runName);
-  const [vulnerabilities, reportMarkdown, transcript] = await Promise.all([
+  const [vulnerabilities, reportMarkdown, transcript, accessMap] = await Promise.all([
     fetchVulnerabilities(summary.runId, runName).catch(() => [] as Vulnerability[]),
     fetchReportMarkdown(runName).catch(() => null),
     fetchTranscript(runName).catch(() => ({ agents: [], events: [] }) as Transcript),
+    fetchAccessMap(runName).catch(() => EMPTY_ACCESS_MAP),
   ]);
-  return { summary, raw, finished, vulnerabilities, reportMarkdown, transcript };
+  return { summary, raw, finished, vulnerabilities, reportMarkdown, transcript, accessMap };
 }
 
 // ---------------------------------------------------------------------------

@@ -18,6 +18,7 @@ import VulnerabilityDetail from "@/components/vulnerability/VulnerabilityDetail"
 import { ContentSection } from "@/components/vulnerability/ContentSection";
 import { IssueSeveritySummary } from "@/components/IssueSeveritySummary";
 import AgentGraph from "@/components/live/AgentGraph";
+import AccessMap from "@/components/live/AccessMap";
 import { buildGraphAgents } from "@/components/live/AgentTranscript";
 import AgentDetailModal from "@/components/live/AgentDetailModal";
 import { ScanPromptComposer } from "@/components/live/ScanPromptComposer";
@@ -28,9 +29,11 @@ import {
   fetchCapabilities,
   fetchRunSummary,
   fetchRuns,
+  fetchAccessMap,
   fetchTranscript,
   fetchVulnerabilities,
   forgetAuth,
+  EMPTY_ACCESS_MAP,
   parseMcpConnectionStatus,
   type AuthStatus,
   type LoadedRun,
@@ -46,7 +49,7 @@ import { TrustToast } from "@/components/TrustToast";
 import FeedbackView from "@/components/FeedbackView";
 import { ProInlineCta } from "@/components/ProCta";
 
-export type View = "overview" | "issues" | "agents" | "history" | "email" | "feedback";
+export type View = "overview" | "issues" | "agents" | "access" | "history" | "email" | "feedback";
 
 const TRUST_BANNER =
   "Your findings stay on your machine. They're rendered here locally in your browser and never uploaded or stored by Lamia.";
@@ -119,9 +122,10 @@ export default function App() {
           if (!cancelled) setRun(full);
           return; // stop polling
         }
-        const [transcript, vulnerabilities] = await Promise.all([
+        const [transcript, vulnerabilities, accessMap] = await Promise.all([
           fetchTranscript(activeRun).catch(() => ({ agents: [], events: [] })),
           fetchVulnerabilities(summary.runId, activeRun).catch(() => [] as Vulnerability[]),
+          fetchAccessMap(activeRun).catch(() => null),
         ]);
         if (cancelled) return;
         setRun((prev) => ({
@@ -131,6 +135,7 @@ export default function App() {
           transcript,
           vulnerabilities,
           reportMarkdown: prev?.reportMarkdown ?? null,
+          accessMap: accessMap ?? prev?.accessMap ?? EMPTY_ACCESS_MAP,
         }));
         schedule();
       } catch (e) {
@@ -274,6 +279,7 @@ export default function App() {
         }}
         issuesCount={run?.vulnerabilities.length ?? 0}
         agentCount={agentCount}
+        accessCount={run?.accessMap.nodes.length ?? 0}
         mcpConnections={mcpConnections}
         mcpInUse={mcpInUse}
         runCount={runs?.count ?? 0}
@@ -390,6 +396,10 @@ export default function App() {
                     Agents ({agentCount})
                   </TabButton>
                 )}
+                <TabButton active={view === "access"} onClick={() => userSetView("access")}>
+                  Access map
+                  {run.accessMap.nodes.length > 0 ? ` (${run.accessMap.nodes.length})` : ""}
+                </TabButton>
               </div>
 
               {view === "overview" ? (
@@ -404,6 +414,12 @@ export default function App() {
                 />
               ) : view === "agents" && agentCount > 0 ? (
                 <AgentsTab run={run} canSteer={canSteer} />
+              ) : view === "access" ? (
+                <AccessTab
+                  run={run}
+                  selected={selected}
+                  onSelect={(id) => setSelectedId(id)}
+                />
               ) : selected ? (
                 <div className="space-y-4">
                   <button
@@ -771,6 +787,56 @@ function TabButton({
       {children}
       {active && <span className="absolute bottom-0 inset-x-0 h-0.5 bg-white rounded-full" />}
     </button>
+  );
+}
+
+function AccessTab({
+  run,
+  selected,
+  onSelect,
+}: {
+  run: LoadedRun;
+  selected: Vulnerability | null;
+  onSelect: (id: string | null) => void;
+}) {
+  if (selected) {
+    return (
+      <div className="space-y-4">
+        <button
+          onClick={() => onSelect(null)}
+          className="cursor-pointer inline-flex items-center gap-1.5 text-sm text-[#888] hover:text-white transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to access map
+        </button>
+        <VulnerabilityDetail vulnerability={selected} />
+      </div>
+    );
+  }
+
+  const deviceCount = run.accessMap.nodes.length;
+  const edgeCount = run.accessMap.edges.length;
+
+  return (
+    <div className="space-y-5">
+      <div className="rounded-xl border border-[#3f1515] bg-[rgba(255,255,255,0.02)] p-5">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-white">Access map</h2>
+          {deviceCount > 0 && (
+            <span className="text-xs text-[#666]">
+              {deviceCount} device{deviceCount === 1 ? "" : "s"}
+              {edgeCount > 0 ? ` · ${edgeCount} path${edgeCount === 1 ? "" : "s"}` : ""}
+            </span>
+          )}
+        </div>
+        <p className="mt-1 mb-4 text-xs text-[#666]">
+          Devices and access recorded in this run. A solid arrow is access already recorded.
+          A dashed arrow is a proof gap. Click an arrow to open the finding.
+        </p>
+        <div className="h-[480px] rounded-lg border border-[#3f1515] overflow-hidden">
+          <AccessMap map={run.accessMap} onOpenFinding={(id) => onSelect(id)} />
+        </div>
+      </div>
+    </div>
   );
 }
 

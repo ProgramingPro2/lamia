@@ -4,6 +4,7 @@ import {
   Bot,
   Users,
   History,
+  Network,
   Mail,
   LogOut,
   ChevronsUpDown,
@@ -38,6 +39,7 @@ interface SidebarProps {
   onSelectView: (view: View) => void;
   issuesCount: number;
   agentCount: number;
+  accessCount: number;
   mcpConnections: McpConnectionStatus[];
   mcpInUse: Set<string>;
   runCount: number;
@@ -64,6 +66,7 @@ export default function Sidebar({
   onSelectView,
   issuesCount,
   agentCount,
+  accessCount,
   mcpConnections,
   mcpInUse,
   runCount,
@@ -251,6 +254,13 @@ export default function Sidebar({
                 onClick={() => onSelectView("agents")}
               />
             )}
+            <NavItem
+              icon={<Network className="h-4 w-4" />}
+              label="Access map"
+              count={accessCount > 0 ? accessCount : undefined}
+              active={view === "access"}
+              onClick={() => onSelectView("access")}
+            />
             {mcpConnections.length > 0 && (
               <McpConnectionsPanel connections={mcpConnections} inUse={mcpInUse} />
             )}
