@@ -24,6 +24,28 @@ If the honest answer is "only if you accept a chain of assumptions", it
 is not high. Rate the weakness you proved, not the worst case you can
 imagine reaching from it.
 
+## Chained Paths Are Scored At The End
+
+When you demonstrate a chain, **score the end impact, not the sum of the
+links and not the weakest link**. A low finding that is the first step of
+a demonstrated path to admin takeover is not a low finding; it is one
+component of a high or critical path.
+
+What this does *not* license:
+
+- Scoring a chain you did not execute. Each link must be demonstrated, or
+  the chain is a hypothesis and every unrun link is a proof gap.
+- Scoring an imagined end. The reachable end is the one you reached, with
+  the controls you crossed named.
+- Inflating an isolated weakness by describing where it *could* lead. If
+  the chain stops at your first real control, you file the weakness you
+  proved at its own severity.
+
+Report the chain as the finding, with the intermediate weaknesses
+attached as steps. File the steps separately only when each is
+independently actionable; otherwise they belong inside the chain, where
+their severity comes from the end.
+
 ## Critical
 
 Reserve for findings where a realistic attacker gets decisive control or
@@ -114,6 +136,8 @@ All of these must be true. If any is not, drop a level:
       reflect that honestly.
 - [ ] The impact is material and demonstrated, not asserted — `C:H` /
       `I:H` mean proven broad or systemic read/write, not one record.
+- [ ] For a chain, every link was executed in sequence and the end impact
+      was observed, not inferred from the last step that worked.
 - [ ] The counterevidence pass found no constraint that meaningfully
       limits exploitation, or you have explained why the constraint does
       not hold.

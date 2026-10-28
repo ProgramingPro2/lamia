@@ -1,164 +1,129 @@
 ---
 name: deep
-description: Exhaustive security assessment with maximum coverage, depth, and vulnerability chaining
+description: Full-penetration assessment that closes each reachable in-scope attack path from entry to demonstrated impact
 ---
 
 # Deep Testing Mode
 
-Exhaustive security assessment. Maximum coverage, maximum depth. Finding what others miss is the goal.
+Full-penetration assessment. Depth is spending your budget on paths that reach real impact, not on visiting every surface once. The deliverable is a demonstrated attack path: entry, foothold, privilege boundary crossed, data or action reached, evidence captured.
 
 ## Approach
 
-Thorough understanding before exploitation. Test every parameter, every endpoint, every edge case. Chain findings for maximum impact.
+Map the target first, then follow the paths that reach high-value data or actions to the end. One closed path outranks a dozen opened ones.
 
-## Phase 1: Exhaustive Reconnaissance
+A path is closed when it ends in exactly one state: confirmed with evidence, ruled out with the specific control named, or recorded as a proof gap with the evidence that would settle it. A path you stopped testing is still open.
+
+## Phase 1: Reconnaissance and Mapping
+
+Map enough to choose paths. Depth here means knowing where the trust boundaries and sinks are, not enumerating every asset the target owns.
 
 **Whitebox (source available)**
-- Map every file, module, and code path in the repository
-- Start with broad source-aware triage (`semgrep`, `ast-grep`, `gitleaks`, `trufflehog`, `trivy fs`) and use outputs to drive deep review
-- Execute at least one structural AST pass (`sg` and/or Tree-sitter) per repository and store artifacts for reuse
-- Keep AST artifacts bounded and query-driven (target relevant paths/sinks first; avoid whole-repo generic function dumps)
-- Use syntax-aware parsing (Tree-sitter tooling) to improve symbol, route, and sink extraction quality
-- Trace all entry points from HTTP handlers to database queries
-- Document all authentication mechanisms and implementations
-- Map authorization checks and access control model
-- Identify all external service integrations and API calls
-- Analyze configuration for secrets and misconfigurations
-- Review database schemas and data relationships
-- Map background jobs, cron tasks, async processing
-- Identify all serialization/deserialization points
-- Review file handling: upload, download, processing
-- Understand the deployment model and infrastructure assumptions
-- Check all dependency versions and repository risks against CVE/misconfiguration data
-- For quick CVE lookups on a named product/version, use `vulnx search <query>`
-  (ProjectDiscovery's CVE database) before falling back to web_search
+- Map modules, entry points, routing, and the data model
+- Start with source-aware triage (`semgrep`, `ast-grep`, `gitleaks`, `trufflehog`, `trivy fs`) and use the output to rank candidate paths
+- Run at least one structural AST pass (`sg` and/or Tree-sitter) per repository and keep artifacts reusable
+- Keep AST artifacts bounded and query-driven: target relevant paths and sinks, not whole-repo function dumps
+- Trace entry points to sinks through the controls between them: validation, authentication, authorization, encoding
+- Map authorization checks and the access control model, including where it is enforced and where it is assumed
+- Map background jobs, cron tasks, async processing, and any internal caller that reaches the same sink as an HTTP route
+- Identify serialization, deserialization, file handling, and external integration points
+- Check dependency versions and repository risks with `trivy fs`, `gitleaks`, and `trufflehog`
+- For quick CVE lookups on a named product/version, use `vulnx search <query>` before falling back to web_search
 
 **Blackbox (no source)**
-- Exhaustive subdomain enumeration with multiple sources and tools
-- Full port scanning across all services
-- Complete content discovery with multiple wordlists
-- Technology fingerprinting on all assets
-- API discovery via docs, JavaScript analysis, fuzzing
-- Identify all parameters including hidden and rarely-used ones
-- Map all user roles with different account types
-- Document rate limiting, WAF rules, security controls
-- Document complete application architecture as understood from outside
+- Subdomain and host enumeration across multiple sources, scoped to the in-scope root domains
+- Port and service discovery on in-scope hosts and ranges only
+- Bounded content discovery: enough breadth to find the routes that matter, then stop
+- Technology fingerprinting and version identification on everything that answered
+- API discovery through docs, JavaScript analysis, and observed traffic
+- Map user roles and account types the target exposes
+- Document the controls you can observe: rate limiting, WAF behavior, session handling
+- Write down the application architecture as far as the outside can confirm it
 
-## Phase 2: Business Logic Deep Dive
+## Phase 2: Path Selection
 
-Create a complete storyboard of the application:
+Rank candidate paths before you test any of them. Pick by reach, not by novelty.
 
-- **User flows** - document every step of every workflow
-- **State machines** - map all transitions (Created → Paid → Shipped → Delivered)
-- **Trust boundaries** - identify where privilege changes hands
-- **Invariants** - what rules should the application always enforce
-- **Implicit assumptions** - what does the code assume that might be violated
-- **Multi-step attack surfaces** - where can normal functionality be abused
-- **Third-party integrations** - map all external service dependencies
+- **Entry** - what an attacker can touch without already holding access
+- **Boundary** - which privilege or tenant boundary the path could cross
+- **Reach** - what data or action sits at the end, and how much of it
+- **Blast radius** - how many users or tenants the end impact covers
+- **Cost** - what it takes to prove, and whether that proof is reproducible
 
-Use the application extensively as every user type to understand the full data lifecycle.
+Work the highest-ranked path to closure before opening the next. Open a second path in parallel only when the two share no evidence and no state.
 
-## Phase 3: Comprehensive Attack Surface Testing
+## Phase 3: Follow Each Path to Impact
 
-Test every input vector with every applicable technique.
+For the path you selected, drive it as far as it goes.
 
-**Input Handling**
-- Multiple injection types: SQL, NoSQL, LDAP, XPath, command, template
-- Encoding bypasses: double encoding, unicode, null bytes
-- Boundary conditions and type confusion
-- Large payloads and buffer-related issues
+**Entry and foothold**
+- Injection across every parser the entry reaches: SQL, NoSQL, LDAP, XPath, command, template
+- Encoding and normalization bypasses: double encoding, unicode, null bytes, case and path variants
+- Boundary conditions, type confusion, oversized input, and truncation
+- File handling: upload bypass by extension, content type, and magic bytes; traversal on every path parameter; SSRF and XXE where the parser is reached
+- Authentication and session: token handling, JWT manipulation, OAuth flows, reset token leakage or reuse, MFA bypass, account enumeration
+- When SSRF, XXE, or a blind injection is in play, use interactsh to confirm the out-of-band channel rather than assuming it
 
-**Authentication & Session**
-- Exhaustive brute force protection testing
-- Session fixation, hijacking, prediction
-- JWT/token manipulation
-- OAuth flow abuse scenarios
-- Password reset vulnerabilities: token leakage, reuse, timing
-- MFA bypass techniques
-- Account enumeration through all channels
+**Boundary crossing**
+- Horizontal and vertical access control on every object reference the path touches
+- Session state changes: logout, role change, impersonation, re-authentication
+- Forced browsing, method tampering, and parameter pollution against the same handler
+- Mass assignment and hidden field acceptance on the objects you can write
 
-**Access Control**
-- Test every endpoint for horizontal and vertical access control
-- Parameter tampering on all object references
-- Forced browsing to all discovered resources
-- HTTP method tampering (GET vs POST vs PUT vs DELETE)
-- Access control after session state changes (logout, role change)
+**Reach**
+- Read, then write, then act: escalate one step at a time and record which step crossed the boundary
+- Race conditions and TOCTOU on any state-changing step the path crosses
+- Business logic: workflow bypass, price and quantity manipulation, replay
+- Confirm the end impact on data or an action that matters, not on a canary you planted
 
-**File Operations**
-- Exhaustive file upload bypass: extension, content-type, magic bytes
-- Path traversal on all file parameters
-- SSRF through file inclusion
-- XXE through all XML parsing points
+**When a control fires**
+- The first blocked payload is not the end of the path. Vary the technique on the same sink
+- Change the surface: a sibling route, an older API version, a different role, an admin alias, a GraphQL resolver, a background job, or a mobile endpoint
+- Read the control and test what it does not cover: encoding it misses, paths it skips, roles it trusts
+- Record the control by name and location whether it holds or not; a bypass and a ruled-out path both need the same specificity
 
-**Business Logic**
-- Race conditions on all state-changing operations
-- Workflow bypass on every multi-step process
-- Price/quantity manipulation in transactions
-- Parallel execution attacks
-- TOCTOU (time-of-check to time-of-use) vulnerabilities
+## Phase 4: Chaining
 
-**Advanced Techniques**
-- HTTP request smuggling (multiple proxies/servers)
-- Cache poisoning and cache deception
-- Subdomain takeover
-- Prototype pollution (JavaScript applications)
-- CORS misconfiguration exploitation
-- WebSocket security testing
-- GraphQL-specific attacks (introspection, batching, nested queries)
-- LLM/RAG/agent features: load `llm_applications` for OWASP 2026 LLM01-LLM10 coverage and `llm_prompt_injection` for deep injection testing
+Low impact alone is not a reason to file or to drop. Follow the chain first.
 
-## Phase 4: Vulnerability Chaining
+- Treat every confirmed weakness as a pivot: what does it unlock next
+- Prefer end-to-end paths over isolated bugs: entry, foothold, privilege gain, sensitive action or data
+- Cross boundaries deliberately: user to admin, external to internal, read to write, one tenant to another
+- Execute the full sequence, not just the first hop; a chain you did not run is a hypothesis
+- Score the chain by its end impact, not by its weakest link
+- When a pivot lands in a different component, spawn a specialist for that segment and hand it the state you reached
 
-Individual bugs are starting points. Chain them for maximum impact:
+## Phase 5: Persistence Within the Path
 
-- Combine information disclosure with access control bypass
-- Chain SSRF to reach internal services
-- Use low-severity findings to enable high-impact attacks
-- Build multi-step attack paths that automated tools miss
-- Cross component boundaries: user → admin, external → internal, read → write, single-tenant → cross-tenant
+Depth means exhausting the path, not the target.
 
-**Chaining Principles**
-- Treat every finding as a pivot point: ask "what does this unlock next?"
-- Continue until reaching maximum privilege / maximum data exposure / maximum control
-- Prefer end-to-end exploit paths over isolated bugs: initial foothold → pivot → privilege gain → sensitive action/data
-- Validate chains by executing the full sequence (proxy + browser for workflows, python for automation)
-- When a pivot is found, spawn focused agents to continue the chain in the next component
+- Research the technology-specific bypasses for the control that stopped you before trying random variants
+- Try the same weakness with a different client context, role, or protocol version
+- Use timing and blind techniques where the response gives you nothing
+- Revisit a path when another finding changes what you know about it
+- Stop when the path is closed, not when the first attempt failed; stop the target when its paths are closed
 
-## Phase 5: Persistent Testing
+## Phase 6: Reporting
 
-When initial attempts fail:
-
-- Research technology-specific bypasses
-- Try alternative exploitation techniques
-- Test edge cases and unusual functionality
-- Test with different client contexts
-- Revisit areas with new information from other findings
-- Consider timing-based and blind exploitation
-- Look for logic flaws that require deep application understanding
-
-## Phase 6: Comprehensive Reporting
-
-- Document every confirmed vulnerability with full details
-- Include all severity levels—low findings may enable chains
-- Complete reproduction steps and working PoC
-- Remediation recommendations with specific guidance
-- Note areas requiring additional review beyond current scope
+- File every confirmed path with its full sequence and the evidence for each step
+- Report the intermediate weaknesses that make the chain work, and name the chain in the end finding
+- Score severity at the end impact of the chain
+- Record what you ruled out and with which control; record proof gaps with what would settle them
+- Note the paths you did not reach and why, so the next run starts where this one stopped
 
 ## Agent Strategy
 
-After reconnaissance, decompose the application hierarchically:
+Decompose by attack path, not by vulnerability type:
 
-1. **Component level** - Auth System, Payment Gateway, User Profile, Admin Panel
-2. **Feature level** - Login Form, Registration API, Password Reset
-3. **Vulnerability level** - SQLi Agent, XSS Agent, Auth Bypass Agent
+1. **Path level** - one specialist per entry-to-impact path, owning it end to end
+2. **Segment level** - a follow-on specialist when the path crosses into a component the first specialist cannot reach, carrying the state forward
+3. **Validation level** - an independent check when the path's central claim is the whole finding
 
-Spawn specialized agents at each level. Scale horizontally to maximum parallelization:
-- Do NOT overload a single agent with multiple vulnerability types
-- Each agent focuses on one specific area or vulnerability type
-- Creates a massive parallel swarm covering every angle
+- Give each specialist the path, its entry point, and the state already reached, so it continues rather than restarts
+- Keep 1-3 related skills per specialist; a path rarely needs a generalist
+- Do not split one path across agents that cannot see each other's progress
+- Spawn reactively, as the path opens up, not as a broad swarm at the start
+- Stop agents whose path is closed, ruled out, or superseded by another path
 
 ## Mindset
 
-Relentless. Creative. Patient. Thorough. Persistent.
-
-This is about finding what others miss. Test every parameter, every endpoint, every edge case. If one approach fails, try ten more. Understand how components interact to find systemic issues.
+Relentless on the path you chose, indifferent to the ones you did not. Vary the technique before you vary the target. Treat every control that fires as a question about what it fails to cover. A path is only finished when it is closed.
