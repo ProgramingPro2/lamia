@@ -7,7 +7,7 @@ returns it as an image content block for vision-capable models.
   (upstream `agents` SDK)
 - **Wired in:** `strix/agents/factory.py` — added per-run via the SDK
   `Filesystem` capability.
-- **Strix defaults:** screenshots default to
+- **Lamia defaults:** screenshots default to
   `/workspace/.agent-browser-screenshots/` via `AGENT_BROWSER_SCREENSHOT_DIR`
   (set in `containers/Dockerfile`; dir is created at container start in
   `containers/docker-entrypoint.sh`).

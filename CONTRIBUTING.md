@@ -1,6 +1,6 @@
-# Contributing to Strix
+# Contributing to Lamia
 
-Thank you for your interest in contributing to Strix! This guide will help you get started with development and contributions.
+Thank you for your interest in contributing to Lamia! This guide will help you get started with development and contributions.
 
 ## 🚀 Development Setup
 
@@ -35,9 +35,9 @@ Thank you for your interest in contributing to Strix! This guide will help you g
    export LLM_API_KEY="your-api-key"
    ```
 
-4. **Run Strix in development mode**
+4. **Run Lamia in development mode**
    ```bash
-   uv run strix --target https://example.com
+   uv run lamia --target https://example.com
    ```
 
 ## 📚 Contributing Skills
@@ -84,7 +84,7 @@ Skills are specialized knowledge packages that enhance agent capabilities. See [
 When reporting bugs, please include:
 
 - Python version and OS
-- Strix version
+- Lamia version
 - LLMs being used
 - Full error traceback
 - Steps to reproduce
@@ -102,7 +102,7 @@ We welcome feature ideas! Please:
 
 ## 🖥️ Local viewer SPA
 
-`strix view` serves a prebuilt web UI whose source lives in
+`lamia view` serves a prebuilt web UI whose source lives in
 `strix/interface/viewer/frontend/` (a Vite + React project) and whose built output is
 committed to `strix/interface/viewer/static/` and shipped in the package. End users never
 run a JS build. If you change anything under `strix/interface/viewer/frontend/`, rebuild

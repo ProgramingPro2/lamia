@@ -1,6 +1,6 @@
-# Strix Documentation
+# Lamia Documentation
 
-Documentation source files for Strix, powered by [Mintlify](https://mintlify.com).
+Documentation source files for Lamia, powered by [Mintlify](https://mintlify.com).
 
 ## Local Preview
 

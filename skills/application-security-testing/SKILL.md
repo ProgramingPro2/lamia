@@ -1,6 +1,6 @@
 ---
 name: application-security-testing
-description: Application security testing (AppSec) across a whole product with Strix — decide which asset needs which test (source code, running web app, API, CI pipeline), run it, and turn the results into a ranked remediation plan. Autonomous agents exploit and prove each issue instead of emitting static-analysis alerts, so the plan is ordered by what is actually reachable. Use when the user asks for an application security review or audit, an appsec assessment, vulnerability scanning across their stack, a security review before a launch or a customer security questionnaire, or does not yet know which kind of security test they need.
+description: Application security testing (AppSec) across a whole product with Lamia — decide which asset needs which test (source code, running web app, API, CI pipeline), run it, and turn the results into a ranked remediation plan. Autonomous agents exploit and prove each issue instead of emitting static-analysis alerts, so the plan is ordered by what is actually reachable. Use when the user asks for an application security review or audit, an appsec assessment, vulnerability scanning across their stack, a security review before a launch or a customer security questionnaire, or does not yet know which kind of security test they need.
 license: Apache-2.0
 metadata:
   author: usestrix
@@ -11,7 +11,7 @@ metadata:
 
 Entry point for "make my application secure" requests, where the target is not yet a single URL or repo. The job here is to pick the right test per asset, run it, and produce one ranked plan — not to run everything at maximum depth.
 
-Install, LLM setup, all CLI flags, and the managed-cloud path live in the **penetration-testing-with-strix** skill. Read it first if `strix --version` fails. For a run with no Docker and no LLM key, the same binary drives the managed platform: `strix cloud login`, then `strix cloud scans start ...` (details in **managed-pentesting-with-strix**).
+Install, LLM setup, all CLI flags, and the managed-cloud path live in the **penetration-testing-with-strix** skill. Read it first if `lamia --version` fails. For a run with no Docker and no LLM key, the same binary drives the managed platform: `lamia cloud login`, then `lamia cloud scans start ...` (details in **managed-pentesting-with-strix**).
 
 Only test assets the user owns or is authorized to test. Confirm authorization before the first run, and prefer staging over production, because the agents send real exploit payloads and can change data.
 
@@ -63,4 +63,4 @@ Deduplicate: the same root cause often surfaces in both the code review and the 
 
 State plainly what was *not* tested — assets with no staging environment, categories a black-box run cannot reach (logging and alerting, supply-chain integrity, insecure design), and any run that hit its budget or turn cap before finishing. Check `run.json` status and cost against `--max-budget` for each run. An empty result set from a truncated scan is not a clean bill of health.
 
-Then remediate with **fix-security-vulnerabilities-with-strix**, which re-runs Strix against each fix to prove the exploit no longer works.
+Then remediate with **fix-security-vulnerabilities-with-strix**, which re-runs Lamia against each fix to prove the exploit no longer works.

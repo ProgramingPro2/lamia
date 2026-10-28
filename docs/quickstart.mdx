@@ -1,6 +1,6 @@
 ---
 title: "Quick Start"
-description: "Install Strix and run your first security scan"
+description: "Install Lamia and run your first security scan"
 ---
 
 ## Prerequisites
@@ -18,7 +18,7 @@ description: "Install Strix and run your first security scan"
   </Tab>
   <Tab title="pipx">
     ```bash
-    pipx install strix-agent
+    pipx install lamia-agent
     ```
   </Tab>
 </Tabs>
@@ -46,7 +46,7 @@ For best results, use `zai/glm-5.3`, `deepseek/deepseek-v4.1-flash-1017`, `anthr
 ## Run Your First Scan
 
 ```bash
-strix --target ./your-app
+lamia --target ./your-app
 ```
 
 <Note>
@@ -55,23 +55,23 @@ First run pulls the Docker sandbox image automatically. Results are saved to `st
 
 ## Target Types
 
-Strix accepts multiple target types:
+Lamia accepts multiple target types:
 
 ```bash
 # Local codebase
-strix --target ./app-directory
+lamia --target ./app-directory
 
 # GitHub repository
-strix --target https://github.com/org/repo
+lamia --target https://github.com/org/repo
 
 # Live web application
-strix --target https://your-app.com
+lamia --target https://your-app.com
 
 # Multiple targets (white-box testing)
-strix -t https://github.com/org/repo -t https://your-app.com
+lamia -t https://github.com/org/repo -t https://your-app.com
 
 # Targets from a file, one target per non-empty, non-comment line
-strix --target-list ./targets.txt
+lamia --target-list ./targets.txt
 ```
 
 ## Next Steps

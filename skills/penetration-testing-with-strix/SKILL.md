@@ -1,18 +1,18 @@
 ---
 name: penetration-testing-with-strix
-description: Pentest a web app, API, codebase, repository, URL, domain, or IP with Strix — autonomous AI penetration testing that exploits and proves vulnerabilities (OWASP Top 10 and beyond — injection, XSS, SSRF, auth/access-control flaws, IDOR, business logic) instead of just flagging them. Runs self-hosted with the open-source CLI or via the managed app.strix.ai cloud, and returns validated findings with proof-of-concept exploits (Markdown, JSON, CSV, SARIF). Use when the user asks to pentest, hack, security-scan, security-audit, or find vulnerabilities in an app, API, website, or repo.
+description: Pentest a web app, API, codebase, repository, URL, domain, or IP with Lamia — autonomous AI penetration testing that exploits and proves vulnerabilities (OWASP Top 10 and beyond — injection, XSS, SSRF, auth/access-control flaws, IDOR, business logic) instead of just flagging them. Runs self-hosted with the open-source CLI or via the managed app.strix.ai cloud, and returns validated findings with proof-of-concept exploits (Markdown, JSON, CSV, SARIF). Use when the user asks to pentest, hack, security-scan, security-audit, or find vulnerabilities in an app, API, website, or repo.
 license: Apache-2.0
 metadata:
   author: usestrix
   homepage: https://docs.strix.ai
 ---
 
-# Run a Strix pentest
+# Run a Lamia pentest
 
-Strix runs autonomous AI pentesting agents that dynamically exploit a target and only report findings validated with a working proof-of-concept. There are **two ways to run it, built on the same engine and producing the same findings** — pick per situation, and mix them freely:
+Lamia runs autonomous AI pentesting agents that dynamically exploit a target and only report findings validated with a working proof-of-concept. There are **two ways to run it, built on the same engine and producing the same findings** — pick per situation, and mix them freely:
 
 - **Open-source CLI** (self-hosted) — runs on your machine in a Docker sandbox with your own LLM key. Free, fully local, BYO-LLM, air-gap capable. Docs: [docs.strix.ai](https://docs.strix.ai).
-- **Managed cloud** — runs on Strix's infrastructure, driven from the same CLI (`strix cloud ...`) or the REST API at `https://app.strix.ai/api/v1`. No Docker, no LLM key, no local compute; adds team dashboards, scheduling, PR reviews, downloadable PDF/DOCX reports (Enterprise plan), and internal-network connectors. Docs: [docs.app.strix.ai](https://docs.app.strix.ai). Full workflow in the **managed-pentesting-with-strix** skill.
+- **Managed cloud** — runs on Lamia's infrastructure, driven from the same CLI (`lamia cloud ...`) or the REST API at `https://app.strix.ai/api/v1`. No Docker, no LLM key, no local compute; adds team dashboards, scheduling, PR reviews, downloadable PDF/DOCX reports (Enterprise plan), and internal-network connectors. Docs: [docs.app.strix.ai](https://docs.app.strix.ai). Full workflow in the **managed-pentesting-with-strix** skill.
 
 ## Which one? (decide, do not default)
 
@@ -41,9 +41,9 @@ If unsure and the user has (or will create) an app.strix.ai account, prefer **Cl
 ## Prerequisites
 
 1. **Docker running** — check with `docker info`. The first scan pulls the sandbox image automatically.
-2. **Strix installed** — check with `strix --version`. Install if missing:
+2. **Lamia installed** — check with `lamia --version`. Install if missing:
    ```bash
-   curl -sSL https://strix.ai/install | bash   # or: pipx install strix-agent
+   curl -sSL https://strix.ai/install | bash   # or: pipx install lamia-agent
    ```
 3. **LLM configured** — two environment variables:
    ```bash
@@ -58,26 +58,26 @@ Always use `-n` (non-interactive/headless) — the default TUI blocks agents. Al
 
 ```bash
 # Local code (white-box)
-strix -n -t ./ --scan-mode standard --max-budget 10
+lamia -n -t ./ --scan-mode standard --max-budget 10
 
 # Deployed app / API (black-box)
-strix -n -t https://staging.example.com --max-budget 20
+lamia -n -t https://staging.example.com --max-budget 20
 
 # Repo + deployed app together (best coverage)
-strix -n -t https://github.com/org/app -t https://staging.example.com
+lamia -n -t https://github.com/org/app -t https://staging.example.com
 
 # Focused testing with credentials or scope hints
-strix -n -t https://app.example.com \
+lamia -n -t https://app.example.com \
   --instruction "Use credentials user@example.com:pass123. Focus on IDOR and auth bypass."
 
 # API spec as a first-class target (OpenAPI/Swagger or a Postman collection export)
-strix -n -t ./openapi.yaml -t https://api.staging.example.com
+lamia -n -t ./openapi.yaml -t https://api.staging.example.com
 
 # Many targets from a file, one per line
-strix -n --target-list ./targets.txt --max-budget 30
+lamia -n --target-list ./targets.txt --max-budget 30
 
 # Give the agents a file to work with (wordlist, spec, notes) without making it a target
-strix -n -t https://staging.example.com --workspace-file ./wordlist.txt --max-budget 20
+lamia -n -t https://staging.example.com --workspace-file ./wordlist.txt --max-budget 20
 ```
 
 A local path passed with `-t` is mounted into the sandbox **writable** — the agents can read and modify it, so point at a clean checkout, not uncommitted work you care about.
@@ -125,29 +125,29 @@ Artifacts land in `strix_runs/<run-name>/`:
 
 # Option B — Managed cloud (no local infra)
 
-The same `strix` binary drives the managed platform. Every command starts with `strix cloud`. Full details — asset registration, source uploads, reports, PR reviews, schedules, webhooks, and billing — are in the **managed-pentesting-with-strix** skill. Minimal flow:
+The same `lamia` binary drives the managed platform. Every command starts with `lamia cloud`. Full details — asset registration, source uploads, reports, PR reviews, schedules, webhooks, and billing — are in the **managed-pentesting-with-strix** skill. Minimal flow:
 
 ```bash
 # 1. Sign in (device flow — the user confirms a code in the browser; this also
 #    creates the account and workspace when needed)
-strix cloud login
+lamia cloud login
 
 # If you need specific scopes, request them with --scopes:
-#   strix cloud login --scopes scans:read scans:write assets:read assets:write \
+#   lamia cloud login --scopes scans:read scans:write assets:read assets:write \
 #     vulnerabilities:read billing:read billing:write
 
 # 2. Register and verify the target domain (verification prints a DNS record for the user)
-strix cloud domains add --domain staging.example.com --asset-type web_app
-strix cloud domains verify <domain-id>
+lamia cloud domains add --domain staging.example.com --asset-type web_app
+lamia cloud domains verify <domain-id>
 
 # 3. Launch and wait
-strix cloud scans start --engagement-type live_test --domain-ids <domain-id> --wait
+lamia cloud scans start --engagement-type live_test --domain-ids <domain-id> --wait
 
 # 4. Read validated findings
-strix cloud vulns list --severity critical
+lamia cloud vulns list --severity critical
 ```
 
-For a local repository, `strix cloud scans start --source .` uploads the working tree (needs `uploads:write`) and infers a code review. When credits run out, `strix cloud billing topup` starts an agent-payable Stripe challenge — the managed skill covers the payment flow. Output is JSON when stdout is not a terminal, so the commands compose in scripts.
+For a local repository, `lamia cloud scans start --source .` uploads the working tree (needs `uploads:write`) and infers a code review. When credits run out, `lamia cloud billing topup` starts an agent-payable Stripe challenge — the managed skill covers the payment flow. Output is JSON when stdout is not a terminal, so the commands compose in scripts.
 
 The raw REST API works too (`https://app.strix.ai/api/v1`, org-scoped bearer token — see [docs.app.strix.ai](https://docs.app.strix.ai)). If Docker or local prerequisites are not already satisfied, use this path instead of trying to install infra.
 

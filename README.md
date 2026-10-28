@@ -1,12 +1,12 @@
 <p align="center">
   <a href="https://strix.ai/">
-    <img src="https://github.com/usestrix/.github/raw/main/imgs/cover.png" alt="Strix Banner" width="100%">
+    <img src="https://github.com/usestrix/.github/raw/main/imgs/cover.png" alt="Lamia Banner" width="100%">
   </a>
 </p>
 
 <div align="center">
 
-# Strix
+# Lamia
 
 ### The open-source AI pentesting tool. Autonomous AI hackers that find and fix your app’s vulnerabilities.
 
@@ -17,8 +17,8 @@
 <a href="https://strix.ai"><img src="https://img.shields.io/badge/Website-strix.ai-f0f0f0?style=for-the-badge&logoColor=000000" alt="Website"></a>
 [![](https://dcbadge.limes.pink/api/server/strix-ai)](https://discord.gg/strix-ai)
 
-<a href="https://app.strix.ai?utm_source=github&utm_medium=readme&utm_content=badge_cloud"><img src="https://img.shields.io/badge/Strix%20Cloud-app.strix.ai-2b9246?style=for-the-badge&logoColor=white" alt="Strix Cloud"></a>
-<a href="https://strix.ai/demo?utm_source=github&utm_medium=readme&utm_content=badge_demo"><img src="https://img.shields.io/badge/Try%20Strix%20Enterprise-555555?style=for-the-badge&logoColor=white" alt="Try Strix Enterprise"></a>
+<a href="https://app.strix.ai?utm_source=github&utm_medium=readme&utm_content=badge_cloud"><img src="https://img.shields.io/badge/Lamia%20Cloud-app.strix.ai-2b9246?style=for-the-badge&logoColor=white" alt="Lamia Cloud"></a>
+<a href="https://strix.ai/demo?utm_source=github&utm_medium=readme&utm_content=badge_demo"><img src="https://img.shields.io/badge/Try%20Lamia%20Enterprise-555555?style=for-the-badge&logoColor=white" alt="Try Lamia Enterprise"></a>
 
 <a href="https://github.com/usestrix/strix"><img src="https://img.shields.io/github/stars/usestrix/strix?style=flat-square" alt="GitHub Stars"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-3b82f6?style=flat-square" alt="License"></a>
@@ -36,14 +36,14 @@
 
 
 > [!TIP]
-> **New!** Strix integrates seamlessly with GitHub Actions and CI/CD pipelines. Automatically scan for vulnerabilities on every pull request and block insecure code before it reaches production - [Get started with no setup required](https://app.strix.ai?utm_source=github&utm_medium=readme&utm_content=tip_ci).
+> **New!** Lamia integrates seamlessly with GitHub Actions and CI/CD pipelines. Automatically scan for vulnerabilities on every pull request and block insecure code before it reaches production - [Get started with no setup required](https://app.strix.ai?utm_source=github&utm_medium=readme&utm_content=tip_ci).
 
 ---
 
 
-## Strix Overview
+## Lamia Overview
 
-Strix are autonomous AI penetration testing agents that act just like real hackers - they run your code dynamically, find vulnerabilities, and validate them through actual proofs-of-concept. Built for developers and security teams who need fast, accurate security testing without the overhead of manual pentesting or the false positives of static analysis tools.
+Lamia are autonomous AI penetration testing agents that act just like real hackers - they run your code dynamically, find vulnerabilities, and validate them through actual proofs-of-concept. Built for developers and security teams who need fast, accurate security testing without the overhead of manual pentesting or the false positives of static analysis tools.
 
 **Key Capabilities:**
 
@@ -59,7 +59,7 @@ Strix are autonomous AI penetration testing agents that act just like real hacke
 
 <div align="center">
   <a href="https://strix.ai">
-    <img src=".github/screenshot.png" alt="Strix Demo" width="1000" style="border-radius: 16px;">
+    <img src=".github/screenshot.png" alt="Lamia Demo" width="1000" style="border-radius: 16px;">
   </a>
 </div>
 
@@ -80,7 +80,7 @@ Strix are autonomous AI penetration testing agents that act just like real hacke
 ### Installation & First Scan
 
 ```bash
-# Install Strix
+# Install Lamia
 curl -sSL https://strix.ai/install | bash
 
 # Configure your AI provider
@@ -89,7 +89,7 @@ export STRIX_LLM="vercel_ai_gateway/zai/glm-5.3"   # Vercel AI Gateway
 export LLM_API_KEY="your-api-key"
 
 # Run your first security assessment
-strix --target ./app-directory
+lamia --target ./app-directory
 ```
 
 > [!NOTE]
@@ -99,27 +99,27 @@ strix --target ./app-directory
 
 ```bash
 # Self-update the standalone binary to the latest release
-strix --update
+lamia --update
 
 # ...or re-run the installer
 curl -sSL https://strix.ai/install | bash
 ```
 
-Installed with pipx, uv, or pip? `strix --update` prints the matching upgrade command instead (`pipx upgrade strix-agent`, `uv tool upgrade strix-agent`, `pip install --upgrade strix-agent`). Strix also shows a notice with the right command when a new version is available.
+Installed with pipx, uv, or pip? `lamia --update` prints the matching upgrade command instead (`pipx upgrade lamia-agent`, `uv tool upgrade lamia-agent`, `pip install --upgrade lamia-agent`). Lamia also shows a notice with the right command when a new version is available.
 
 ---
 
-## Ways to Run Strix
+## Ways to Run Lamia
 
 - **Open Source** - free, runs locally with Docker and your own LLM key. [Quick Start](https://docs.strix.ai/quickstart)
-- **Strix Cloud** - no setup, validated findings, one-click autofix, and PR reviews. [Run a pentest →](https://app.strix.ai?intent=pentest&utm_source=github&utm_medium=readme&utm_content=table_cloud)
-- **Enterprise** - SSO, compliance-ready reports, VPC or self-hosted deployment. [Try Strix Enterprise →](https://strix.ai/demo?utm_source=github&utm_medium=readme&utm_content=table_demo)
+- **Lamia Cloud** - no setup, validated findings, one-click autofix, and PR reviews. [Run a pentest →](https://app.strix.ai?intent=pentest&utm_source=github&utm_medium=readme&utm_content=table_cloud)
+- **Enterprise** - SSO, compliance-ready reports, VPC or self-hosted deployment. [Try Lamia Enterprise →](https://strix.ai/demo?utm_source=github&utm_medium=readme&utm_content=table_demo)
 
 ---
 
-## ☁️ Strix Cloud
+## ☁️ Lamia Cloud
 
-Try the Strix full-stack penetration testing platform at **[app.strix.ai](https://app.strix.ai?utm_source=github&utm_medium=readme&utm_content=cloud_heading)** - sign up for free, connect your repos and domains, and launch a pentest in minutes.
+Try the Lamia full-stack penetration testing platform at **[app.strix.ai](https://app.strix.ai?utm_source=github&utm_medium=readme&utm_content=cloud_heading)** - sign up for free, connect your repos and domains, and launch a pentest in minutes.
 
 - **Validated findings with PoCs** - every vulnerability includes a working proof-of-concept exploit and reproduction steps
 - **One-click autofix** - AI-generated security patches as ready-to-merge pull requests
@@ -131,15 +131,15 @@ Try the Strix full-stack penetration testing platform at **[app.strix.ai](https:
 
 ## 🏢 Enterprise
 
-Get the same Strix experience with enterprise-grade controls: SSO (SAML/OIDC), custom compliance-ready penetration testing reports (SOC 2, ISO 27001, PCI DSS), dedicated support and SLA, custom deployment options (VPC or self-hosted), BYOK model support, and tailored AI pentesting agents optimized for your environment.
+Get the same Lamia experience with enterprise-grade controls: SSO (SAML/OIDC), custom compliance-ready penetration testing reports (SOC 2, ISO 27001, PCI DSS), dedicated support and SLA, custom deployment options (VPC or self-hosted), BYOK model support, and tailored AI pentesting agents optimized for your environment.
 
-[**Try Strix Enterprise →**](https://strix.ai/demo?utm_source=github&utm_medium=readme&utm_content=enterprise_cta)
+[**Try Lamia Enterprise →**](https://strix.ai/demo?utm_source=github&utm_medium=readme&utm_content=enterprise_cta)
 
 ---
 
-## 🤖 Use Strix from Your Coding Agent
+## 🤖 Use Lamia from Your Coding Agent
 
-Strix is agent-ready. Give Claude Code, Cursor, Codex, or any [SKILL.md-compatible](https://agentskills.io) agent the ability to run pentests, fix findings, and set up CI scanning:
+Lamia is agent-ready. Give Claude Code, Cursor, Codex, or any [SKILL.md-compatible](https://agentskills.io) agent the ability to run pentests, fix findings, and set up CI scanning:
 
 ```bash
 npx skills add usestrix/strix
@@ -155,7 +155,7 @@ See [`AGENTS.md`](AGENTS.md) for the quick reference, [docs.strix.ai/llms.txt](h
 
 ### Agentic Pentesting Tools
 
-Strix agents come equipped with a comprehensive offensive security toolkit - the same tools used by professional penetration testers and ethical hackers:
+Lamia agents come equipped with a comprehensive offensive security toolkit - the same tools used by professional penetration testers and ethical hackers:
 
 - **HTTP Interception Proxy** - Full request/response manipulation and analysis with Caido
 - **Browser Exploitation** - Automated browser for testing XSS, CSRF, clickjacking, and auth bypass flows
@@ -167,7 +167,7 @@ Strix agents come equipped with a comprehensive offensive security toolkit - the
 
 ### Comprehensive Vulnerability Scanner
 
-Strix identifies, validates, and exploits a wide range of security vulnerabilities across the OWASP Top 10 and beyond:
+Lamia identifies, validates, and exploits a wide range of security vulnerabilities across the OWASP Top 10 and beyond:
 
 - **Broken Access Control** - IDOR, privilege escalation, auth bypass
 - **Injection Attacks** - SQL injection, NoSQL injection, OS command injection, SSTI
@@ -194,16 +194,16 @@ Every scan writes its results to disk as it runs. Bring them up in a local dashb
 
 ```bash
 # Open the most recent run
-strix view
+lamia view
 
 # ...or open a specific run by name
-strix view my-run-name
+lamia view my-run-name
 
 # Expose the viewer on all IPv4 interfaces at a fixed port
-strix view --host 0.0.0.0 --port 8080 --no-open
+lamia view --host 0.0.0.0 --port 8080 --no-open
 ```
 
-The dashboard shows the findings, a live map of the agent team, and past runs. Nothing leaves your machine, and the UI ships prebuilt. `strix view` binds to `127.0.0.1` and prints a tokened link that grants access to the run, so share it carefully.
+The dashboard shows the findings, a live map of the agent team, and past runs. Nothing leaves your machine, and the UI ships prebuilt. `lamia view` binds to `127.0.0.1` and prints a tokened link that grants access to the run, so share it carefully.
 
 See the [viewer documentation](https://docs.strix.ai/usage/viewer) for the options and for reaching the viewer from another machine.
 
@@ -215,25 +215,25 @@ See the [viewer documentation](https://docs.strix.ai/usage/viewer) for the optio
 
 ```bash
 # Scan a local codebase
-strix --target ./app-directory
+lamia --target ./app-directory
 
 # Security review of a GitHub repository
-strix --target https://github.com/org/repo
+lamia --target https://github.com/org/repo
 
 # Black-box web application assessment
-strix --target https://your-app.com
+lamia --target https://your-app.com
 ```
 
 ### API Testing (OpenAPI / Swagger / Postman)
 
-Point Strix at an API contract and it tests every declared endpoint instead of
+Point Lamia at an API contract and it tests every declared endpoint instead of
 having to discover them by crawling. Pair the spec with the live base URL so the
 agent knows where to send traffic:
 
 ```bash
 # OpenAPI / Swagger file, Postman export, or a live collection by id
-strix --target ./openapi.yaml --target https://api.your-app.com
-strix --target postman://<collection-uuid> --target https://api.your-app.com
+lamia --target ./openapi.yaml --target https://api.your-app.com
+lamia --target postman://<collection-uuid> --target https://api.your-app.com
 ```
 
 
@@ -241,31 +241,31 @@ strix --target postman://<collection-uuid> --target https://api.your-app.com
 
 ```bash
 # Grey-box authenticated testing
-strix --target https://your-app.com --instruction "Perform authenticated testing using credentials: user:pass"
+lamia --target https://your-app.com --instruction "Perform authenticated testing using credentials: user:pass"
 
 # Multi-target testing (source code + deployed app)
-strix -t https://github.com/org/app -t https://your-app.com
+lamia -t https://github.com/org/app -t https://your-app.com
 
 # Targets from a file, one target per non-empty, non-comment line
-strix --target-list ./targets.txt
+lamia --target-list ./targets.txt
 ```
 
 See the [CLI reference](https://docs.strix.ai/usage/cli) for every option, including scan modes, diff scope, instruction files, and budgets.
 
 ### Headless Mode
 
-Run Strix programmatically without interactive UI using the `-n/--non-interactive` flag - perfect for servers and automated jobs. The CLI prints real-time vulnerability findings and the final report before exiting. Exits with non-zero code when vulnerabilities are found.
+Run Lamia programmatically without interactive UI using the `-n/--non-interactive` flag - perfect for servers and automated jobs. The CLI prints real-time vulnerability findings and the final report before exiting. Exits with non-zero code when vulnerabilities are found.
 
 ```bash
-strix -n --target https://your-app.com
+lamia -n --target https://your-app.com
 ```
 
 ### CI/CD (GitHub Actions)
 
-Strix can be added to your pipeline to run a security test on pull requests with a lightweight GitHub Actions workflow:
+Lamia can be added to your pipeline to run a security test on pull requests with a lightweight GitHub Actions workflow:
 
 ```yaml
-name: strix-penetration-test
+name: lamia-penetration-test
 
 on:
   pull_request:
@@ -278,19 +278,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Strix
+      - name: Install Lamia
         run: curl -sSL https://strix.ai/install | bash
 
-      - name: Run Strix
+      - name: Run Lamia
         env:
           STRIX_LLM: ${{ secrets.STRIX_LLM }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
 
-        run: strix -n -t ./ --scan-mode quick
+        run: lamia -n -t ./ --scan-mode quick
 ```
 
 > [!TIP]
-> In CI pull request runs, Strix automatically scopes quick reviews to changed files, which is why the
+> In CI pull request runs, Lamia automatically scopes quick reviews to changed files, which is why the
 > checkout above fetches full history. See the
 > [CI/CD documentation](https://docs.strix.ai/integrations/github-actions) for the details.
 
@@ -306,37 +306,37 @@ export LLM_API_BASE="your-api-base-url"  # if using a local model, e.g. Ollama, 
 ```
 
 > [!NOTE]
-> Strix automatically saves your configuration to `~/.strix/cli-config.json`, so you don't have to re-enter it on every run.
+> Lamia automatically saves your configuration to `~/.strix/cli-config.json`, so you don't have to re-enter it on every run.
 > See the [configuration reference](https://docs.strix.ai/advanced/configuration) for every environment variable.
 
 #### Sign in with a ChatGPT subscription
 
-Instead of a metered API key, you can run Strix on your ChatGPT Plus/Pro subscription:
+Instead of a metered API key, you can run Lamia on your ChatGPT Plus/Pro subscription:
 
 ```bash
-strix auth login chatgpt             # sign in with your ChatGPT account
+lamia auth login chatgpt             # sign in with your ChatGPT account
 export STRIX_LLM="chatgpt/gpt-5.4"   # chatgpt/<model> runs on the subscription
-strix auth status                    # show the active sign-in, or logout to forget it
+lamia auth status                    # show the active sign-in, or logout to forget it
 ```
 
-#### Use the managed platform: `strix cloud`
+#### Use the managed platform: `lamia cloud`
 
 Run scans on [app.strix.ai](https://app.strix.ai) from the terminal, without Docker or an LLM key:
 
 ```bash
-strix cloud login                                  # browser sign-in, one credential per install
-strix cloud scans start --source . --yes --wait    # scan local code, approving the upload
-strix cloud scans start --engagement-type live_test --domain-ids <uuid> --wait
-strix cloud vulns list --severity critical
+lamia cloud login                                  # browser sign-in, one credential per install
+lamia cloud scans start --source . --yes --wait    # scan local code, approving the upload
+lamia cloud scans start --engagement-type live_test --domain-ids <uuid> --wait
+lamia cloud vulns list --severity critical
 ```
 
-Every [REST API](https://docs.app.strix.ai) operation has a matching `strix cloud <resource> <verb>` command. Run `strix cloud` to list the resources, and add `help` to a resource to list its verbs. Output is JSON when stdout is not a terminal or when you pass `--json`. Binary downloads are the exception: redirect the raw bytes, or combine `--output FILE --json` for download metadata.
+Every [REST API](https://docs.app.strix.ai) operation has a matching `lamia cloud <resource> <verb>` command. Run `lamia cloud` to list the resources, and add `help` to a resource to list its verbs. Output is JSON when stdout is not a terminal or when you pass `--json`. Binary downloads are the exception: redirect the raw bytes, or combine `--output FILE --json` for download metadata.
 
 See the [cloud CLI documentation](https://docs.strix.ai/cloud/cli) for scopes, workspaces, billing, and source-upload options.
 
 #### Connect your own MCP servers
 
-Strix can connect to Model Context Protocol (MCP) servers you list and expose their tools to the agent during a run. Create `~/.strix/mcp-servers.json` with a JSON list of local `stdio` servers or remote `http` servers:
+Lamia can connect to Model Context Protocol (MCP) servers you list and expose their tools to the agent during a run. Create `~/.strix/mcp-servers.json` with a JSON list of local `stdio` servers or remote `http` servers:
 
 ```json
 [
@@ -379,15 +379,15 @@ Have questions? Found a bug? Want to contribute? **[Join our Discord!](https://d
 
 ## Support the Project
 
-**Love Strix?** Give us a ⭐ on GitHub!
+**Love Lamia?** Give us a ⭐ on GitHub!
 
 ## Acknowledgements
 
-Strix builds on the incredible work of open-source projects like [LiteLLM](https://github.com/BerriAI/litellm), [Caido](https://github.com/caido/caido), [Nuclei](https://github.com/projectdiscovery/nuclei), [Playwright](https://github.com/microsoft/playwright), and [Bubble Tea](https://github.com/charmbracelet/bubbletea). Huge thanks to their maintainers!
+Lamia builds on the incredible work of open-source projects like [LiteLLM](https://github.com/BerriAI/litellm), [Caido](https://github.com/caido/caido), [Nuclei](https://github.com/projectdiscovery/nuclei), [Playwright](https://github.com/microsoft/playwright), and [Bubble Tea](https://github.com/charmbracelet/bubbletea). Huge thanks to their maintainers!
 
 
 > [!WARNING]
-> **Authorized use only.** Strix actively tests the targets you point it at, so only run it against systems you own or have **explicit, written permission** to test, and stay within the agreed scope. Unauthorized testing is illegal in most jurisdictions.
-> You alone are responsible for obtaining authorization and complying with the law. Strix is provided "as is" with no warranty or liability for misuse.
+> **Authorized use only.** Lamia actively tests the targets you point it at, so only run it against systems you own or have **explicit, written permission** to test, and stay within the agreed scope. Unauthorized testing is illegal in most jurisdictions.
+> You alone are responsible for obtaining authorization and complying with the law. Lamia is provided "as is" with no warranty or liability for misuse.
 
 </div>

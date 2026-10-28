@@ -1,6 +1,6 @@
 ---
 name: web-app-penetration-testing
-description: Pentest a web app or website end to end — black-box testing of a live URL, staging environment, or local dev server that finds and exploits real vulnerabilities (auth bypass, broken access control, IDOR, injection, XSS, SSRF, business logic) and proves each one with a working proof-of-concept instead of a signature match. Runs with Strix, either the self-hosted open-source CLI or the managed app.strix.ai cloud. Use when the user asks to pentest, hack, security-test, or audit their web app, website, web application, or staging site.
+description: Pentest a web app or website end to end — black-box testing of a live URL, staging environment, or local dev server that finds and exploits real vulnerabilities (auth bypass, broken access control, IDOR, injection, XSS, SSRF, business logic) and proves each one with a working proof-of-concept instead of a signature match. Runs with Lamia, either the self-hosted open-source CLI or the managed app.strix.ai cloud. Use when the user asks to pentest, hack, security-test, or audit their web app, website, web application, or staging site.
 license: Apache-2.0
 metadata:
   author: usestrix
@@ -9,9 +9,9 @@ metadata:
 
 # Pentest a web application
 
-Black-box (and optionally source-assisted) penetration testing of a running web app with Strix's autonomous agents. Every reported finding is validated with a working exploit, so there are no signature-based false positives to triage.
+Black-box (and optionally source-assisted) penetration testing of a running web app with Lamia's autonomous agents. Every reported finding is validated with a working exploit, so there are no signature-based false positives to triage.
 
-Install, LLM setup, all CLI flags, and the managed-cloud alternative are covered in the **penetration-testing-with-strix** skill — read it if the target is not a running web app, or if `strix --version` fails. For a run with no Docker and no LLM key, the same binary drives the managed platform: `strix cloud login`, then `strix cloud scans start ...` (details in **managed-pentesting-with-strix**). This skill is the web-app-specific workflow.
+Install, LLM setup, all CLI flags, and the managed-cloud alternative are covered in the **penetration-testing-with-strix** skill — read it if the target is not a running web app, or if `lamia --version` fails. For a run with no Docker and no LLM key, the same binary drives the managed platform: `lamia cloud login`, then `lamia cloud scans start ...` (details in **managed-pentesting-with-strix**). This skill is the web-app-specific workflow.
 
 ## 1. Confirm authorization and scope
 
@@ -27,7 +27,7 @@ Ask for anything missing rather than guessing.
 ## 2. Run the scan
 
 ```bash
-strix -n -t https://staging.example.com --max-budget 20 \
+lamia -n -t https://staging.example.com --max-budget 20 \
   --instruction "Test account: qa@example.com / <password>. In scope: /app/*, /api/*. Do not touch /billing or send email. Focus on access control between the two seeded orgs."
 ```
 
@@ -49,6 +49,6 @@ Exit codes: `0` no validated vulns in what was analyzed, `2` vulnerabilities fou
 
 ## 4. Fix and verify
 
-Hand findings to the **fix-security-vulnerabilities-with-strix** skill: patch the root cause, then re-run Strix against the same target to prove the exploit no longer works. Re-testing is the only reliable confirmation a fix landed.
+Hand findings to the **fix-security-vulnerabilities-with-strix** skill: patch the root cause, then re-run Lamia against the same target to prove the exploit no longer works. Re-testing is the only reliable confirmation a fix landed.
 
-To keep the app tested on every change rather than once, wire Strix into CI with **ci-security-scanning-with-strix**.
+To keep the app tested on every change rather than once, wire Lamia into CI with **ci-security-scanning-with-strix**.

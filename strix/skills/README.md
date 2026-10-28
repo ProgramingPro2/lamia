@@ -1,8 +1,8 @@
-# 📚 Strix Skills
+# 📚 Lamia Skills
 
 ## 🎯 Overview
 
-Skills are specialized knowledge packages that enhance Strix agents with deep expertise in specific vulnerability types, technologies, and testing methodologies. Each skill provides advanced techniques, practical examples, and validation methods that go beyond baseline security knowledge.
+Skills are specialized knowledge packages that enhance Lamia agents with deep expertise in specific vulnerability types, technologies, and testing methodologies. Each skill provides advanced techniques, practical examples, and validation methods that go beyond baseline security knowledge.
 
 ---
 
@@ -75,7 +75,7 @@ Skills focus on deep, specialized knowledge to significantly enhance agent capab
 
 ## 🤝 Contributing
 
-Community contributions are more than welcome — contribute new skills via [pull requests](https://github.com/usestrix/strix/pulls) or [GitHub issues](https://github.com/usestrix/strix/issues) to help expand the collection and improve extensibility for Strix agents.
+Community contributions are more than welcome — contribute new skills via [pull requests](https://github.com/usestrix/strix/pulls) or [GitHub issues](https://github.com/usestrix/strix/issues) to help expand the collection and improve extensibility for Lamia agents.
 
 ---
 

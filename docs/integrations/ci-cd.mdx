@@ -1,22 +1,22 @@
 ---
 title: "CI/CD Integration"
-description: "Run Strix in any CI/CD pipeline"
+description: "Run Lamia in any CI/CD pipeline"
 ---
 
-Strix runs in headless mode for automated pipelines.
+Lamia runs in headless mode for automated pipelines.
 
 ## Headless Mode
 
 Use the `-n` or `--non-interactive` flag:
 
 ```bash
-strix -n --target ./app --scan-mode quick
+lamia -n --target ./app --scan-mode quick
 ```
 
-For pull-request style CI runs, Strix automatically scopes quick scans to changed files. You can force this behavior and set a base ref explicitly:
+For pull-request style CI runs, Lamia automatically scopes quick scans to changed files. You can force this behavior and set a base ref explicitly:
 
 ```bash
-strix -n --target ./app --scan-mode quick --scope-mode diff --diff-base origin/main
+lamia -n --target ./app --scan-mode quick --scope-mode diff --diff-base origin/main
 ```
 
 ## Exit Codes
@@ -30,7 +30,7 @@ strix -n --target ./app --scan-mode quick --scope-mode diff --diff-base origin/m
 To fail only on serious findings, pass `--fail-on` with a minimum severity. Lower findings are still reported but exit `0`, so a passing job does not mean the report is empty.:
 
 ```bash
-strix -n --target ./app --scan-mode quick --fail-on high
+lamia -n --target ./app --scan-mode quick --fail-on high
 ```
 
 ## GitLab CI
@@ -45,7 +45,7 @@ security-scan:
     LLM_API_KEY: $LLM_API_KEY
   script:
     - curl -sSL https://strix.ai/install | bash
-    - strix -n -t ./ --scan-mode quick
+    - lamia -n -t ./ --scan-mode quick
 ```
 
 ## Jenkins
@@ -54,14 +54,14 @@ security-scan:
 pipeline {
     agent any
     environment {
-        STRIX_LLM = credentials('strix-llm')
+        STRIX_LLM = credentials('lamia-llm')
         LLM_API_KEY = credentials('llm-api-key')
     }
     stages {
         stage('Security Scan') {
             steps {
                 sh 'curl -sSL https://strix.ai/install | bash'
-                sh 'strix -n -t ./ --scan-mode quick'
+                sh 'lamia -n -t ./ --scan-mode quick'
             }
         }
     }
@@ -80,11 +80,11 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Install Strix
+          name: Install Lamia
           command: curl -sSL https://strix.ai/install | bash
       - run:
           name: Run Scan
-          command: strix -n -t ./ --scan-mode quick
+          command: lamia -n -t ./ --scan-mode quick
 ```
 
 <Note>
