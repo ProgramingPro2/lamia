@@ -5,6 +5,16 @@
     Helvetica, Arial, sans-serif;
   --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
+  --accent: #ef4444;
+  --accent-strong: #b91c1c;
+  --accent-deep: #991b1b;
+  --accent-soft: #fca5a5;
+  --accent-muted: #7f1d1d;
+  --field: #f87171;
+  --header-accent: #b91c1c;
+  --info: #fecaca;
+  --bg: #140606;
+  --fg: #fff1f2;
 }
 
 @theme inline {
@@ -14,9 +24,15 @@
 
 html,
 body {
-  background: #000000;
-  color: #ffffff;
+  background: var(--bg);
+  color: var(--fg);
   font-family: var(--font-geist-sans);
+  border-top: 2px solid var(--accent);
+}
+
+::selection {
+  background: var(--accent-muted);
+  color: #ffffff;
 }
 
 /* Thin sidebar scrollbar */
@@ -194,7 +210,7 @@ body {
 .prose-markdown {
   font-size: 14px;
   line-height: 1.7;
-  color: #999;
+  color: var(--accent-soft);
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
@@ -208,7 +224,7 @@ body {
 }
 
 .prose-markdown strong {
-  color: #ccc;
+  color: var(--info);
   font-weight: 600;
 }
 
@@ -218,12 +234,12 @@ body {
 
 .prose-markdown code {
   background: #0a0a0a;
-  border: 1px solid #111;
+  border: 1px solid var(--accent-muted);
   border-radius: 4px;
   padding: 0.15em 0.4em;
   font-size: 0.9em;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  color: #ccc;
+  color: var(--field);
   font-variant-ligatures: none;
 }
 
@@ -280,7 +296,7 @@ body {
 .prose-markdown h4,
 .prose-markdown h5,
 .prose-markdown h6 {
-  color: #ddd;
+  color: var(--accent);
   font-weight: 600;
   margin-top: 1em;
   margin-bottom: 0.5em;
@@ -293,15 +309,15 @@ body {
 }
 
 .prose-markdown blockquote {
-  border-left: 3px solid #333;
+  border-left: 3px solid var(--accent);
   padding-left: 1em;
-  color: #777;
+  color: var(--accent-soft);
   margin: 0.75em 0;
 }
 
 .prose-markdown hr {
   border: none;
-  border-top: 1px solid #222;
+  border-top: 1px solid var(--accent-deep);
   margin: 1em 0;
 }
 
@@ -313,14 +329,14 @@ body {
 
 .prose-markdown > table th,
 .prose-markdown > table td {
-  border: 1px solid #333;
+  border: 1px solid var(--accent-muted);
   padding: 0.4em 0.75em;
   text-align: left;
   font-size: 13px;
 }
 
 .prose-markdown > table th {
-  background: #1a1a1a;
-  color: #ccc;
+  background: var(--accent-deep);
+  color: var(--info);
   font-weight: 600;
 }

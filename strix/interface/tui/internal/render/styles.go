@@ -11,11 +11,11 @@ import (
 // Colors and shared lipgloss style helpers used across the renderers.
 // Rich's "dim" attribute maps to lipgloss Faint.
 var (
-	Green     = lipgloss.Color("#22c55e")
-	Blue      = lipgloss.Color("#3b82f6")
+	Green     = lipgloss.Color("#ef4444")
+	Blue      = lipgloss.Color("#f87171")
 	Red       = lipgloss.Color("#ef4444")
 	Text      = lipgloss.Color("#d4d4d4")
-	Field     = lipgloss.Color("#4ade80") // FIELD_STYLE base (bold)
+	Field     = lipgloss.Color("#fca5a5") // FIELD_STYLE base (bold)
 	ReportHdr = lipgloss.Color("#ea580c") // report title / orange
 	SevCrit   = lipgloss.Color("#dc2626")
 	SevHigh   = lipgloss.Color("#ea580c")
@@ -35,12 +35,12 @@ var (
 	Cyan      = lipgloss.Color("#06b6d4") // proxy
 	Status3xx = lipgloss.Color("#eab308")
 	Status4xx = lipgloss.Color("#f97316")
-	Hdr16a    = lipgloss.Color("#16a34a")
-	Hdr158    = lipgloss.Color("#15803d")
+	Hdr16a    = lipgloss.Color("#b91c1c")
+	Hdr158    = lipgloss.Color("#991b1b")
 	Mint      = lipgloss.Color("#86efac")
 	Strike    = lipgloss.Color("#525252")
 	CodeBg    = lipgloss.Color("#0a0a0a")
-	InfoBlue  = lipgloss.Color("#60a5fa")
+	InfoBlue  = lipgloss.Color("#fecaca")
 )
 
 // Style helpers. Col() foreground; Dim() Rich "dim" (faint attribute).
