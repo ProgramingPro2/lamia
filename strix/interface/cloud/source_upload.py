@@ -209,7 +209,7 @@ def prepare_source(
             raise http.CloudError(
                 f"--source must be a directory, not an archive: {source}",
                 next_step=(
-                    "Extract the archive and pass the directory to --source. Strix packs the "
+                    "Extract the archive and pass the directory to --source. Lamia packs the "
                     "directory and excludes dependencies, build output, and secret-like files. "
                     "Add --dry-run --show-files to review the selection first."
                 ),

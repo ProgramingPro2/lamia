@@ -66,8 +66,8 @@ func TestRepeatedSetupStartFailureLogsOnce(t *testing.T) {
 	}
 }
 
-// Every Tab-reachable panel shows focus with the same green border.
-func TestFocusedPanelsCarryTheGreenBorder(t *testing.T) {
+// Every Tab-reachable panel shows focus with the same red accent border.
+func TestFocusedPanelsCarryTheAccentBorder(t *testing.T) {
 	// The profile is global; restore it so later tests still render unstyled.
 	previous := lipgloss.ColorProfile()
 	t.Cleanup(func() { lipgloss.SetColorProfile(previous) })
@@ -77,19 +77,21 @@ func TestFocusedPanelsCarryTheGreenBorder(t *testing.T) {
 		m.width, m.height = 130, 30
 		m.showSplash = false
 		m.snapshot.ScanState = "running"
-		m.snapshot.Agents = []protocol.Agent{{ID: "a0", Name: "Strix", Status: "running"}}
+		m.snapshot.Agents = []protocol.Agent{{ID: "a0", Name: "Lamia", Status: "running"}}
 		m.snapshot.Vulnerabilities = []map[string]any{{"title": "XSS", "severity": "high"}}
 		m.focus = focus
 		m.resizeViewport()
 		return m.sidebarView(26, m.height)
 	}
+	// #ef4444, the brand accent.
+	const accent = "239;68;68"
 	idle := borderColorsOf(focusInput)
-	if strings.Contains(idle, "34;197;94") {
-		t.Fatal("an unfocused sidebar panel drew a green border")
+	if strings.Contains(idle, accent) {
+		t.Fatal("an unfocused sidebar panel drew an accent border")
 	}
 	for _, focus := range []focusMode{focusAgents, focusVulnerabilities} {
-		if !strings.Contains(borderColorsOf(focus), "34;197;94") {
-			t.Fatalf("focus %v did not draw a green border", focus)
+		if !strings.Contains(borderColorsOf(focus), accent) {
+			t.Fatalf("focus %v did not draw an accent border", focus)
 		}
 	}
 }

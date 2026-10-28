@@ -1,4 +1,4 @@
-"""Local web viewer for Strix runs.
+"""Local web viewer for Lamia runs.
 
 Serves a prebuilt single-page app that renders a run (live or finished) read
 directly from the run's on-disk files. No cloud dependency, no file picker.

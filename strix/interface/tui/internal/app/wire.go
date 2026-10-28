@@ -137,7 +137,7 @@ func setTerminalTitle(title string) tea.Cmd {
 func windowTitle(targets []string) string {
 	switch len(targets) {
 	case 0:
-		return "strix"
+		return "lamia"
 	case 1:
 		return targets[0]
 	default:

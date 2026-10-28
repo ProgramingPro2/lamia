@@ -42,7 +42,7 @@ const OTP_START_ERRORS: Record<string, string> = {
 };
 
 const SEND_ERRORS: Record<string, string> = {
-  forbidden: "This email was unsubscribed from Strix, so we cannot send to it.",
+  forbidden: "This email was unsubscribed from Lamia, so we cannot send to it.",
   too_large: "This report is too large to email. Try a smaller run.",
   unavailable: "The email service is unavailable right now. Try again shortly.",
 };
@@ -231,7 +231,7 @@ export default function EmailReportView({
               <div className="flex items-start gap-2.5">
                 <Lock className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#888]" aria-hidden="true" />
                 <p className="text-xs leading-relaxed text-[#aaa]">
-                  Only you hold the password; Strix can&apos;t read it.
+                  Only you hold the password; Lamia can&apos;t read it.
                 </p>
               </div>
             </div>
@@ -352,7 +352,7 @@ export default function EmailReportView({
                 </button>
               </div>
               <p className="mt-2 text-xs text-[#666]">
-                Save this now. Strix never stores it, so we cannot show it again. File:{" "}
+                Save this now. Lamia never stores it, so we cannot show it again. File:{" "}
                 <span className="font-mono text-[#888]">{filename}</span>
               </p>
             </div>

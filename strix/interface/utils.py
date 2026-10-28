@@ -979,7 +979,7 @@ def _resolve_repo_diff_scope(
 
     if _is_repo_shallow(repo_path):
         raise ValueError(
-            "Strix requires full git history for diff-scope. Please set fetch-depth: 0 "
+            "Lamia requires full git history for diff-scope. Please set fetch-depth: 0 "
             "in your CI config."
         )
 
@@ -1612,14 +1612,14 @@ def check_docker_connection() -> Any:
         error_text.append(f"Cannot connect to Docker at {exc.endpoint.label}.\n", style="white")
         error_text.append(f"{exc.detail}\n\n", style="dim red")
         error_text.append(
-            "Make sure Docker is running. If `docker info` works in this shell, strix uses "
+            "Make sure Docker is running. If `docker info` works in this shell, lamia uses "
             "the same daemon. Otherwise set DOCKER_HOST.\n",
             style="white",
         )
 
         panel = Panel(
             error_text,
-            title="[bold white]STRIX",
+            title="[bold white]LAMIA",
             title_align="left",
             border_style="red",
             padding=(1, 2),

@@ -368,7 +368,7 @@ func (m Model) setupHeaderView(fit setupFit) string {
 			rows = append(rows, "")
 		}
 	case logoCompact:
-		rows = append(rows, center.Render(lipgloss.NewStyle().Bold(true).Foreground(brightGreen).Render("STRIX")))
+		rows = append(rows, center.Render(lipgloss.NewStyle().Bold(true).Foreground(brightGreen).Render("LAMIA")))
 	}
 	if fit.tagline {
 		rows = append(rows, center.Render(render.Dim().Render("Open-source AI hackers for your apps")))
@@ -376,15 +376,15 @@ func (m Model) setupHeaderView(fit setupFit) string {
 	return strings.Join(rows, "\n")
 }
 
-// banner is the Strix wordmark: block letters with a bevelled edge.
-const banner = ` ███████╗████████╗██████╗ ██╗██╗  ██╗
- ██╔════╝╚══██╔══╝██╔══██╗██║╚██╗██╔╝
- ███████╗   ██║   ██████╔╝██║ ╚███╔╝
- ╚════██║   ██║   ██╔══██╗██║ ██╔██╗
- ███████║   ██║   ██║  ██║██║██╔╝ ██╗
- ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝`
+// banner is the Lamia wordmark: block letters with a bevelled edge.
+const banner = ` ██╗      █████╗ ███╗   ███╗██╗ █████╗
+ ██║     ██╔══██╗████╗ ████║██║██╔══██╗
+ ██║     ███████║██╔████╔██║██║███████║
+ ██║     ██╔══██║██║╚██╔╝██║██║██╔══██║
+ ███████╗██║  ██║██║ ╚═╝ ██║██║██║  ██║
+ ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═╝`
 
-// wordmark renders the banner in solid brand green. Every row is padded out to
+// wordmark renders the banner in the solid brand accent. Every row is padded out to
 // the full block so centering cannot ripple the letterforms out of alignment.
 var wordmarkOnce = sync.OnceValue(func() string {
 	green := lipgloss.NewStyle().Foreground(green)

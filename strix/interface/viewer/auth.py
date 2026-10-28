@@ -1,7 +1,7 @@
 """Viewer email verification state and the relay client.
 
 The local viewer proxies email verification and encrypted-report delivery to
-the Strix relay (``STRIX_APP_URL``). The browser never talks to the relay
+the Lamia relay (``STRIX_APP_URL``). The browser never talks to the relay
 directly, and the report password generated locally is never sent to it.
 
 State lives in ``~/.strix/viewer-auth.json`` (0600). ``is_verified`` is a local
@@ -198,7 +198,7 @@ def otp_verify(email: str, code: str) -> dict[str, Any]:
 
 
 def feedback_submit(email: str, message: str) -> None:
-    """Relay a feedback message + email to Strix. No verification is required;
+    """Relay a feedback message + email to Lamia. No verification is required;
     the email is taken as given. Raises RelayError on failure."""
     status, data = _post_json(
         "/api/oss/feedback",

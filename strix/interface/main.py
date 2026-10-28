@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Strix Agent Interface
+Lamia Agent Interface
 """
 
 import argparse
@@ -61,10 +61,10 @@ logger = logging.getLogger(__name__)
 
 _ROOT_SUBCOMMAND_HELP = """
 Additional commands:
-  strix cloud ...          Use the managed Strix platform
-  strix auth ...           Manage model-subscription sign-in
-  strix view [RUN]         View a completed or running scan
-  strix completions SHELL  Generate zsh, bash, or fish tab completion
+  lamia cloud ...          Use the managed Lamia platform
+  lamia auth ...           Manage model-subscription sign-in
+  lamia view [RUN]         View a completed or running scan
+  lamia completions SHELL  Generate zsh, bash, or fish tab completion
 """
 
 
@@ -103,7 +103,7 @@ def _subscription_error_hint(exc: BaseException) -> str | None:
     ):
         return (
             "Your ChatGPT sign-in has expired or was revoked. Sign in again:\n"
-            "  strix auth login chatgpt"
+            "  lamia auth login chatgpt"
         )
     return None
 
@@ -146,7 +146,7 @@ async def warm_up_llm() -> None:
             console.print(
                 Panel(
                     warn_text,
-                    title="[bold white]STRIX",
+                    title="[bold white]LAMIA",
                     title_align="left",
                     border_style="yellow",
                     padding=(1, 2),
@@ -229,7 +229,7 @@ def display_completion_message(args: argparse.Namespace, results_path: Path) -> 
     view_text.append("\n")
     view_text.append("View", style="dim")
     view_text.append("    ")
-    view_text.append(f"strix view {args.run_name}", style="#22c55e")
+    view_text.append(f"lamia view {args.run_name}", style="#22c55e")
     panel_parts.extend(["\n", view_text])
 
     if not scan_completed:
@@ -237,7 +237,7 @@ def display_completion_message(args: argparse.Namespace, results_path: Path) -> 
         resume_text.append("\n")
         resume_text.append("Resume", style="dim")
         resume_text.append("  ")
-        resume_text.append(f"strix --resume {args.run_name}", style="#22c55e")
+        resume_text.append(f"lamia --resume {args.run_name}", style="#22c55e")
         panel_parts.extend(["\n", resume_text])
 
     panel_content = Text.assemble(*panel_parts)
@@ -246,7 +246,7 @@ def display_completion_message(args: argparse.Namespace, results_path: Path) -> 
 
     panel = Panel(
         panel_content,
-        title="[bold white]STRIX",
+        title="[bold white]LAMIA",
         title_align="left",
         border_style=border_style,
         padding=(1, 2),
@@ -262,7 +262,7 @@ def display_completion_message(args: argparse.Namespace, results_path: Path) -> 
     )
     if not args.non_interactive:
         console.print(
-            "[dim]Run a pentest in Strix Cloud[/]  [#60a5fa]app.strix.ai[/]  [dim]·[/]  "
+            "[dim]Run a pentest in Lamia Cloud[/]  [#60a5fa]app.strix.ai[/]  [dim]·[/]  "
             "[dim]Enterprise[/]  [#60a5fa]strix.ai/demo[/]"
         )
     console.print()
@@ -302,7 +302,7 @@ def _print_error_panel(title: str, message: str) -> None:
     error_text.append(message, style="white")
     panel = Panel(
         error_text,
-        title="[bold white]STRIX",
+        title="[bold white]LAMIA",
         title_align="left",
         border_style="red",
         padding=(1, 2),
@@ -332,7 +332,7 @@ def _print_model_connection_error(exc: BaseException) -> None:
 
     panel = Panel(
         error_text,
-        title="[bold white]STRIX",
+        title="[bold white]LAMIA",
         title_align="left",
         border_style=border_style,
         padding=(1, 2),
@@ -344,11 +344,11 @@ def _print_model_connection_error(exc: BaseException) -> None:
 
 def _print_cli_error(message: str) -> None:
     Console(stderr=True, soft_wrap=True).print(
-        f"strix: error: {message}", markup=False, highlight=False
+        f"lamia: error: {message}", markup=False, highlight=False
     )
 
 
-HEADLESS_HINT = "If Strix runs without a terminal (CI, nohup, pipes), pass -n to run headless."
+HEADLESS_HINT = "If Lamia runs without a terminal (CI, nohup, pipes), pass -n to run headless."
 
 
 def _fall_back_to_headless(args: argparse.Namespace) -> None:
@@ -441,7 +441,7 @@ def main() -> None:
             Console().print(_ROOT_SUBCOMMAND_HELP.strip(), markup=False)
             raise SystemExit(exc.code) from None
 
-    # `strix view [<run>]` is a viewer-only subcommand, dispatched before the
+    # `lamia view [<run>]` is a viewer-only subcommand, dispatched before the
     # scan argument parser (which requires a target) and before any scan setup.
     if len(sys.argv) > 1 and sys.argv[1] == "view":
         from strix.interface.viewer.cli import run_view
@@ -449,7 +449,7 @@ def main() -> None:
         run_view(sys.argv[2:])
         return
 
-    # `strix auth …` manages model-subscription sign-in and exits; it needs no
+    # `lamia auth …` manages model-subscription sign-in and exits; it needs no
     # target, Docker, or scan setup.
     if len(sys.argv) > 1 and sys.argv[1] == "auth":
         from strix.interface.auth_cli import run_auth
@@ -462,7 +462,7 @@ def main() -> None:
 
         sys.exit(run_completions(sys.argv[2:]))
 
-    # `strix cloud …` drives the managed platform (app.strix.ai) and exits;
+    # `lamia cloud …` drives the managed platform (app.strix.ai) and exits;
     # it needs no target, Docker, or scan setup.
     if len(sys.argv) > 1 and sys.argv[1] == "cloud":
         from strix.interface.cloud import run_cloud

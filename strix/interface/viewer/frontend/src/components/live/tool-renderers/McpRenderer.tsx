@@ -11,12 +11,12 @@ import type { ToolRendererProps } from "@/types/events";
  * reader wants at this point in the transcript, and the agent narrates what it
  * learned in its next message. A failure is the exception, because that is what
  * someone is looking for when a step did not work; it renders as inert text,
- * never as markdown, since it came from a server outside Strix.
+ * never as markdown, since it came from a server outside Lamia.
  *
  * The full result is still in the run's event data on disk either way.
  *
  * list_mcps is the other exception: its result is the engine's own inventory of
- * the run's connections (names and tool counts), short and assembled by Strix
+ * the run's connections (names and tool counts), short and assembled by Lamia
  * rather than returned by an outside server, so it is shown inline.
  */
 

@@ -1,6 +1,6 @@
 """Build and encrypt a branded PDF report for a run.
 
-The layout mirrors the Strix cloud pentest report (cover page, executive
+The layout mirrors the Lamia cloud pentest report (cover page, executive
 severity grid, per-finding detail with colored severity badges) but is rendered
 entirely locally with reportlab, so it ships without a browser or heavy system
 deps and keeps the report on the user's machine.
@@ -8,7 +8,7 @@ deps and keeps the report on the user's machine.
 The PDF carries FULL finding detail, including proof-of-concept scripts, so it
 is encrypted end to end with AES-256. The password is generated locally with a
 CSPRNG, shown only to the local browser, and never leaves the machine except in
-the user's own hands. Strix cannot read the delivered report.
+the user's own hands. Lamia cannot read the delivered report.
 """
 
 from __future__ import annotations
@@ -119,7 +119,7 @@ class _NumberedCanvas(pdfcanvas.Canvas):  # type: ignore[misc]  # reportlab base
 
 
 class _LogoMark(Flowable):  # type: ignore[misc]  # reportlab base is untyped
-    """The rounded-square Strix mark drawn inline (no raster asset to ship)."""
+    """The rounded-square Lamia mark drawn inline (no raster asset to ship)."""
 
     def __init__(self, size: float = 30) -> None:
         super().__init__()
@@ -357,7 +357,7 @@ def _cover(
     styles: dict[str, ParagraphStyle], record: dict[str, Any], run_name: str
 ) -> list[Flowable]:
     header = Table(
-        [[_LogoMark(30), Paragraph("Strix", styles["wordmark"])]],
+        [[_LogoMark(30), Paragraph("Lamia", styles["wordmark"])]],
         colWidths=[38, _PAGE_W - 40 * mm - 38],
     )
     header.setStyle(
@@ -645,8 +645,8 @@ def generate_report_pdf(run_dir: Path) -> bytes:
     doc = SimpleDocTemplate(
         buffer,
         pagesize=A4,
-        title="Strix Security Report",
-        author="Strix",
+        title="Lamia Security Report",
+        author="Lamia",
         leftMargin=20 * mm,
         rightMargin=20 * mm,
         topMargin=22 * mm,
@@ -693,7 +693,7 @@ def build_encrypted_report(run_dir: Path) -> tuple[bytes, str, str]:
     pdf_bytes = generate_report_pdf(run_dir)
     password = generate_password()
     encrypted = encrypt_pdf(pdf_bytes, password)
-    filename = f"strix-report-{run_name}.pdf"
+    filename = f"lamia-report-{run_name}.pdf"
     return encrypted, password, filename
 
 

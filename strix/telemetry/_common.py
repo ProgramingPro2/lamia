@@ -24,9 +24,9 @@ _FIRST_RUN_CACHED: bool | None = None
 
 def get_version() -> str:
     try:
-        return version("strix-agent")
+        return version("lamia-agent")
     except PackageNotFoundError:
-        logger.debug("strix-agent version lookup failed", exc_info=True)
+        logger.debug("lamia-agent version lookup failed", exc_info=True)
         return "unknown"
 
 

@@ -1,4 +1,4 @@
-"""Tests for the `strix cloud` CLI: routing, request building, and output."""
+"""Tests for the `lamia cloud` CLI: routing, request building, and output."""
 
 from __future__ import annotations
 
@@ -551,9 +551,9 @@ def test_insufficient_credits_always_prints_topup_instruction(
     output = " ".join(capsys.readouterr().out.split())
     assert "Error: Out of credits." in output
     assert "Next step:" in output
-    assert "strix cloud billing topup --credits <count>" in output
+    assert "lamia cloud billing topup --credits <count>" in output
     assert "https://app.strix.ai/settings/billing" in output
-    assert "strix cloud billing credits" in output
+    assert "lamia cloud billing credits" in output
 
 
 def test_insufficient_credits_shows_platform_hint_once(
@@ -593,7 +593,7 @@ def test_payment_required_without_body_names_the_topup_command(
     assert cloud.run_cloud(argv) == http.EXIT_PAYMENT
     result = json.loads(capsys.readouterr().out)
     assert result["error"] == "Not enough credits to run this command."
-    assert "strix cloud billing topup --credits <count>" in result["next_step"]
+    assert "lamia cloud billing topup --credits <count>" in result["next_step"]
     assert "https://app.strix.ai/settings/billing" in result["next_step"]
 
 
@@ -1483,7 +1483,7 @@ def test_every_command_builds_a_parser() -> None:
     for group, commands in SPEC.items():
         for verb, cmd in commands.items():
             parser = runner._build_parser(group, verb, cmd)
-            assert parser.prog == f"strix cloud {group} {verb}"
+            assert parser.prog == f"lamia cloud {group} {verb}"
 
 
 def test_app_url_and_timeout_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -3625,7 +3625,7 @@ def test_logout_help_does_not_remove_stored_auth(
 
     assert cloud.run_cloud(["logout", "--help"]) == 0
     assert platform_cli.read_record() == {"api_token": "keep-me"}
-    assert "usage: strix cloud logout" in capsys.readouterr().out
+    assert "usage: lamia cloud logout" in capsys.readouterr().out
 
 
 def test_logout_rejects_unknown_arguments_without_removing_stored_auth(

@@ -33,7 +33,7 @@ import McpRenderer from "./McpRenderer";
 /**
  * Tool-renderer mapping — data-driven, keyed by the engine's tool *family*.
  *
- * The OSS strix engine (usestrix/strix) is the source of truth for tool names:
+ * The OSS lamia engine (usestrix/strix) is the source of truth for tool names:
  * see `strix/tools/**` for definitions and `strix/interface/tui/renderers/` for
  * the TUI equivalents of these components. Tools come in families that share a
  * React renderer + icon (terminal, proxy, notes, todos, …), so we describe each

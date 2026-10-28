@@ -14,7 +14,7 @@ const ERROR_COPY: Record<string, string> = {
 
 /**
  * Feedback & support form. Collects a message plus a work email (no
- * verification — the email is taken as-is) and relays it to Strix via the local
+ * verification — the email is taken as-is) and relays it to Lamia via the local
  * server. Mirrors EmailReportView's centered-card styling and palette.
  */
 export default function FeedbackView({

@@ -194,6 +194,6 @@ def package_version() -> str:
     """Report the installed package version for the Go splash/stats
     ("dev" when metadata is unavailable)."""
     try:
-        return version("strix-agent")
+        return version("lamia-agent")
     except PackageNotFoundError:
         return "dev"

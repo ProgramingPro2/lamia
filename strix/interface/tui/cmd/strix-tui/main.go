@@ -14,12 +14,12 @@ func main() {
 	render.DetectKittyGraphics()
 	client, err := app.ConnectFromEnvironment()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "connect to Strix backend:", err)
+		fmt.Fprintln(os.Stderr, "connect to Lamia backend:", err)
 		os.Exit(1)
 	}
 	defer client.Close()
 	if err := client.Handshake(); err != nil {
-		fmt.Fprintln(os.Stderr, "negotiate Strix TUI protocol:", err)
+		fmt.Fprintln(os.Stderr, "negotiate Lamia TUI protocol:", err)
 		os.Exit(1)
 	}
 	program := tea.NewProgram(app.New(client), tea.WithAltScreen(), tea.WithMouseCellMotion())

@@ -1,4 +1,4 @@
-"""`strix auth` — ChatGPT subscription sign-in (login / status / logout).
+"""`lamia auth` — ChatGPT subscription sign-in (login / status / logout).
 
 Signing in only stores OAuth tokens (``~/.strix/subscription-auth.json``); model
 selection stays with ``STRIX_LLM``. A ``chatgpt/<model>`` STRIX_LLM runs on the
@@ -38,13 +38,13 @@ _CALLBACK_TIMEOUT_S = 300
 LOGIN_PROVIDER = "chatgpt"
 _ACCEPTED_PROVIDERS = frozenset({LOGIN_PROVIDER, codex.PROVIDER})
 
-_USAGE = "Usage:\n  strix auth login chatgpt [--manual]\n  strix auth status\n  strix auth logout"
+_USAGE = "Usage:\n  lamia auth login chatgpt [--manual]\n  lamia auth status\n  lamia auth logout"
 
 
 def run_auth(argv: list[str]) -> int:
-    """Entry point for ``strix auth …``. Returns a process exit code."""
+    """Entry point for ``lamia auth …``. Returns a process exit code."""
     console = Console()
-    # Bare `strix auth` (no subcommand) defaults to login.
+    # Bare `lamia auth` (no subcommand) defaults to login.
     subcommand = argv[0] if argv else "login"
     rest = argv[1:]
 
@@ -67,7 +67,7 @@ def run_auth(argv: list[str]) -> int:
 
 
 def _login(console: Console, argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(prog="strix auth login", add_help=True)
+    parser = argparse.ArgumentParser(prog="lamia auth login", add_help=True)
     parser.add_argument(
         "provider",
         nargs="?",
@@ -245,7 +245,7 @@ def _first(query: dict[str, list[str]], key: str) -> str | None:
 def _status(console: Console) -> int:
     record = codex.read_record()
     if record is None:
-        console.print("[yellow]Not signed in.[/] Run [cyan]strix auth login chatgpt[/] to sign in.")
+        console.print("[yellow]Not signed in.[/] Run [cyan]lamia auth login chatgpt[/] to sign in.")
         return 1
     settings = load_settings()
     console.print("[green]Signed in[/] with a ChatGPT subscription.")
@@ -275,7 +275,7 @@ def _fail(console: Console, exc: codex.CodexAuthError) -> int:
     console.print(
         Panel(
             error_text,
-            title="[bold white]STRIX",
+            title="[bold white]LAMIA",
             title_align="left",
             border_style="red",
             padding=(1, 2),
@@ -297,12 +297,12 @@ def _print_success(console: Console) -> None:
     text.append(") — runs are billed to your ChatGPT plan.", style="white")
     text.append("\n\n", style="white")
     text.append("Run a scan as usual, e.g. ", style="white")
-    text.append("strix --target https://example.com", style="bold cyan")
+    text.append("lamia --target https://example.com", style="bold cyan")
     console.print()
     console.print(
         Panel(
             text,
-            title="[bold white]STRIX",
+            title="[bold white]LAMIA",
             title_align="left",
             border_style="#22c55e",
             padding=(1, 2),
@@ -315,11 +315,11 @@ _LOGO_PATH = Path(__file__).resolve().parent.parent / "viewer" / "static" / "log
 
 
 def _logo_img_tag() -> str:
-    """Return an ``<img>`` for the Strix logo as an inline data URI, or "".
+    """Return an ``<img>`` for the Lamia logo as an inline data URI, or "".
 
     The callback page is served offline by the local OAuth server, so the logo
     is embedded rather than linked. Missing/unreadable file degrades to just the
-    "Strix" wordmark.
+    "Lamia" wordmark.
     """
     try:
         data = _LOGO_PATH.read_bytes()
@@ -336,7 +336,7 @@ def _render_callback_html() -> str:
 _CALLBACK_HTML = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Strix — signed in</title>
+<title>Lamia — signed in</title>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -391,15 +391,15 @@ _CALLBACK_HTML = """<!doctype html>
 </style></head>
 <body>
   <a class="topbar" href="https://strix.ai" target="_blank" rel="noopener"
-     aria-label="Strix — strix.ai">
+     aria-label="Lamia — strix.ai">
     <!--LOGO-->
-    <span>Strix</span>
+    <span>Lamia</span>
   </a>
-  <div class="brand">Strix</div>
+  <div class="brand">Lamia</div>
   <h1>You're signed in</h1>
   <main class="card">
     <div class="badge">✓</div>
-    <p class="msg">Strix is connected to your ChatGPT subscription. Head back to your
+    <p class="msg">Lamia is connected to your ChatGPT subscription. Head back to your
       terminal — your security test runs there.</p>
     <div class="rule"></div>
     <p class="tagline">Autonomous AI hackers that <b>find and fix</b> your app's

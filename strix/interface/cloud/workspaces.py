@@ -1,4 +1,4 @@
-"""`strix cloud workspaces use` — switch the stored token to another workspace.
+"""`lamia cloud workspaces use` — switch the stored token to another workspace.
 
 The command lists the workspaces of the account, finds the requested one by
 ID or by exact name, asks the platform to rotate that token in place, and
@@ -27,10 +27,10 @@ if TYPE_CHECKING:
 
 
 def run_workspace_use(argv: list[str]) -> int:
-    """Entry point for ``strix cloud workspaces use``. Returns an exit code."""
+    """Entry point for ``lamia cloud workspaces use``. Returns an exit code."""
     console = Console()
     parser = CloudArgumentParser(
-        prog="strix cloud workspaces use",
+        prog="lamia cloud workspaces use",
         description="Switch the stored API token to another workspace.",
     )
     parser.add_argument(
@@ -268,7 +268,7 @@ def _find_workspace(selector: str, *, token: str | None) -> dict[str, Any]:
             return workspaces[index - 1]
         raise http.CloudError(
             f"workspace number must be between 1 and {len(workspaces)}. "
-            "Run `strix cloud workspaces` to see the numbered list."
+            "Run `lamia cloud workspaces` to see the numbered list."
         )
     by_id = [w for w in workspaces if w.get("id") == wanted]
     if by_id:

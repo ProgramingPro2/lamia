@@ -1,8 +1,8 @@
 """Loopback bridge for wallet clients that only accept secrets in argv.
 
 The ``mppx`` CLI accepts custom HTTP headers through ``-H`` only.  Passing a
-Strix API token that way exposes it to process-listing tools.  This module keeps
-the token in the Strix process and injects it while forwarding the wallet's few
+Lamia API token that way exposes it to process-listing tools.  This module keeps
+the token in the Lamia process and injects it while forwarding the wallet's few
 requests (challenge probes and the paid retry) to the fixed billing endpoint.
 """
 
@@ -112,8 +112,8 @@ def _forward_request_headers(handler: BaseHTTPRequestHandler) -> dict[str, str]:
         "x-forwarded-host",
         "x-forwarded-proto",
         "x-real-ip",
-        "x-strix-authorization",
-        "x-strix-workspace",
+        "x-lamia-authorization",
+        "x-lamia-workspace",
         "x-vercel-forwarded-for",
     }
     return {name: value for name, value in handler.headers.items() if name.lower() not in blocked}
@@ -184,10 +184,10 @@ def _make_handler(state: _BridgeState) -> type[BaseHTTPRequestHandler]:
                 finally:
                     response.close()
             except _ResponseTooLargeError:
-                _send_json_error(self, 502, "Strix billing response was too large")
+                _send_json_error(self, 502, "Lamia billing response was too large")
                 return
             except requests.RequestException:
-                _send_json_error(self, 502, "Could not reach the Strix billing endpoint")
+                _send_json_error(self, 502, "Could not reach the Lamia billing endpoint")
                 return
 
             if state.response_observer is not None:
@@ -197,7 +197,7 @@ def _make_handler(state: _BridgeState) -> type[BaseHTTPRequestHandler]:
                     )
 
             if 300 <= response_status < 400:
-                _send_json_error(self, 502, "Strix billing refused an unexpected redirect")
+                _send_json_error(self, 502, "Lamia billing refused an unexpected redirect")
                 return
 
             self.send_response(response_status)
@@ -252,7 +252,7 @@ def wallet_payment_bridge(
     timeout: float | None = None,
     response_observer: Callable[[WalletUpstreamResponse], None] | None = None,
 ) -> Generator[str]:
-    """Yield a one-run loopback URL that injects the Strix API token upstream.
+    """Yield a one-run loopback URL that injects the Lamia API token upstream.
 
     The random path prevents accidental cross-process requests and limits local
     denial-of-service races.  It is not an authentication boundary against a

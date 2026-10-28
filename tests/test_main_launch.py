@@ -289,7 +289,7 @@ def test_tui_process_dying_after_startup_prints_a_panel_instead_of_a_traceback(
         (
             "INTERACTIVE INTERFACE STOPPED",
             "Bubble Tea TUI exited with status 1.\n"
-            "If Strix runs without a terminal (CI, nohup, pipes), pass -n to run headless.",
+            "If Lamia runs without a terminal (CI, nohup, pipes), pass -n to run headless.",
         )
     ]
 

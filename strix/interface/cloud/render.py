@@ -1,4 +1,4 @@
-"""Output rendering for `strix cloud` commands."""
+"""Output rendering for `lamia cloud` commands."""
 
 from __future__ import annotations
 
@@ -650,7 +650,7 @@ def emit(  # noqa: PLR0911, PLR0912, PLR0915
                 scan_rows,
                 row_numbers=False,
                 omit_columns=omit_columns,
-                hint=_combine_hints("Inspect one scan with `strix cloud scans get ID`.", hint),
+                hint=_combine_hints("Inspect one scan with `lamia cloud scans get ID`.", hint),
                 view=view,
             )
             return
@@ -662,7 +662,7 @@ def emit(  # noqa: PLR0911, PLR0912, PLR0915
                 vulnerability_rows,
                 row_numbers=False,
                 omit_columns=omit_columns | frozenset({"scan_id"}),
-                hint=_combine_hints("Inspect one finding with `strix cloud vulns get ID`.", hint),
+                hint=_combine_hints("Inspect one finding with `lamia cloud vulns get ID`.", hint),
                 view=view,
             )
             return
@@ -675,7 +675,7 @@ def emit(  # noqa: PLR0911, PLR0912, PLR0915
                 row_numbers=False,
                 omit_columns=omit_columns,
                 hint=_combine_hints(
-                    "Use `strix cloud pr-reviews get ID` for one review.",
+                    "Use `lamia cloud pr-reviews get ID` for one review.",
                     _view_hint(data, view),
                     hint,
                 ),
@@ -821,7 +821,7 @@ def _view_hint(data: Any, view: str | None) -> str | None:
         if isinstance(address, str) and address.strip():
             hint = f"Inbox: {sanitize_terminal_text(address.strip())}."
     elif view == "GET /schedules":
-        hint = "Inspect one schedule with `strix cloud schedules get ID`."
+        hint = "Inspect one schedule with `lamia cloud schedules get ID`."
     return hint
 
 
@@ -829,7 +829,7 @@ def _trace_view_hint(data: dict[str, Any]) -> str | None:
     scan_id = data.get("scan_id")
     suffix = f" {scan_id}" if scan_id else " SCAN_ID"
     parts = [
-        f"Inspect a complete event with `strix cloud scans trace-event{suffix} EVENT_ID`; "
+        f"Inspect a complete event with `lamia cloud scans trace-event{suffix} EVENT_ID`; "
         "use --json for full tool arguments and results."
     ]
     cursor = data.get("cursor")
@@ -1121,15 +1121,15 @@ def _print_chat_credentials(console: Console, data: dict[str, Any]) -> None:
             "Available saved test users",
             _credential_summary_rows(data, "available_test_users"),
             "chat_credentials_test_users",
-            "Attach one with `strix cloud chat credentials set CHAT_ID --test-user-ids ID`.",
+            "Attach one with `lamia cloud chat credentials set CHAT_ID --test-user-ids ID`.",
         ),
         (
             "Credentials from requested scans",
             _credential_summary_rows(data, "available_scan_credentials"),
             "chat_credentials_scans",
             (
-                "Discover these with `strix cloud chat credentials CHAT_ID --scan-ids SCAN_ID`; "
-                "attach them with `strix cloud chat credentials set CHAT_ID --scan-ids SCAN_ID`."
+                "Discover these with `lamia cloud chat credentials CHAT_ID --scan-ids SCAN_ID`; "
+                "attach them with `lamia cloud chat credentials set CHAT_ID --scan-ids SCAN_ID`."
             ),
         ),
     )
@@ -1570,7 +1570,7 @@ def _print_supply_chain_summary(console: Console, data: dict[str, Any]) -> None:
         console,
         _supply_chain_repository_rows(data),
         view="supply_chain_repositories",
-        hint="Inspect one repository with `strix cloud repos supply-chain summary ID`.",
+        hint="Inspect one repository with `lamia cloud repos supply-chain summary ID`.",
         show_json_hint=False,
     )
     console.print("[dim]Use --json for complete totals and repository records.[/]")

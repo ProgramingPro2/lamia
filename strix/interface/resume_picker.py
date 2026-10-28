@@ -1,4 +1,4 @@
-"""Inline arrow-key picker for ``strix --resume`` with no run name.
+"""Inline arrow-key picker for ``lamia --resume`` with no run name.
 
 Draws a short list in the normal terminal (no alternate screen), redraws it in
 place on every key, and returns the chosen run. Keys: up/down, page up/down,

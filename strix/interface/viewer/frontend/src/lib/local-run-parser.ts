@@ -5,7 +5,7 @@ import type {
 } from "@/types/issues";
 
 /**
- * Pure, dependency-free parsers that turn a Strix CLI local run
+ * Pure, dependency-free parsers that turn a Lamia CLI local run
  * (`strix_runs/<run>/{run.json,vulnerabilities.json}`) into the app's own
  * types, so the /results view can reuse the dashboard's finding components.
  *
@@ -70,7 +70,7 @@ function parseJson(text: string, label: string): unknown {
     return JSON.parse(text);
   } catch {
     throw new RunParseError(
-      `${label} isn't valid JSON. Make sure you selected a Strix run directory.`
+      `${label} isn't valid JSON. Make sure you selected a Lamia run directory.`
     );
   }
 }

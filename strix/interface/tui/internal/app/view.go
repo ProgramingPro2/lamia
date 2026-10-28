@@ -278,7 +278,7 @@ func (m Model) viewInner() string {
 		return m.splashView()
 	}
 	if !m.ready {
-		return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, lipgloss.NewStyle().Foreground(dim).Render("Connecting to Strix…"), lipgloss.WithWhitespaceBackground(black))
+		return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, lipgloss.NewStyle().Foreground(dim).Render("Connecting to Lamia…"), lipgloss.WithWhitespaceBackground(black))
 	}
 	main := m.mainView()
 	if m.snapshot.SetupMode {
@@ -408,7 +408,7 @@ var baseColorRestorer = strings.NewReplacer(
 )
 
 func (m Model) splashView() string {
-	shine := "Starting Strix Agent"
+	shine := "Starting Lamia Agent"
 	chars := []rune(shine)
 	pos := m.splashFrame % (len(chars) + 8)
 	var start strings.Builder
@@ -432,7 +432,7 @@ func (m Model) splashView() string {
 		start.WriteString(lipgloss.NewStyle().Foreground(color).Bold(bold).Render(string(char)))
 	}
 	welcome := lipgloss.NewStyle().Bold(true).Foreground(white).Render("Welcome to ") +
-		lipgloss.NewStyle().Bold(true).Foreground(green).Render("Strix") +
+		lipgloss.NewStyle().Bold(true).Foreground(green).Render("Lamia") +
 		lipgloss.NewStyle().Bold(true).Foreground(white).Render("!")
 	version := lipgloss.NewStyle().Foreground(white).Faint(true).Render("v" + appVersion)
 	tagline := lipgloss.NewStyle().Foreground(white).Faint(true).Render("Open-source AI hackers for your apps")
@@ -961,8 +961,8 @@ func flattenStatus(message string) string {
 
 func (m Model) sweepView() string {
 	palette := []lipgloss.Color{
-		black, lipgloss.Color("#031a09"), lipgloss.Color("#052e16"), lipgloss.Color("#0d4a2a"),
-		lipgloss.Color("#15803d"), green, brightGreen, lipgloss.Color("#86efac"),
+		black, lipgloss.Color("#1a0303"), lipgloss.Color("#2e0505"), lipgloss.Color("#4a0d0d"),
+		lipgloss.Color("#7f1d1d"), green, brightGreen, lipgloss.Color("#fecaca"),
 	}
 	const numSquares = 6
 	numColors := len(palette)
@@ -974,7 +974,7 @@ func (m Model) sweepView() string {
 	wavePos := totalRange - abs(totalRange-frameInCycle)
 	sweepPos := wavePos - offset
 
-	dotColor := lipgloss.Color("#0a3d1f")
+	dotColor := lipgloss.Color("#3d0a0a")
 	var b strings.Builder
 	for i := 0; i < numSquares; i++ {
 		dist := abs(i - sweepPos)

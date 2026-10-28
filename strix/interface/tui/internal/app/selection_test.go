@@ -17,7 +17,7 @@ func selectionModel(t *testing.T) Model {
 	model.width, model.height = 130, 40
 	model.snapshot.Agents = append(
 		model.snapshot.Agents,
-		protocol.Agent{ID: "root", Name: "Strix", Status: "running"},
+		protocol.Agent{ID: "root", Name: "Lamia", Status: "running"},
 	)
 	model.resizeViewport()
 	model.viewportContent = strings.Join([]string{
@@ -151,7 +151,7 @@ func TestClickTogglesToolExpansion(t *testing.T) {
 	model.showSplash = false
 	model.ready = true
 	model.width, model.height = 130, 40
-	model.snapshot.Agents = []protocol.Agent{{ID: "root", Name: "Strix", Status: "running"}}
+	model.snapshot.Agents = []protocol.Agent{{ID: "root", Name: "Lamia", Status: "running"}}
 	var output []string
 	for i := 0; i < 20; i++ {
 		output = append(output, "output line")

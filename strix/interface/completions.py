@@ -1,4 +1,4 @@
-"""Shell completion scripts and candidates for the Strix CLI."""
+"""Shell completion scripts and candidates for the Lamia CLI."""
 
 from __future__ import annotations
 
@@ -33,11 +33,11 @@ def run_completions(argv: list[str]) -> int:
         return 0
     if not argv or argv[0] in ("-h", "--help", "help"):
         sys.stdout.write(
-            "Usage: strix completions <zsh|bash|fish>\n\n"
+            "Usage: lamia completions <zsh|bash|fish>\n\n"
             "Enable tab completion for the current shell:\n"
-            "  zsh:  source <(strix completions zsh)\n"
-            "  bash: source <(strix completions bash)\n"
-            "  fish: strix completions fish | source\n"
+            "  zsh:  source <(lamia completions zsh)\n"
+            "  bash: source <(lamia completions bash)\n"
+            "  fish: lamia completions fish | source\n"
         )
         return 0
     shell = argv[0].lower()
@@ -53,7 +53,7 @@ def run_completions(argv: list[str]) -> int:
 
 
 def completion_candidates(words: list[str]) -> list[str]:
-    """Return candidates for words after the ``strix`` executable."""
+    """Return candidates for words after the ``lamia`` executable."""
     prior, current = _split_cursor(words)
     if not prior:
         candidates = _matching(_ROOT_COMMANDS, current)
@@ -332,13 +332,13 @@ def _matching(candidates: Any, prefix: str) -> list[str]:
 
 
 def _zsh_script() -> str:
-    return r"""#compdef strix
+    return r"""#compdef lamia
 _strix() {
   local -a candidates
   candidates=("${(@f)$($words[1] completions --candidates "${words[@]:2}")}")
-  _describe 'strix' candidates
+  _describe 'lamia' candidates
 }
-compdef _strix strix
+compdef _strix lamia
 """
 
 
@@ -348,7 +348,7 @@ def _bash_script() -> str:
   local candidate
   while IFS= read -r candidate; do
     candidates+=("$candidate")
-  done < <(strix completions --candidates "${COMP_WORDS[@]:1:$COMP_CWORD}")
+  done < <(lamia completions --candidates "${COMP_WORDS[@]:1:$COMP_CWORD}")
   COMPREPLY=("${candidates[@]}")
   for candidate in "${COMPREPLY[@]}"; do
     if [[ $candidate == */ ]]; then
@@ -359,7 +359,7 @@ def _bash_script() -> str:
     fi
   done
 }
-complete -F _strix_completion strix
+complete -F _strix_completion lamia
 """
 
 
@@ -367,7 +367,7 @@ def _fish_script() -> str:
     return r"""function __strix_candidates
   set -l words (commandline -opc)
   set -e words[1]
-  command strix completions --candidates $words (commandline -ct)
+  command lamia completions --candidates $words (commandline -ct)
 end
-complete -c strix -f -a '(__strix_candidates)'
+complete -c lamia -f -a '(__strix_candidates)'
 """

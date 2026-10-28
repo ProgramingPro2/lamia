@@ -1,4 +1,4 @@
-"""Declarative command table for `strix cloud`.
+"""Declarative command table for `lamia cloud`.
 
 Each command maps one CLI verb to one managed API operation. The runner
 builds the argument parser and the HTTP request from this table, so the
@@ -404,7 +404,7 @@ SPEC: dict[str, dict[str, Cmd]] = {
             "POST",
             "/domains/{domainId}/test-users/provision-inbox",
             (
-                "Provision a Strix-managed inbox for email OTP or magic-link MFA. "
+                "Provision a Lamia-managed inbox for email OTP or magic-link MFA. "
                 "Returns an address; it does not create a test user."
             ),
             body=(P("label", help="Optional display label for the managed inbox."),),
@@ -1066,7 +1066,7 @@ SPEC: dict[str, dict[str, Cmd]] = {
         "request": Cmd(
             "POST",
             "/uploads/request",
-            "Request an upload URL. To scan local source, prefer `strix cloud scans start "
+            "Request an upload URL. To scan local source, prefer `lamia cloud scans start "
             "--source DIR`, which packs, uploads, and starts the scan in one step.",
             body=(
                 P("file_name", required=True, help="File name."),

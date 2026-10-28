@@ -133,10 +133,10 @@ def test_write_cache_preserves_existing_fields() -> None:
 
 
 def test_get_upgrade_command_all_methods() -> None:
-    assert update_check.get_upgrade_command("binary") == "strix --update"
-    assert update_check.get_upgrade_command("pipx") == "pipx upgrade strix-agent"
-    assert update_check.get_upgrade_command("uv") == "uv tool upgrade strix-agent"
-    assert update_check.get_upgrade_command("pip") == "pip install --upgrade strix-agent"
+    assert update_check.get_upgrade_command("binary") == "lamia --update"
+    assert update_check.get_upgrade_command("pipx") == "pipx upgrade lamia-agent"
+    assert update_check.get_upgrade_command("uv") == "uv tool upgrade lamia-agent"
+    assert update_check.get_upgrade_command("pip") == "pip install --upgrade lamia-agent"
 
 
 def test_self_update_non_binary_prints_command(monkeypatch: pytest.MonkeyPatch) -> None:

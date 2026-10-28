@@ -12,7 +12,7 @@ const mcpIcon = "🔌 "
 
 // renderMcpTool renders a call to a tool from one of the user's MCP servers.
 //
-// Its own icon and color so a call that left Strix for a server the user
+// Its own icon and color so a call that left Lamia for a server the user
 // connected is obvious while scrolling a transcript. The action leads and the
 // server trails: the model-facing name is the connection name and the tool name
 // stuck together, so leading with the whole name buries the part a reader wants
@@ -21,7 +21,7 @@ const mcpIcon = "🔌 "
 // The result is deliberately not rendered, for the same reason
 // renderGenericTool leaves it out: an MCP result is whatever an outside server
 // chose to return, often multi-kilobyte JSON, and it floods the screen. The full
-// result is in the event data, the run log, and the `strix view` viewer.
+// result is in the event data, the run log, and the `lamia view` viewer.
 func renderMcpTool(connection, toolName string, args map[string]any, status string) string {
 	var b strings.Builder
 	b.WriteString(mcpIcon + Bold(Mint).Render(toolName))
@@ -49,7 +49,7 @@ func renderMcpInspect(connection, status string) string {
 // renderMcpList renders list_mcps: the inventory of connections the run may
 // reach, not a call to any of them, so no connection leads and the event
 // carries no connection tag. Unlike the other MCP results, the names are worth
-// showing: Strix assembled them itself from the run's registered connections,
+// showing: Lamia assembled them itself from the run's registered connections,
 // so they are short and never an outside server's payload.
 func renderMcpList(result any, status string) string {
 	var b strings.Builder

@@ -390,7 +390,7 @@ class GoTuiRuntime:
         if packaged.is_file():
             return [str(packaged)]
         raise RuntimeError(
-            "Bubble Tea TUI binary not found. Reinstall Strix from an official platform wheel."
+            "Bubble Tea TUI binary not found. Reinstall Lamia from an official platform wheel."
         )
 
     @staticmethod

@@ -49,7 +49,7 @@ import { ProInlineCta } from "@/components/ProCta";
 export type View = "overview" | "issues" | "agents" | "history" | "email" | "feedback";
 
 const TRUST_BANNER =
-  "Your findings stay on your machine. They're rendered here locally in your browser and never uploaded or stored by Strix.";
+  "Your findings stay on your machine. They're rendered here locally in your browser and never uploaded or stored by Lamia.";
 
 const SEVERITY_ORDER: VulnerabilitySeverity[] = ["critical", "high", "medium", "low"];
 const POLL_MS = 500;
@@ -295,10 +295,10 @@ export default function App() {
               rel="noopener noreferrer"
               onClick={() => trackCta("logo", "topbar")}
               className="flex items-center gap-1.5 opacity-90 transition-opacity hover:opacity-100 lg:hidden"
-              title="Open Strix Cloud"
+              title="Open Lamia Cloud"
             >
-              <img src="./logo.png" alt="Strix" className="w-10 h-8 object-cover" />
-              <div className="text-base text-white font-medium tracking-tight">Strix</div>
+              <img src="./logo.png" alt="Lamia" className="w-10 h-8 object-cover" />
+              <div className="text-base text-white font-medium tracking-tight">Lamia</div>
             </a>
             {run && <LiveIndicator finished={run.finished} />}
             <div className="ml-auto flex items-center gap-3">
@@ -709,11 +709,11 @@ function OverviewTab({
 
       {finished && (
         <div className="animate-card-in rounded-xl border border-[#222] bg-[rgba(255,255,255,0.02)] p-5">
-          <p className="text-sm font-semibold text-white">Strix Cloud</p>
-          <p className="mt-0.5 text-xs text-[#666]">Run your next pentest in Strix Cloud.</p>
+          <p className="text-sm font-semibold text-white">Lamia Cloud</p>
+          <p className="mt-0.5 text-xs text-[#666]">Run your next pentest in Lamia Cloud.</p>
           <div className="mt-3 flex flex-wrap gap-2.5">
             <ProInlineCta
-              label="Run a pentest in Strix Cloud"
+              label="Run a pentest in Lamia Cloud"
               desc="Validated findings, autofix, and PR reviews."
               slug="overview_cloud"
               surface="overview"
@@ -721,7 +721,7 @@ function OverviewTab({
               primary
             />
             <ProInlineCta
-              label="Try Strix Enterprise"
+              label="Try Lamia Enterprise"
               desc="SSO, compliance-ready reports, VPC or self-hosted deployment."
               slug="book_demo"
               surface="overview"
@@ -812,13 +812,13 @@ function AgentsTab({ run, canSteer }: { run: LoadedRun; canSteer: boolean }) {
       {/* Live steering: only in-process while the scan runs. Otherwise omitted. */}
       {steerable && <ScanPromptComposer agents={agents} />}
 
-      {/* Re-run always routes to Strix Cloud. */}
+      {/* Re-run always routes to Lamia Cloud. */}
       <div className="rounded-xl border border-[#222] bg-[rgba(255,255,255,0.02)] p-5">
         <p className="text-sm font-semibold text-white">Run this pentest with more depth</p>
-        <p className="mt-0.5 text-xs text-[#666]">Run this pentest again in Strix Cloud.</p>
+        <p className="mt-0.5 text-xs text-[#666]">Run this pentest again in Lamia Cloud.</p>
         <div className="mt-3 flex flex-wrap gap-2.5">
           <ProInlineCta
-            label="Re-run in Strix Pro with more depth"
+            label="Re-run in Lamia Pro with more depth"
             desc="More depth, validated findings, and autofix."
             slug="live_scan"
             surface="agents"
@@ -826,7 +826,7 @@ function AgentsTab({ run, canSteer }: { run: LoadedRun; canSteer: boolean }) {
             primary
           />
           <ProInlineCta
-            label="Try Strix Enterprise"
+            label="Try Lamia Enterprise"
             desc="SSO, compliance-ready reports, VPC or self-hosted deployment."
             slug="book_demo"
             surface="agents"

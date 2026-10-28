@@ -1,4 +1,4 @@
-"""Billing top-up and agent-wallet execution for ``strix cloud``."""
+"""Billing top-up and agent-wallet execution for ``lamia cloud``."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ _MPPX_PACKAGE = "mppx@0.8.17"
 # spend request, waits for the person to approve it in the Link app, and retries
 # the payment with the approved credential.
 _LINK_CLI_PACKAGE = "@stripe/link-cli@0.13.1"
-_LINK_CLI_CLIENT_NAME = "Strix CLI"
+_LINK_CLI_CLIENT_NAME = "Lamia CLI"
 _LINK_LOGIN_TIMEOUT_S = 300
 # Poll every 2 seconds while the person approves the spend request in the Link
 # app. 150 attempts give the person 5 minutes.
@@ -185,7 +185,7 @@ def run_topup(  # noqa: PLR0911, PLR0912, PLR0915
             {
                 "error": (
                     "Payment was interrupted after the wallet started. The outcome is unknown; "
-                    "run `strix cloud billing credits` and check the balance before retrying."
+                    "run `lamia cloud billing credits` and check the balance before retrying."
                 ),
                 "interrupted": True,
                 "payment_outcome_unknown": True,
@@ -215,7 +215,7 @@ def run_topup(  # noqa: PLR0911, PLR0912, PLR0915
     if not as_json:
         console.print(
             "[yellow]The wallet exited without a confirmed receipt. The payment outcome is "
-            "unknown; run `strix cloud billing credits` before retrying.[/]"
+            "unknown; run `lamia cloud billing credits` before retrying.[/]"
         )
         detail = _wallet_detail(stderr or stdout or "")
         if detail:
@@ -256,7 +256,7 @@ def run_topup(  # noqa: PLR0911, PLR0912, PLR0915
             console,
             {
                 "error": (
-                    "The wallet returned a receipt, but the Strix billing endpoint did not "
+                    "The wallet returned a receipt, but the Lamia billing endpoint did not "
                     "confirm it. Check the credit balance before retrying payment."
                 ),
                 "detail": _wallet_detail(stdout),
@@ -271,7 +271,7 @@ def run_topup(  # noqa: PLR0911, PLR0912, PLR0915
         {
             "error": (
                 "The wallet exited without a confirmed receipt. The payment outcome is unknown; "
-                "run `strix cloud billing credits` and check the balance before retrying."
+                "run `lamia cloud billing credits` and check the balance before retrying."
             ),
             "detail": _wallet_detail(
                 stderr or stdout or f"Wallet client exited with status {result.returncode}."
@@ -562,9 +562,9 @@ def _payment_context(body: dict[str, Any]) -> str:
     """Describe the purchase for the person who approves it in the Link app."""
     credits_requested = body.get("credits")
     return (
-        f"Strix scan credits. The Strix command line interface asks to buy "
-        f"{credits_requested} scan credit(s) for the selected Strix workspace on "
-        "app.strix.ai. Strix spends the credits on managed penetration test scans "
+        f"Lamia scan credits. The Lamia command line interface asks to buy "
+        f"{credits_requested} scan credit(s) for the selected Lamia workspace on "
+        "app.strix.ai. Lamia spends the credits on managed penetration test scans "
         "that the user starts."
     )
 
@@ -623,17 +623,17 @@ def _prepare_link_wallet(console: Console, npx: str, *, as_json: bool) -> str | 
         return None
 
     manual_setup = (
-        "Payment needs a Stripe Link wallet. Run `strix cloud billing topup` in an "
+        "Payment needs a Stripe Link wallet. Run `lamia cloud billing topup` in an "
         "interactive terminal to connect one, or set up the wallet at "
         "https://link.com/agents. For a browser checkout instead, run "
-        "`strix cloud billing subscribe --plan strix_top_up`."
+        "`lamia cloud billing subscribe --plan strix_top_up`."
     )
     if as_json or not (sys.stdin.isatty() and sys.stdout.isatty()):
         return manual_setup
 
     console.print(
-        "[yellow]No Stripe Link wallet is connected.[/] Strix starts the Link sign-in now. "
-        "Approve the connection in the Link app, then Strix continues the payment. "
+        "[yellow]No Stripe Link wallet is connected.[/] Lamia starts the Link sign-in now. "
+        "Approve the connection in the Link app, then Lamia continues the payment. "
         "The user approves every payment in the Link app."
     )
     try:

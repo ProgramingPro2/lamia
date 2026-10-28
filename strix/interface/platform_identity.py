@@ -1,4 +1,4 @@
-"""Stable, privacy-safe identity for this Strix CLI installation."""
+"""Stable, privacy-safe identity for this Lamia CLI installation."""
 
 from __future__ import annotations
 

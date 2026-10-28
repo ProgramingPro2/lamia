@@ -58,7 +58,7 @@ class ReportRollbackError(RuntimeError):
 def _strix_version() -> str | None:
     """Best-effort package version for the SARIF tool.driver.version field."""
     try:
-        return version("strix-agent")
+        return version("lamia-agent")
     except PackageNotFoundError:
         return None
 
@@ -198,7 +198,7 @@ class ReportState:
     """Per-scan product artifact state plus artifact writer.
 
     The Agents SDK owns model/tool execution, tracing, and conversation
-    persistence. This store keeps only Strix-owned scan artifacts and
+    persistence. This store keeps only Lamia-owned scan artifacts and
     report metadata. Live UI projections belong to the interface layer.
 
     It does not consume SDK tracing processors.

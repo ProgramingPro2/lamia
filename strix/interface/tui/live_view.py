@@ -32,7 +32,7 @@ class TuiLiveView:
         """Event fields naming the MCP server a tool call went out to, if any.
 
         Delegates to the shared engine resolver :func:`resolve_mcp_call` so a
-        dispatch call is attributed the same way here and in strix-pro's tracer.
+        dispatch call is attributed the same way here and in lamia-pro's tracer.
         The projection has no live registry, so it passes none: it reports the
         connection and tool read from the call's arguments and leaves the provider
         out. Empty for every other tool, which is what tells an interface to

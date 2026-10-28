@@ -43,7 +43,7 @@ type collectionAssembly struct {
 
 // appVersion is the package version string shown on the splash and stats panel.
 // It is set by main from the STRIX_VERSION env var (see go_tui.py), matching
-// Python's get_package_version() which reads the installed "strix-agent" version
+// Python's get_package_version() which reads the installed "lamia-agent" version
 // and falls back to "dev".
 var appVersion = "dev"
 
@@ -141,10 +141,10 @@ type Model struct {
 }
 
 var (
-	green       = lipgloss.Color("#22c55e")
-	brightGreen = lipgloss.Color("#4ade80")
-	blue        = lipgloss.Color("#3b82f6")
-	lightBlue   = lipgloss.Color("#60a5fa")
+	green       = lipgloss.Color("#ef4444")
+	brightGreen = lipgloss.Color("#f87171")
+	blue        = lipgloss.Color("#f87171")
+	lightBlue   = lipgloss.Color("#fecaca")
 	red         = lipgloss.Color("#ef4444")
 	orange      = lipgloss.Color("#ea580c")
 	amber       = lipgloss.Color("#d97706")
@@ -181,7 +181,7 @@ const (
 // the column is too narrow to show the full one without clipping it.
 const (
 	setupPlaceholder      = "Describe what to test, or name a target"
-	setupPlaceholderShort = "What should Strix test?"
+	setupPlaceholderShort = "What should Lamia test?"
 	chatPlaceholder       = "Send a message"
 )
 
@@ -290,7 +290,7 @@ func New(client *Client) Model {
 
 func (m Model) Init() tea.Cmd { return tea.Batch(readWire(m.client), splashTick(), sweepTick()) }
 
-// splashTick drives the splash "Starting Strix Agent" shimmer at Python's 0.1s cadence.
+// splashTick drives the splash "Starting Lamia Agent" shimmer at Python's 0.1s cadence.
 func splashTick() tea.Cmd {
 	return tea.Tick(100*time.Millisecond, func(t time.Time) tea.Msg { return splashTickMsg(t) })
 }

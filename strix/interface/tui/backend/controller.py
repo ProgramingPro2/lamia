@@ -1,4 +1,4 @@
-"""UI-independent state and command controller for interactive Strix clients."""
+"""UI-independent state and command controller for interactive Lamia clients."""
 
 from __future__ import annotations
 
