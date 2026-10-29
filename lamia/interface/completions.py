@@ -7,7 +7,7 @@ import sys
 from lamia.interface.terminal_text import has_terminal_control, sanitize_terminal_text
 
 
-_ROOT_COMMANDS = ("auth", "view", "completions", "completion")
+_ROOT_COMMANDS = ("auth", "view", "export", "completions", "completion")
 _AUTH_COMMANDS = ("login", "status", "logout", "help")
 _AUTH_LOGIN_PROVIDERS = ("chatgpt",)
 _AUTH_LOGIN_FLAGS = ("--manual", "-h", "--help")

@@ -63,6 +63,7 @@ _ROOT_SUBCOMMAND_HELP = """
 Additional commands:
   lamia auth ...           Manage model-subscription sign-in
   lamia view [RUN]         View a completed or running scan
+  lamia export [RUN]       Export a run as pdf, sarif, json, csv, or markdown
   lamia completions SHELL  Generate zsh, bash, or fish tab completion
 """
 
@@ -230,6 +231,13 @@ def display_completion_message(args: argparse.Namespace, results_path: Path) -> 
     view_text.append("    ")
     view_text.append(f"lamia view {args.run_name}", style="#22c55e")
     panel_parts.extend(["\n", view_text])
+
+    export_text = Text()
+    export_text.append("\n")
+    export_text.append("Export", style="dim")
+    export_text.append("  ")
+    export_text.append(f"lamia export {args.run_name}", style="#22c55e")
+    panel_parts.extend(["\n", export_text])
 
     if not scan_completed:
         resume_text = Text()
@@ -429,12 +437,19 @@ def main() -> None:
             Console().print(_ROOT_SUBCOMMAND_HELP.strip(), markup=False)
             raise SystemExit(exc.code) from None
 
-    # `lamia view [<run>]` is a viewer-only subcommand, dispatched before the
-    # scan argument parser (which requires a target) and before any scan setup.
+    # `lamia view [<run>]` and `lamia export [<run>]` are run-directory
+    # subcommands, dispatched before the scan argument parser (which requires
+    # a target) and before any scan setup.
     if len(sys.argv) > 1 and sys.argv[1] == "view":
         from lamia.interface.viewer.cli import run_view
 
         run_view(sys.argv[2:])
+        return
+
+    if len(sys.argv) > 1 and sys.argv[1] == "export":
+        from lamia.interface.export_cli import run_export
+
+        run_export(sys.argv[2:])
         return
 
     # `lamia auth …` manages model-subscription sign-in and exits; it needs no

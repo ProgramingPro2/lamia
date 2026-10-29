@@ -28,6 +28,7 @@ from urllib.parse import parse_qs, unquote, urlencode, urlsplit
 
 from lamia.core.paths import iter_run_dirs, run_record_path, run_search_dirs
 from lamia.interface.viewer.access_map import build_access_map
+from lamia.interface.viewer.report_pdf import generate_report_pdf
 from lamia.interface.viewer.transcript import (
     build_run_state,
     primary_target,
@@ -115,6 +116,16 @@ def resolve_run_across(
         if found is not None:
             return found
     return None
+
+
+def report_pdf_filename(run_dir: Path) -> str:
+    """Safe ``Content-Disposition`` name for the plain PDF of ``run_dir``."""
+    record = read_run_summary(run_dir)
+    raw = str(record.get("run_name") or run_dir.name)
+    safe = "".join(
+        ch if ch.isascii() and (ch.isalnum() or ch in "._-") else "-" for ch in raw
+    ).strip(".-")
+    return f"lamia-report-{safe or 'report'}.pdf"
 
 
 def _runs_payload(workspace: Path) -> dict[str, Any]:
@@ -249,6 +260,8 @@ def _make_handler(state: _ViewerState) -> type[BaseHTTPRequestHandler]:
                 self._send_json(HTTPStatus.OK, read_vulnerabilities(run_dir))
             elif path == "/api/report":
                 self._send_json(HTTPStatus.OK, {"markdown": read_report_markdown(run_dir)})
+            elif path == "/api/report.pdf":
+                self._send_pdf(generate_report_pdf(run_dir), report_pdf_filename(run_dir))
             elif path == "/api/transcript":
                 self._send_json(HTTPStatus.OK, build_run_state(run_dir))
             elif path == "/api/access-map":
@@ -360,6 +373,15 @@ def _make_handler(state: _ViewerState) -> type[BaseHTTPRequestHandler]:
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
+
+        def _send_pdf(self, pdf: bytes, filename: str) -> None:
+            """Send a plain PDF download. The caller already checked the session."""
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-Type", "application/pdf")
+            self.send_header("Content-Length", str(len(pdf)))
+            self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
+            self.end_headers()
+            self.wfile.write(pdf)
 
     return ViewerHandler
 

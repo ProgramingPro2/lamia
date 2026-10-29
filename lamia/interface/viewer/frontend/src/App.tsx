@@ -4,6 +4,7 @@ import {
   AlertCircle,
   Bot,
   ChevronDown,
+  Download,
   History,
 } from "lucide-react";
 import type { Vulnerability, VulnerabilitySeverity } from "@/types/issues";
@@ -28,6 +29,7 @@ import {
   fetchVulnerabilities,
   EMPTY_ACCESS_MAP,
   parseMcpConnectionStatus,
+  reportPdfUrl,
   type LoadedRun,
   type RunsPayload,
 } from "@/data/serverSource";
@@ -248,6 +250,13 @@ export default function App() {
             </div>
             {run && <LiveIndicator finished={run.finished} />}
             <div className="ml-auto flex items-center gap-3">
+              <a
+                href={reportPdfUrl(activeRun)}
+                className="flex items-center gap-2 rounded-lg border border-[#3a3a3a] bg-[rgba(255,255,255,0.05)] px-3 py-2 text-sm text-white transition-colors hover:border-[#555] hover:bg-[rgba(255,255,255,0.09)]"
+              >
+                <Download className="h-4 w-4 flex-shrink-0 text-[#888]" aria-hidden="true" />
+                Download PDF
+              </a>
               {runs && !runs.locked && runs.runs.length > 0 && (
                 <RunSwitcher
                   runs={runs}

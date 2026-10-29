@@ -289,6 +289,27 @@ def _get_status(url: str, *, cookie: str | None = None) -> int:
         return int(exc.code)
 
 
+def _get_download(url: str, *, cookie: str | None = None) -> tuple[int, str, str, bytes]:
+    """Status, content type, content disposition, and body, including HTTP errors."""
+    headers = {"Cookie": cookie} if cookie else {}
+    req = urllib.request.Request(url, headers=headers)  # noqa: S310 - localhost test server
+    try:
+        with urllib.request.urlopen(req) as resp:  # noqa: S310  # nosec B310
+            return (
+                int(resp.status),
+                str(resp.headers.get("Content-Type", "")),
+                str(resp.headers.get("Content-Disposition", "")),
+                resp.read(),
+            )
+    except urllib.error.HTTPError as exc:
+        return (
+            int(exc.code),
+            str(exc.headers.get("Content-Type", "")),
+            str(exc.headers.get("Content-Disposition", "")),
+            exc.read(),
+        )
+
+
 def _bundle(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assets = tmp_path / "bundle"
     assets.mkdir()
@@ -378,6 +399,36 @@ def test_run_data_requires_session(tmp_path: Path, monkeypatch: pytest.MonkeyPat
             assert _get_status(url + path) == 403, path
             assert _get_status(url + path, cookie=f"{_cookie_name(url)}=wrong") == 403, path
             assert _get_status(url + path, cookie=cookie) == 200, path
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+
+
+def test_report_pdf_requires_session(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    launched = _make_run(tmp_path, "pdf-main", status="completed", end_time="2026-01-01T00:00:00Z")
+    _make_run(tmp_path, "pdf-other", status="completed", end_time="2026-01-01T00:00:00Z")
+    _bundle(tmp_path, monkeypatch)
+
+    httpd, url, token = serve(launched, open_browser=False)
+    try:
+        assert _get_status(f"{url}/api/report.pdf") == 403
+        assert _get_status(f"{url}/api/report.pdf", cookie=f"{_cookie_name(url)}=wrong") == 403
+        assert _get_status(f"{url}/api/report.pdf?run=pdf-other") == 403
+
+        cookie = _session_cookie(url, token)
+        status, ctype, disposition, body = _get_download(f"{url}/api/report.pdf", cookie=cookie)
+        assert status == 200
+        assert "application/pdf" in ctype
+        assert body.startswith(b"%PDF")
+        assert disposition == 'attachment; filename="lamia-report-pdf-main.pdf"'
+
+        status, ctype, disposition, body = _get_download(
+            f"{url}/api/report.pdf?run=pdf-other", cookie=cookie
+        )
+        assert status == 200
+        assert "application/pdf" in ctype
+        assert body.startswith(b"%PDF")
+        assert disposition == 'attachment; filename="lamia-report-pdf-other.pdf"'
     finally:
         httpd.shutdown()
         httpd.server_close()
