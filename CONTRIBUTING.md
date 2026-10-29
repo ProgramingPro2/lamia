@@ -31,7 +31,7 @@ Thank you for your interest in contributing to Lamia! This guide will help you g
 
 3. **Configure your LLM provider**
    ```bash
-   export STRIX_LLM="openrouter/z-ai/glm-5.3"   # or vercel_ai_gateway/zai/glm-5.3
+   export LAMIA_LLM="openrouter/z-ai/glm-5.3"   # or vercel_ai_gateway/zai/glm-5.3
    export LLM_API_KEY="your-api-key"
    ```
 
@@ -42,7 +42,7 @@ Thank you for your interest in contributing to Lamia! This guide will help you g
 
 ## 📚 Contributing Skills
 
-Skills are specialized knowledge packages that enhance agent capabilities. See [strix/skills/README.md](strix/skills/README.md) for detailed guidelines.
+Skills are specialized knowledge packages that enhance agent capabilities. See [lamia/skills/README.md](lamia/skills/README.md) for detailed guidelines.
 
 ### Quick Guide
 
@@ -103,16 +103,16 @@ We welcome feature ideas! Please:
 ## 🖥️ Local viewer SPA
 
 `lamia view` serves a prebuilt web UI whose source lives in
-`strix/interface/viewer/frontend/` (a Vite + React project) and whose built output is
-committed to `strix/interface/viewer/static/` and shipped in the package. End users never
-run a JS build. If you change anything under `strix/interface/viewer/frontend/`, rebuild
+`lamia/interface/viewer/frontend/` (a Vite + React project) and whose built output is
+committed to `lamia/interface/viewer/static/` and shipped in the package. End users never
+run a JS build. If you change anything under `lamia/interface/viewer/frontend/`, rebuild
 and commit the output:
 
 ```bash
-make viewer   # or: cd strix/interface/viewer/frontend && npm ci && npm run build
+make viewer   # or: cd lamia/interface/viewer/frontend && npm ci && npm run build
 ```
 
-Commit both the source change and the regenerated `strix/interface/viewer/static/`.
+Commit both the source change and the regenerated `lamia/interface/viewer/static/`.
 
 ## Package builds
 
@@ -125,23 +125,11 @@ make wheel
 ```
 
 The build hook (`scripts/tui_sidecar_hook.py`) compiles the sidecar, embeds it as
-`strix/bin/strix-tui`, and assigns the current platform tag. It requires Go
+`lamia/bin/lamia-tui`, and assigns the current platform tag. It requires Go
 1.24.x or newer and fails rather than producing a wheel without the sidecar.
-`scripts/build.sh` and `strix.spec` are likewise strict for frozen PyInstaller
+`scripts/build.sh` and `lamia.spec` are likewise strict for frozen PyInstaller
 releases.
 
-## 🤝 Community
+## Questions
 
-- **Discord**: [Join our community](https://discord.gg/strix-ai)
-- **Issues**: [GitHub Issues](https://github.com/usestrix/strix/issues)
-
-## ✨ Recognition
-
-We value all contributions! Contributors will be:
-- Listed in release notes
-- Thanked in our Discord
-- Added to contributors list (coming soon)
-
----
-
-**Questions?** Reach out on [Discord](https://discord.gg/strix-ai) or create an issue. We're here to help!
+Open a GitHub issue on this repository.

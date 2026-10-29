@@ -24,8 +24,8 @@ from agents.run import RunConfig
 from openai import AsyncOpenAI
 from openai.types.responses import ResponseFunctionToolCall
 
-from strix.config.models import _NonStreamingModel, _TurnGuardModel
-from strix.config.tool_call_ids import TurnCallIdRewriter, dedupe_history_call_ids
+from lamia.config.models import _NonStreamingModel, _TurnGuardModel
+from lamia.config.tool_call_ids import TurnCallIdRewriter, dedupe_history_call_ids
 
 
 if TYPE_CHECKING:

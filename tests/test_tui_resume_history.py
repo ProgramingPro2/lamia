@@ -15,10 +15,10 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from strix.core import execution
-from strix.core.paths import runtime_state_dir
-from strix.interface.tui.backend.live_view import TuiLiveView as GoTuiLiveView
-from strix.interface.tui.live_view import (
+from lamia.core import execution
+from lamia.core.paths import runtime_state_dir
+from lamia.interface.tui.backend.live_view import TuiLiveView as GoTuiLiveView
+from lamia.interface.tui.live_view import (
     _INTERNAL_TURN_PREFIXES,
     TuiLiveView,
     _is_internal_agent_turn,
@@ -247,7 +247,7 @@ def _injected_strings(module: ModuleType) -> list[str]:
 def test_internal_turn_prefixes_still_match_what_is_injected() -> None:
     """The classifier copies sentences out of another module, so they can drift.
 
-    Both nudges are written inline in strix.core.execution, so there is nothing to
+    Both nudges are written inline in lamia.core.execution, so there is nothing to
     import and compare against. Read them back out of what that module can inject.
     """
     injected = _injected_strings(execution)
@@ -255,7 +255,7 @@ def test_internal_turn_prefixes_still_match_what_is_injected() -> None:
     assert nudges, "the no-tool-call nudges are no longer in the classifier"
     for nudge in nudges:
         assert any(nudge in literal for literal in injected), (
-            f"the classifier expects {nudge!r}, which strix.core.execution no longer "
+            f"the classifier expects {nudge!r}, which lamia.core.execution no longer "
             f"injects. A resumed scan would show that nudge as the user's own message."
         )
 

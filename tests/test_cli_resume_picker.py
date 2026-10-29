@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-cli_main: Any = importlib.import_module("strix.interface.main")
+cli_main: Any = importlib.import_module("lamia.interface.main")
 
 
 def _write_run(base: Path, name: str, *, state: bool = True) -> None:
@@ -79,7 +79,7 @@ def test_bare_resume_with_no_runs_is_an_error(
     with pytest.raises(SystemExit):
         cli_main.parse_arguments()
 
-    assert "no runs in ./strix_runs" in capsys.readouterr().err
+    assert "no runs in ./lamia_runs or ./strix_runs" in capsys.readouterr().err
 
 
 def test_bare_resume_headless_lists_the_runs_instead_of_prompting(

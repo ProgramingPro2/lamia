@@ -8,9 +8,9 @@ from typing import Any, cast
 import pytest
 from agents.tool import FunctionTool
 
-from strix.agents import factory
-from strix.tools.notes.tools import list_notes
-from strix.tools.reporting.tool import list_reports
+from lamia.agents import factory
+from lamia.tools.notes.tools import list_notes
+from lamia.tools.reporting.tool import list_reports
 
 
 def _capturing_tool(

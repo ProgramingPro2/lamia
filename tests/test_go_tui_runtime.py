@@ -15,11 +15,11 @@ from typing import Any, cast
 
 import pytest
 
-from strix.config.settings import DEFAULT_MAX_TURNS
-from strix.interface.tui import runtime as go_tui
-from strix.interface.tui import sidecar
-from strix.interface.tui.runtime import GoTuiRuntime
-from strix.report.state import ReportState
+from lamia.config.settings import DEFAULT_MAX_TURNS
+from lamia.interface.tui import runtime as go_tui
+from lamia.interface.tui import sidecar
+from lamia.interface.tui.runtime import GoTuiRuntime
+from lamia.report.state import ReportState
 
 
 def args() -> argparse.Namespace:
@@ -43,7 +43,7 @@ def test_binary_command_prefers_packaged_sidecar(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Any,
 ) -> None:
-    sidecar = tmp_path / "strix-tui"
+    sidecar = tmp_path / "lamia-tui"
     sidecar.write_text("binary")
     monkeypatch.setattr(go_tui, "tui_source_dir", lambda: tmp_path / "tui-src")
     monkeypatch.setattr(go_tui, "get_strix_resource_path", lambda *_parts: sidecar)
@@ -63,13 +63,13 @@ def test_binary_command_prefers_current_source_over_packaged_sidecar(
     source = tmp_path / "tui-src"
     source.mkdir()
     (source / "go.mod").write_text("module test\n")
-    sidecar = tmp_path / "strix-tui"
+    sidecar = tmp_path / "lamia-tui"
     sidecar.write_text("stale")
     monkeypatch.setattr(go_tui, "tui_source_dir", lambda: tmp_path / "tui-src")
     monkeypatch.setattr(go_tui, "get_strix_resource_path", lambda *_parts: sidecar)
     monkeypatch.setattr(shutil, "which", lambda name: "/usr/bin/go" if name == "go" else None)
 
-    assert GoTuiRuntime.binary_command() == ["go", "run", "./cmd/strix-tui"]
+    assert GoTuiRuntime.binary_command() == ["go", "run", "./cmd/lamia-tui"]
 
 
 def test_binary_command_reports_missing_sidecar(
@@ -90,7 +90,7 @@ def test_binary_command_ignores_unconstrained_path_sidecar(
 ) -> None:
     monkeypatch.setattr(go_tui, "get_strix_resource_path", lambda *_parts: tmp_path / "missing")
     monkeypatch.setattr(go_tui, "tui_source_dir", lambda: tmp_path / "tui-src")
-    monkeypatch.setattr(shutil, "which", lambda _name: "/untrusted/path/strix-tui")
+    monkeypatch.setattr(shutil, "which", lambda _name: "/untrusted/path/lamia-tui")
 
     with pytest.raises(RuntimeError, match="Bubble Tea TUI binary not found"):
         GoTuiRuntime.binary_command()
@@ -160,11 +160,12 @@ async def test_windows_transport_launches_without_inherited_fd() -> None:
 import os
 import socket
 
-host, port = os.environ["STRIX_TUI_ADDR"].rsplit(":", 1)
+host, port = os.environ["LAMIA_TUI_ADDR"].rsplit(":", 1)
 with socket.create_connection((host, int(port))) as connection:
-    connection.sendall(os.environ["STRIX_TUI_TOKEN"].encode("ascii"))
+    connection.sendall(os.environ["LAMIA_TUI_TOKEN"].encode("ascii"))
 """
     env = os.environ.copy()
+    env.pop("LAMIA_TUI_FD", None)
     env.pop("STRIX_TUI_FD", None)
 
     process, connection = await sidecar._launch_windows_tui_process(

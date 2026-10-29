@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from strix.config import codex
-from strix.interface import auth_cli
+from lamia.config import codex
+from lamia.interface import auth_cli
 
 
 if TYPE_CHECKING:

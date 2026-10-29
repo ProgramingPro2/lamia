@@ -6,8 +6,8 @@ from typing import Any
 import pytest
 from agents.tool_context import ToolContext
 
-from strix.tools.todo import tools
-from strix.tools.todo.tools import _coerce_priority, create_todo
+from lamia.tools.todo import tools
+from lamia.tools.todo.tools import _coerce_priority, create_todo
 
 
 @pytest.fixture(autouse=True)

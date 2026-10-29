@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from agents.tool import FunctionTool
 
-from strix.agents import factory
+from lamia.agents import factory
 
 
 if TYPE_CHECKING:

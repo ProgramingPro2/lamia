@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from agents.usage import Usage
 
-from strix.report.usage import LLMUsageLedger
+from lamia.report.usage import LLMUsageLedger
 
 
 def _usage() -> Usage:

@@ -14,15 +14,15 @@ A few things it pays off for:
 
 ## Setup
 
-Create the file `~/.strix/mcp-servers.json`. It holds a JSON list of the servers you want the agent to reach. Each entry is either a local `stdio` server that Lamia launches as a subprocess, or a remote `http` server.
+Create the file `~/.lamia/mcp-servers.json`. It holds a JSON list of the servers you want the agent to reach. Each entry is either a local `stdio` server that Lamia launches as a subprocess, or a remote `http` server.
 
 Create the directory if it does not exist, then write the file:
 
 ```bash
-mkdir -p ~/.strix
+mkdir -p ~/.lamia
 ```
 
-Paste the servers you want into `~/.strix/mcp-servers.json`. The example below shows one of each transport: a local filesystem server over `stdio` and a remote GitHub server over `http` with a bearer token:
+Paste the servers you want into `~/.lamia/mcp-servers.json`. The example below shows one of each transport: a local filesystem server over `stdio` and a remote GitHub server over `http` with a bearer token:
 
 ```json
 [
@@ -103,13 +103,13 @@ a name, the first is kept and the rest are ignored.
 
 ## Pointing at a different file
 
-To read the config from another path instead of `~/.strix/mcp-servers.json`, either pass `--mcp-config <path>` on the command line:
+To read the config from another path instead of `~/.lamia/mcp-servers.json`, either pass `--mcp-config <path>` on the command line:
 
 ```bash
 lamia --mcp-config ./mcp-servers.json -t ...
 ```
 
-or set the `STRIX_MCP_CONFIG` environment variable to that path. The flag takes precedence when both are given.
+or set the `LAMIA_MCP_CONFIG` environment variable to that path. The flag takes precedence when both are given.
 
 ## Startup confirmation
 

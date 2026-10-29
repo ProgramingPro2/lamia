@@ -33,7 +33,7 @@ For critical assessments, we strongly recommend using state-of-the-art cloud mod
    ```
 3. Configure Lamia:
    ```bash
-   export STRIX_LLM="ollama/qwen3-vl"
+   export LAMIA_LLM="ollama/qwen3-vl"
    export LLM_API_BASE="http://localhost:11434"
    ```
 
@@ -51,7 +51,7 @@ We recommend these models for the best balance of reasoning and tool use:
 If you use LM Studio, vLLM, or other runners:
 
 ```bash
-export STRIX_LLM="openai/local-model"
+export LAMIA_LLM="openai/local-model"
 export LLM_API_BASE="http://localhost:1234/v1"  # Adjust port as needed
 ```
 
@@ -62,7 +62,7 @@ tenant routing) alongside the bearer token. Set them with `LLM_EXTRA_HEADERS` as
 a JSON object — they are sent on every request:
 
 ```bash
-export STRIX_LLM="openai/your-model"
+export LAMIA_LLM="openai/your-model"
 export LLM_API_BASE="https://your-gateway.example/v1"
 export LLM_API_KEY="your-bearer-token"          # sent as Authorization: Bearer ...
 export LLM_EXTRA_HEADERS='{"X-Feature-Key":"value","X-Tenant":"acme"}'

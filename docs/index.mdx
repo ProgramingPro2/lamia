@@ -5,10 +5,6 @@ description: "Open-source AI hackers to secure your apps"
 
 Lamia are autonomous AI agents that act like real hackers—they run your code dynamically, find vulnerabilities, and validate them with proof-of-concepts. Built for developers and security teams who need fast, accurate security testing without the overhead of manual pentesting or the false positives of static analysis tools.
 
-<Frame>
-  <img src="/images/screenshot.png" alt="Lamia Demo" />
-</Frame>
-
 <CardGroup cols={2}>
   <Card title="Quick Start" icon="rocket" href="/quickstart">
     Install and run your first scan in minutes.
@@ -76,10 +72,10 @@ Lamia uses a graph of specialized agents for comprehensive security testing:
 <CodeGroup>
 ```bash Vercel AI Gateway
 # Install
-curl -sSL https://strix.ai/install | bash
+pipx install lamia-agent
 
 # Configure
-export STRIX_LLM="vercel_ai_gateway/zai/glm-5.3"
+export LAMIA_LLM="vercel_ai_gateway/zai/glm-5.3"
 export LLM_API_KEY="your-api-key"
 
 # Scan
@@ -88,27 +84,16 @@ lamia --target ./your-app
 
 ```bash OpenRouter
 # Install
-curl -sSL https://strix.ai/install | bash
+pipx install lamia-agent
 
 # Configure
-export STRIX_LLM="openrouter/z-ai/glm-5.3"
+export LAMIA_LLM="openrouter/z-ai/glm-5.3"
 export LLM_API_KEY="your-api-key"
 
 # Scan
 lamia --target ./your-app
 ```
 </CodeGroup>
-
-## Community
-
-<CardGroup cols={2}>
-  <Card title="Discord" icon="discord" href="https://discord.gg/strix-ai">
-    Join the community for help and discussion.
-  </Card>
-  <Card title="GitHub" icon="github" href="https://github.com/usestrix/strix">
-    Star the repo and contribute.
-  </Card>
-</CardGroup>
 
 <Warning>
 Only test applications you own or have explicit permission to test.

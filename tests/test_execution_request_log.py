@@ -7,9 +7,9 @@ import pytest
 from agents import RunConfig, Runner
 from openai import APIError, PermissionDeniedError
 
-from strix.core import execution
-from strix.core.agents import AgentCoordinator
-from strix.llm import request_log
+from lamia.core import execution
+from lamia.core.agents import AgentCoordinator
+from lamia.llm import request_log
 
 
 if TYPE_CHECKING:

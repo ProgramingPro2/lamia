@@ -17,18 +17,18 @@ from agents import ModelSettings
 from agents.tool_context import ToolContext
 from openai import RateLimitError
 
-import strix.tools.mcp as mcp_pkg
-import strix.tools.notes.tools as notes_tools
-import strix.tools.todo.tools as todo_tools
-from strix.agents.prompt import render_system_prompt
-from strix.config.models import _split_cached_prefix
-from strix.core import runner
-from strix.core.agents import AgentCoordinator
-from strix.core.inputs import make_model_settings
-from strix.runtime import session_manager
-from strix.tools.load_skill.tool import load_skill
-from strix.tools.mcp import BearerAuth, McpConnectionConfig, McpConnectionRequest
-from strix.tools.mcp import client as mcp_client
+import lamia.tools.mcp as mcp_pkg
+import lamia.tools.notes.tools as notes_tools
+import lamia.tools.todo.tools as todo_tools
+from lamia.agents.prompt import render_system_prompt
+from lamia.config.models import _split_cached_prefix
+from lamia.core import runner
+from lamia.core.agents import AgentCoordinator
+from lamia.core.inputs import make_model_settings
+from lamia.runtime import session_manager
+from lamia.tools.load_skill.tool import load_skill
+from lamia.tools.mcp import BearerAuth, McpConnectionConfig, McpConnectionRequest
+from lamia.tools.mcp import client as mcp_client
 
 
 _test_mcp_client = importlib.import_module("tests.test_mcp_client")

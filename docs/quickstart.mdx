@@ -13,7 +13,7 @@ description: "Install Lamia and run your first security scan"
 <Tabs>
   <Tab title="curl">
     ```bash
-    curl -sSL https://strix.ai/install | bash
+    pipx install lamia-agent
     ```
   </Tab>
   <Tab title="pipx">
@@ -29,12 +29,12 @@ Set your LLM provider. We recommend GLM-5.3 through [Vercel AI Gateway](/llm-pro
 
 <CodeGroup>
 ```bash Vercel AI Gateway
-export STRIX_LLM="vercel_ai_gateway/zai/glm-5.3"
+export LAMIA_LLM="vercel_ai_gateway/zai/glm-5.3"
 export LLM_API_KEY="your-api-key"
 ```
 
 ```bash OpenRouter
-export STRIX_LLM="openrouter/z-ai/glm-5.3"
+export LAMIA_LLM="openrouter/z-ai/glm-5.3"
 export LLM_API_KEY="your-api-key"
 ```
 </CodeGroup>
@@ -50,7 +50,7 @@ lamia --target ./your-app
 ```
 
 <Note>
-First run pulls the Docker sandbox image automatically. Results are saved to `strix_runs/<run-name>`.
+First run pulls the Docker sandbox image automatically. Results are saved to `lamia_runs/<run-name>`.
 </Note>
 
 ## Target Types

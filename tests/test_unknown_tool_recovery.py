@@ -23,7 +23,7 @@ from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
 from agents.run import RunConfig
 from openai import AsyncOpenAI
 
-from strix.config.models import _NonStreamingModel
+from lamia.config.models import _NonStreamingModel
 
 
 if TYPE_CHECKING:

@@ -1,23 +1,14 @@
-"""Error beacons carry a category, phase, and exception class — never a message."""
+"""Exception props stay local: a category and class name, never a message."""
 
 from __future__ import annotations
 
-from typing import Any
-
-import pytest
 import requests
 
-from strix.report.state import ReportState
-from strix.telemetry import posthog, report_error, scarf, set_scan_phase
-from strix.telemetry._common import exception_props
+from lamia.telemetry import report_error
+from lamia.telemetry._common import exception_props
 
 
 PRIVATE_MESSAGE = "private message that must stay on the machine"
-
-
-def _capture(sent: list[dict[str, Any]], event: str, props: dict[str, Any]) -> bool:
-    sent.append({"event": event, **props})
-    return True
 
 
 def test_exception_props_uses_bare_name_for_builtins() -> None:
@@ -60,66 +51,6 @@ def test_exception_props_unwraps_exception_group() -> None:
     assert exception_props(group) == {"exception_type": "TimeoutError"}
 
 
-@pytest.mark.parametrize("telemetry", [posthog, scarf])
-def test_error_event_carries_phase_and_class_but_no_message(
-    telemetry: Any,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    sent: list[dict[str, Any]] = []
-    monkeypatch.setattr(telemetry, "_send", lambda event, props: _capture(sent, event, props))
-    set_scan_phase("sandbox_init")
-
-    telemetry.error("scan_failed", RuntimeError(PRIVATE_MESSAGE))
-
-    assert len(sent) == 1
-    event = sent[0]
-    assert event["event"] == "error"
-    assert event["error_type"] == "scan_failed"
-    assert event["phase"] == "sandbox_init"
-    assert event["exception_type"] == "RuntimeError"
-    assert PRIVATE_MESSAGE not in repr(event)
-
-
-@pytest.mark.parametrize("telemetry", [posthog, scarf])
-def test_error_event_without_exception_omits_exception_fields(
-    telemetry: Any,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    sent: list[dict[str, Any]] = []
-    monkeypatch.setattr(telemetry, "_send", lambda event, props: _capture(sent, event, props))
-    set_scan_phase("startup")
-
-    telemetry.error("docker_not_installed")
-
-    assert sent[0]["error_type"] == "docker_not_installed"
-    assert sent[0]["phase"] == "startup"
-    assert "exception_type" not in sent[0]
-    assert "exception_cause" not in sent[0]
-
-
-def test_report_error_fans_out_to_both_backends(monkeypatch: pytest.MonkeyPatch) -> None:
-    sent: list[dict[str, Any]] = []
-    monkeypatch.setattr(posthog, "_send", lambda event, props: _capture(sent, event, props))
-    monkeypatch.setattr(scarf, "_send", lambda event, props: _capture(sent, event, props))
-
-    report_error("model_connection_failed", TimeoutError(PRIVATE_MESSAGE))
-
-    assert len(sent) == 2
-    assert {e["error_type"] for e in sent} == {"model_connection_failed"}
-    assert {e["exception_type"] for e in sent} == {"TimeoutError"}
-
-
-@pytest.mark.parametrize("telemetry", [posthog, scarf])
-def test_scan_ended_prefers_recorded_exit_reason(
-    telemetry: Any,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    state = ReportState()
-    state.scan_ended_exit_reason = "budget_exceeded"
-    sent: list[dict[str, Any]] = []
-    monkeypatch.setattr(telemetry, "_send", lambda event, props: _capture(sent, event, props))
-
-    telemetry.end(state, exit_reason="user_exit")
-
-    assert sent[0]["event"] == "scan_ended"
-    assert sent[0]["exit_reason"] == "budget_exceeded"
+def test_report_error_is_a_no_op() -> None:
+    report_error("scan_failed", RuntimeError(PRIVATE_MESSAGE))
+    report_error("docker_not_installed")

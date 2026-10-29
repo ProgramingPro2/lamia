@@ -13,7 +13,7 @@ from pypdf.errors import WrongPasswordError
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import Paragraph
 
-from strix.interface.viewer.report_pdf import (
+from lamia.interface.viewer.report_pdf import (
     _duration,
     _inline_md,
     _normalize_severity,

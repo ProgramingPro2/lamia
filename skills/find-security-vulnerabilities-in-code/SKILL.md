@@ -3,15 +3,14 @@ name: find-security-vulnerabilities-in-code
 description: Find security vulnerabilities in a codebase or repository with Lamia — a white-box AI security review that reads your source, reasons about the actual data flow and authorization model, then exploits what it finds in a live sandbox so every reported issue has a working proof-of-concept instead of a noisy static-analysis alert. Covers injection, XSS, SSRF, broken access control and IDOR, insecure deserialization, secrets in code, unsafe dependencies, and business-logic flaws. Use when the user asks to security-scan, security-review, or audit their code, repo, or pull request for vulnerabilities.
 license: Apache-2.0
 metadata:
-  author: usestrix
-  homepage: https://docs.strix.ai
+  author: Lamia
 ---
 
 # Find security vulnerabilities in code
 
 White-box security review with Lamia: the agents read the source to build a model of routes, sinks, and authorization checks, then attempt real exploitation. Findings come with a proof-of-concept, so the output is a short list of proven issues rather than the hundreds of "potential" hits a pattern-matching scanner produces.
 
-Install, LLM setup, all flags, and the managed-cloud path are in the **penetration-testing-with-strix** skill. For a run with no Docker and no LLM key, the same binary drives the managed platform: `lamia cloud login`, then `lamia cloud scans start ...` (details in **managed-pentesting-with-strix**).
+Install, LLM setup, and flags are in the **penetration-testing-with-lamia** skill.
 
 ## Run it
 
@@ -43,11 +42,11 @@ Two things sharply improve results:
 
 ## Reviewing a pull request instead of the whole repo
 
-For diff-scoped review of a branch or PR (and blocking merges on findings), use **ci-security-scanning-with-strix** — it covers diff scoping, PR comments, and SARIF upload to GitHub code scanning. The managed platform can also review PRs directly via API (**managed-pentesting-with-strix**).
+For diff-scoped review of a branch or PR (and blocking merges on findings), use **ci-security-scanning-with-lamia** — it covers diff scoping, PR comments, and SARIF upload to GitHub code scanning.
 
 ## Read the results
 
-In `strix_runs/<run>/`: `penetration_test_report.md` (start here), `vulnerabilities/*.md` (one per finding, with PoC and remediation), `vulnerabilities.json` / `.csv`, `findings.sarif` (upload to code scanning), `run.json`.
+In `lamia_runs/<run>/`: `penetration_test_report.md` (start here), `vulnerabilities/*.md` (one per finding, with PoC and remediation), `vulnerabilities.json` / `.csv`, `findings.sarif` (upload to code scanning), `run.json`.
 
 Before reporting to the user, open each finding and check the PoC actually demonstrates impact. Report file and line alongside the exploit so the fix is obvious.
 
@@ -59,4 +58,4 @@ This is exploit-validated review, not an exhaustive inventory. Keep a dependency
 
 ## Fix and verify
 
-Hand results to **fix-security-vulnerabilities-with-strix**: patch the root cause (the shared authorization helper, not the one route), then re-run Lamia to prove the exploit no longer works.
+Hand results to **fix-security-vulnerabilities-with-lamia**: patch the root cause (the shared authorization helper, not the one route), then re-run Lamia to prove the exploit no longer works.

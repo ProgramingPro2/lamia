@@ -27,9 +27,9 @@ import pytest
 from agents import Agent, ModelSettings, Runner, function_tool
 from agents.run import RunConfig
 
-from strix.config import loader
-from strix.config import models as strix_models
-from strix.config.models import StrixProvider
+from lamia.config import loader
+from lamia.config import models as strix_models
+from lamia.config.models import StrixProvider
 
 
 if TYPE_CHECKING:

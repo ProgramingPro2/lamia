@@ -2,7 +2,17 @@
 
 from __future__ import annotations
 
+import os
+
 import pytest
+
+
+@pytest.fixture(autouse=True)
+def _isolate_lamia_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Drop developer ``LAMIA_*`` variables so they cannot outrank ``STRIX_*``."""
+    for key in list(os.environ):
+        if key.upper().startswith("LAMIA_"):
+            monkeypatch.delenv(key, raising=False)
 
 
 @pytest.fixture(autouse=True)
@@ -11,17 +21,18 @@ def _isolate_mcp_config(
 ) -> None:
     """Keep the whole suite from reading the developer's real MCP config.
 
-    ``run_strix_scan`` connects the MCP servers listed in
-    ``~/.strix/mcp-servers.json`` and threads an inventory of them into the
-    prompt context. Without isolation, any test that drives the runner on a
-    machine that has a real config would do real network I/O and see MCP
-    connections it never asked for. Point the loader at a path that does not
-    exist so it resolves to "no connections", and clear the per-run selection
-    env vars. Tests that exercise the loader itself set their own
-    ``STRIX_MCP_CONFIG`` after this runs and so override it.
+    The runner connects the MCP servers listed in the config home and threads
+    an inventory of them into the prompt context. Without isolation, any test
+    that drives the runner on a machine that has a real config would do real
+    network I/O. Point the loader at a path that does not exist so it resolves
+    to "no connections", and clear the per-run selection env vars. Tests that
+    exercise the loader itself set their own config path after this runs.
     """
     missing = tmp_path_factory.mktemp("mcp-isolation") / "no-servers.json"
+    monkeypatch.delenv("LAMIA_MCP_CONFIG", raising=False)
     monkeypatch.setenv("STRIX_MCP_CONFIG", str(missing))
+    monkeypatch.delenv("LAMIA_MCP_ONLY", raising=False)
+    monkeypatch.delenv("LAMIA_MCP_EXCLUDE", raising=False)
     monkeypatch.delenv("STRIX_MCP_ONLY", raising=False)
     monkeypatch.delenv("STRIX_MCP_EXCLUDE", raising=False)
 

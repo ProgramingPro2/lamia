@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING, Any
 import pytest
 import requests
 
-from strix.config.settings import IntegrationSettings
-from strix.interface.environment import _missing_web_search_vars
-from strix.tools.web_search import tool
+from lamia.config.settings import IntegrationSettings
+from lamia.interface.environment import _missing_web_search_vars
+from lamia.tools.web_search import tool
 
 
 if TYPE_CHECKING:

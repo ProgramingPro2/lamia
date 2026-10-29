@@ -10,8 +10,8 @@ from agents.models import _openai_shared
 from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
 from agents.models.openai_responses import OpenAIResponsesModel
 
-from strix.config import models
-from strix.config.models import (
+from lamia.config import models
+from lamia.config.models import (
     StrixProvider,
     _NonStreamingModel,
     _TurnGuardModel,
@@ -23,8 +23,8 @@ from strix.config.models import (
     supports_strict_tool_schemas,
     uses_chat_completions_tool_schema,
 )
-from strix.config.settings import Settings
-from strix.llm.request_log import RequestLoggingModel
+from lamia.config.settings import Settings
+from lamia.llm.request_log import RequestLoggingModel
 
 
 def test_request_timeout_extra_args_positive() -> None:

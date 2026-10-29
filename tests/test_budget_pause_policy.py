@@ -8,16 +8,16 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from strix.core import execution
-from strix.core.agents import AgentCoordinator
-from strix.core.execution import _start_child_runner, run_agent_loop
-from strix.core.hooks import (
+from lamia.core import execution
+from lamia.core.agents import AgentCoordinator
+from lamia.core.execution import _start_child_runner, run_agent_loop
+from lamia.core.hooks import (
     BudgetExceededError,
     BudgetPausedError,
     ReportUsageHooks,
     recomputed_budget_flags,
 )
-from strix.core.sessions import open_agent_session
+from lamia.core.sessions import open_agent_session
 
 
 if TYPE_CHECKING:
@@ -236,7 +236,7 @@ async def test_pause_policy_parks_every_agent_at_the_limit_and_resumes_in_place(
     scan = _Scan(tmp_path, monkeypatch, max_budget_usd=5.0)
     agents = ("root", "child-a", "child-b")
 
-    with patch("strix.core.hooks.get_global_report_state", return_value=scan.ledger):
+    with patch("lamia.core.hooks.get_global_report_state", return_value=scan.ledger):
         await scan.start_root(calls=100)
         await scan.start_child("child-a", calls=100)
         await scan.start_child("child-b", calls=100)
@@ -291,7 +291,7 @@ async def test_pause_policy_operator_pause_and_resume_without_a_limit(
     scan = _Scan(tmp_path, monkeypatch, max_budget_usd=None)
     agents = ("root", "child-a", "child-b")
 
-    with patch("strix.core.hooks.get_global_report_state", return_value=scan.ledger):
+    with patch("lamia.core.hooks.get_global_report_state", return_value=scan.ledger):
         await scan.start_root(calls=6)
         await scan.start_child("child-a", calls=6)
         await scan.start_child("child-b", calls=6)
@@ -331,7 +331,7 @@ async def test_pause_policy_keeps_in_flight_overshoot(
     scan.ledger.gate = asyncio.Event()
     await scan.coordinator.register("root", "strix", parent_id=None)
 
-    with patch("strix.core.hooks.get_global_report_state", return_value=scan.ledger):
+    with patch("lamia.core.hooks.get_global_report_state", return_value=scan.ledger):
         await scan.start_child("child-a", calls=100)
         await scan.start_child("child-b", calls=100)
 
@@ -465,7 +465,7 @@ async def test_pause_hooks_never_warn_and_park_only_at_the_limit() -> None:
     coordinator = AgentCoordinator()
     coordinator.set_budget_policy("pause")
 
-    with patch("strix.core.hooks.get_global_report_state", return_value=ledger):
+    with patch("lamia.core.hooks.get_global_report_state", return_value=ledger):
         for cost in (7.0, 8.5, 9.5, 9.99):
             ledger.cost = cost
             for parent_id in (None, "root"):
@@ -505,7 +505,7 @@ async def test_pause_hooks_do_not_count_a_parked_turn() -> None:
     hooks = ReportUsageHooks(model="m", max_budget_usd=10.0, budget_policy="pause")
     coordinator = AgentCoordinator()
     ctx = _ctx(coordinator)
-    with patch("strix.core.hooks.get_global_report_state", return_value=ledger):
+    with patch("lamia.core.hooks.get_global_report_state", return_value=ledger):
         with pytest.raises(BudgetPausedError):
             await hooks.on_llm_start(ctx, MagicMock(), None, [])
         assert "llm_turn" not in ctx.context
@@ -520,7 +520,7 @@ async def test_stop_policy_is_unchanged() -> None:
     hooks = ReportUsageHooks(model="m", max_budget_usd=10.0)
     assert hooks.budget_policy == "stop"
 
-    with patch("strix.core.hooks.get_global_report_state", return_value=ledger):
+    with patch("lamia.core.hooks.get_global_report_state", return_value=ledger):
         ledger.cost = 7.0
         items: list[Any] = []
         await hooks.on_llm_start(_ctx(None), MagicMock(), None, items)
@@ -557,7 +557,7 @@ async def test_operator_pause_holds_under_the_stop_policy(
     scan = _Scan(tmp_path, monkeypatch, max_budget_usd=None, budget_policy="stop")
     agents = ("root", "child-a", "child-b")
 
-    with patch("strix.core.hooks.get_global_report_state", return_value=scan.ledger):
+    with patch("lamia.core.hooks.get_global_report_state", return_value=scan.ledger):
         await scan.start_root(calls=6)
         await scan.start_child("child-a", calls=6)
         await scan.start_child("child-b", calls=6)
@@ -606,7 +606,7 @@ async def test_a_resume_that_lands_before_the_park_still_continues(
         await scan.coordinator.resume_budget()
 
     scan.ledger.on_pause = resume_at_once
-    with patch("strix.core.hooks.get_global_report_state", return_value=scan.ledger):
+    with patch("lamia.core.hooks.get_global_report_state", return_value=scan.ledger):
         await scan.start_root(calls=6)
         await scan.start_child("child-a", calls=6)
         await _wait_until(lambda: scan.ledger.cost >= 2.0)

@@ -17,9 +17,9 @@ import pytest
 from agents import RunContextWrapper
 from agents.tool_context import ToolContext
 
-from strix.core.agents import AgentCoordinator
-from strix.core.hooks import LLM_TURN_KEY, ReportUsageHooks
-from strix.tools.agents_graph.tools import wait_for_agents
+from lamia.core.agents import AgentCoordinator
+from lamia.core.hooks import LLM_TURN_KEY, ReportUsageHooks
+from lamia.tools.agents_graph.tools import wait_for_agents
 
 
 if TYPE_CHECKING:
@@ -33,7 +33,7 @@ _WAIT_SECONDS = 2
 def _fast_wait(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     # The real ceiling is 300s per wait; the shape of the bug is the same.
     monkeypatch.setattr(
-        "strix.tools.agents_graph.tools._WAIT_DEFAULT_TIMEOUT_S", _WAIT_SECONDS, raising=True
+        "lamia.tools.agents_graph.tools._WAIT_DEFAULT_TIMEOUT_S", _WAIT_SECONDS, raising=True
     )
     yield
 

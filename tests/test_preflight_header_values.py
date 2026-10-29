@@ -4,8 +4,8 @@ import asyncio
 
 import pytest
 
-from strix.config import Settings
-from strix.interface.scan_setup import check_header_safe_credentials, preflight_model_connection
+from lamia.config import Settings
+from lamia.interface.scan_setup import check_header_safe_credentials, preflight_model_connection
 
 
 _ENV_KEYS = (

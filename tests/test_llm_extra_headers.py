@@ -9,9 +9,9 @@ import litellm
 import pytest
 from agents.models import _openai_shared
 
-from strix.config import loader
-from strix.config.loader import load_settings
-from strix.config.models import configure_sdk_model_defaults
+from lamia.config import loader
+from lamia.config.loader import load_settings
+from lamia.config.models import configure_sdk_model_defaults
 
 
 if TYPE_CHECKING:

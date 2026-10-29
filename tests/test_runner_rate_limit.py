@@ -11,11 +11,11 @@ import pytest
 from agents import ModelSettings
 from openai import RateLimitError
 
-import strix.tools.notes.tools as notes_tools
-import strix.tools.todo.tools as todo_tools
-from strix.core import runner
-from strix.core.agents import AgentCoordinator
-from strix.runtime import session_manager
+import lamia.tools.notes.tools as notes_tools
+import lamia.tools.todo.tools as todo_tools
+from lamia.core import runner
+from lamia.core.agents import AgentCoordinator
+from lamia.runtime import session_manager
 
 
 def _make_rate_limit_error() -> RateLimitError:

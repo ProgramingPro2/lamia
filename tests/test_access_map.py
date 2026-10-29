@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Any
 
-from strix.interface.viewer.access_map import build_access_map
+from lamia.interface.viewer.access_map import build_access_map
 
 
 if TYPE_CHECKING:

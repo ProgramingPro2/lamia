@@ -1,5 +1,5 @@
 # Built viewer bundles are generated output, not hand-edited source.
-exclude: ^strix/interface/viewer/static/assets/
+exclude: ^lamia/interface/viewer/static/assets/
 
 repos:
   # Ruff for fast linting and formatting

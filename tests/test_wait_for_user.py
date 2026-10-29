@@ -8,8 +8,8 @@ from typing import Any
 import pytest
 from agents.tool_context import ToolContext
 
-from strix.core.agents import AgentCoordinator
-from strix.tools.wait_for_user.tool import wait_for_user
+from lamia.core.agents import AgentCoordinator
+from lamia.tools.wait_for_user.tool import wait_for_user
 
 
 async def _call(context: dict[str, Any]) -> dict[str, Any]:

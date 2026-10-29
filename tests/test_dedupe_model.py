@@ -5,9 +5,9 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
-from strix.config import loader
-from strix.config.settings import DedupeSettings
-from strix.report.dedupe import _dedupe_model_settings, resolve_dedupe_model
+from lamia.config import loader
+from lamia.config.settings import DedupeSettings
+from lamia.report.dedupe import _dedupe_model_settings, resolve_dedupe_model
 
 
 if TYPE_CHECKING:

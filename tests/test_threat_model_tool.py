@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from strix.agents.factory import _BASE_TOOLS
-from strix.tools.threat_model import tools as threat_model_tools
-from strix.tools.threat_model.tools import (
+from lamia.agents.factory import _BASE_TOOLS
+from lamia.tools.threat_model import tools as threat_model_tools
+from lamia.tools.threat_model.tools import (
     _amend_impl,
     _get_impl,
     _save_impl,

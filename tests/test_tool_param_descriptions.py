@@ -12,11 +12,11 @@ from __future__ import annotations
 import pytest
 from agents.tool import FunctionTool
 
-from strix.agents import factory
-from strix.tools.agents_graph.tools import agent_finish
-from strix.tools.finish.tool import finish_scan
-from strix.tools.reporting.tool import create_vulnerability_report
-from strix.tools.wait_for_user.tool import wait_for_user
+from lamia.agents import factory
+from lamia.tools.agents_graph.tools import agent_finish
+from lamia.tools.finish.tool import finish_scan
+from lamia.tools.reporting.tool import create_vulnerability_report
+from lamia.tools.wait_for_user.tool import wait_for_user
 
 
 _SCAN_AGENT_TOOLS = [

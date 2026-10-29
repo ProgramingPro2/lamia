@@ -21,10 +21,10 @@ from agents.models.interface import Model, ModelTracing
 from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
 from openai import AsyncOpenAI
 
-from strix.config import loader
-from strix.config.loader import load_settings
-from strix.config.models import StrixProvider, _TurnGuardModel, _with_timeouts
-from strix.llm import request_log
+from lamia.config import loader
+from lamia.config.loader import load_settings
+from lamia.config.models import StrixProvider, _TurnGuardModel, _with_timeouts
+from lamia.llm import request_log
 
 
 if TYPE_CHECKING:
@@ -202,7 +202,7 @@ class _DummyModel(Model):
 def test_idle_timeout_is_configurable(
     monkeypatch: pytest.MonkeyPatch, _reset_settings: None
 ) -> None:
-    monkeypatch.setattr("strix.config.models.MultiProvider.get_model", lambda *_: _DummyModel())
+    monkeypatch.setattr("lamia.config.models.MultiProvider.get_model", lambda *_: _DummyModel())
     monkeypatch.setenv("LLM_STREAM_IDLE_TIMEOUT", "45")
     monkeypatch.setenv("LLM_STREAM_FIRST_EVENT_TIMEOUT", "30")
     monkeypatch.setenv("LLM_STREAM_TOTAL_TIMEOUT", "400")
@@ -220,7 +220,7 @@ def test_idle_timeout_is_off_without_streaming(
 ) -> None:
     # LLM_DISABLE_STREAMING turns the whole request into one event, so an idle
     # gap would just be the request duration — the request timeout bounds that.
-    monkeypatch.setattr("strix.config.models.MultiProvider.get_model", lambda *_: _DummyModel())
+    monkeypatch.setattr("lamia.config.models.MultiProvider.get_model", lambda *_: _DummyModel())
     monkeypatch.setenv("LLM_STREAM_IDLE_TIMEOUT", "45")
     monkeypatch.setenv("LLM_DISABLE_STREAMING", "true")
     load_settings()

@@ -9,8 +9,8 @@ from typing import Any, cast
 import pytest
 from agents.tool import CustomTool, FunctionTool
 
-from strix.agents import factory
-from strix.config import load_settings
+from lamia.agents import factory
+from lamia.config import load_settings
 
 
 def _capturing_exec_tool(captured: dict[str, str]) -> FunctionTool:

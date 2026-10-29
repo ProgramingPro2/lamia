@@ -12,7 +12,7 @@ from unittest import mock
 import pytest
 import requests
 
-from strix.config import codex
+from lamia.config import codex
 
 
 if TYPE_CHECKING:
@@ -123,7 +123,7 @@ def test_content_guardrail_error_message() -> None:
     err = codex.CodexContentGuardrailError("gpt-5.6-sol")
     assert err.model == "gpt-5.6-sol"
     assert "gpt-5.6-sol" in str(err)
-    assert "STRIX_LLM" in str(err)
+    assert "LAMIA_LLM" in str(err)
 
 
 def test_account_id_from_jwt() -> None:

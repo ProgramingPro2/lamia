@@ -14,9 +14,9 @@ from agents.models.interface import ModelTracing
 from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
 from agents.models.openai_responses import OpenAIResponsesModel
 
-from strix.config import loader
-from strix.config.loader import load_settings
-from strix.core.inputs import make_model_settings
+from lamia.config import loader
+from lamia.config.loader import load_settings
+from lamia.core.inputs import make_model_settings
 
 
 if TYPE_CHECKING:

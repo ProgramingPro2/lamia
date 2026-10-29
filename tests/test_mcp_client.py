@@ -22,10 +22,10 @@ from mcp.types import CallToolResult, ImageContent, TextContent
 from mcp.types import Tool as MCPTool
 from pydantic import ValidationError
 
-from strix.agents import factory
-from strix.agents.prompt import render_system_prompt
-from strix.interface.tui.live_view import TuiLiveView
-from strix.tools.mcp import (
+from lamia.agents import factory
+from lamia.agents.prompt import render_system_prompt
+from lamia.interface.tui.live_view import TuiLiveView
+from lamia.tools.mcp import (
     MCP_REGISTRY_CONTEXT_KEY,
     BearerAuth,
     McpCallInfo,
@@ -43,10 +43,10 @@ from strix.tools.mcp import (
     resolve_mcp_call,
     search_mcp_tools,
 )
-from strix.tools.mcp import agent_tools as mcp_agent_tools
-from strix.tools.mcp import client as mcp_client
-from strix.tools.mcp import registry as mcp_registry_mod
-from strix.tools.mcp import session as mcp_session_mod
+from lamia.tools.mcp import agent_tools as mcp_agent_tools
+from lamia.tools.mcp import client as mcp_client
+from lamia.tools.mcp import registry as mcp_registry_mod
+from lamia.tools.mcp import session as mcp_session_mod
 
 
 if TYPE_CHECKING:
@@ -1450,7 +1450,7 @@ async def test_connect_cleans_up_started_sessions_when_attach_is_cancelled(
 
 
 # --- reading a tool call back to the server it went out to -------------------
-# namespaced_tool_name stays in strix.tools.mcp.naming so call_mcp can build the
+# namespaced_tool_name stays in lamia.tools.mcp.naming so call_mcp can build the
 # result_transform label. The connection a call went out to is read off the
 # call's arguments by the TUI projection, not off the tool name.
 
@@ -2082,7 +2082,7 @@ async def test_reconnect_reuses_the_stored_config_and_never_logs_the_token(
     registry = McpRegistry()
     entry = registry.add(name="fs", session=session, tool_count=1)
 
-    with caplog.at_level("DEBUG", logger="strix.tools.mcp.session"):
+    with caplog.at_level("DEBUG", logger="lamia.tools.mcp.session"):
         out = await call_mcp.on_invoke_tool(
             _ctx(registry), json.dumps({"connection": "fs", "tool": "read_file"})
         )
@@ -2132,7 +2132,7 @@ async def test_session_on_dead_fires_once_on_the_death_transition(
     session.set_on_dead(lambda: fires.append(1))
 
     clock = [100.0]
-    monkeypatch.setattr("strix.tools.mcp.session.time.monotonic", lambda: clock[0])
+    monkeypatch.setattr("lamia.tools.mcp.session.time.monotonic", lambda: clock[0])
     monkeypatch.setattr(mcp_session_mod, "_retry_delay", lambda _attempt, _retry_after: 0)
 
     async def no_sleep(_delay: float) -> None:

@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from strix.telemetry import logging as tlog
+from lamia.telemetry import logging as tlog
 
 
 if TYPE_CHECKING:
@@ -80,7 +80,7 @@ def test_every_unraisable_is_logged_not_printed(
     assert capsys.readouterr().err == ""
     [record] = strix_records
     assert record.levelno == logging.WARNING
-    assert record.name == "strix.telemetry"
+    assert record.name == "lamia.telemetry"
     message = logging.Formatter().format(record)
     if args.err_msg:  # type: ignore[attr-defined]
         assert message.startswith(args.err_msg)  # type: ignore[attr-defined]
@@ -104,7 +104,7 @@ def test_unraisable_is_dropped_when_strix_has_no_handlers(
 
 _EXIT_SCRIPT = r"""
 import io, sys
-from strix.telemetry.logging import setup_console_logging
+from lamia.telemetry.logging import setup_console_logging
 setup_console_logging()
 
 class Leaky:

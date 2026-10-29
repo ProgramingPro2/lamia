@@ -10,12 +10,12 @@ from typing import Any
 import pytest
 
 
-cli_main: Any = importlib.import_module("strix.interface.main")
-cli_args: Any = importlib.import_module("strix.interface.cli_args")
-report_state_module: Any = importlib.import_module("strix.report.state")
-interactive: Any = importlib.import_module("strix.interface.interactive")
-tui_runtime: Any = importlib.import_module("strix.interface.tui.runtime")
-tui_sidecar: Any = importlib.import_module("strix.interface.tui.sidecar")
+cli_main: Any = importlib.import_module("lamia.interface.main")
+cli_args: Any = importlib.import_module("lamia.interface.cli_args")
+report_state_module: Any = importlib.import_module("lamia.report.state")
+interactive: Any = importlib.import_module("lamia.interface.interactive")
+tui_runtime: Any = importlib.import_module("lamia.interface.tui.runtime")
+tui_sidecar: Any = importlib.import_module("lamia.interface.tui.sidecar")
 
 
 def _launch(
@@ -44,7 +44,7 @@ def _launch(
 
     monkeypatch.setattr(sys, "argv", ["strix", "--target", "https://example.com"])
     monkeypatch.setattr(cli_main, "terminal_attached", lambda: terminal)
-    monkeypatch.setattr("strix.interface.cli.run_cli", run_cli)
+    monkeypatch.setattr("lamia.interface.cli.run_cli", run_cli)
     monkeypatch.setattr(cli_main, "report_error", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(cli_main, "_print_error_panel", lambda title, _msg: calls.append(title))
     monkeypatch.setattr(cli_main, "display_completion_message", lambda *_args: None)
@@ -136,8 +136,6 @@ def test_tui_startup_failure_marks_the_prepared_run_failed(monkeypatch: pytest.M
     monkeypatch.setattr(cli_main, "run_tui", run_tui)
     monkeypatch.setattr(cli_main, "report_error", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(cli_main, "_print_error_panel", lambda *_args: calls.append("panel"))
-    monkeypatch.setattr(cli_main.posthog, "end", lambda *_args, **_kwargs: None)
-    monkeypatch.setattr(cli_main.scarf, "end", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(report_state_module, "get_global_report_state", lambda: report_state)
 
     with pytest.raises(SystemExit) as exit_info:
@@ -174,8 +172,6 @@ def test_no_terminal_fallback_keeps_the_fail_on_gate(monkeypatch: pytest.MonkeyP
         run_name="run",
         fail_on="high",
     )
-    monkeypatch.setattr(cli_main.posthog, "end", lambda *_args, **_kwargs: None)
-    monkeypatch.setattr(cli_main.scarf, "end", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(report_state_module, "get_global_report_state", lambda: report_state)
 
     with pytest.raises(SystemExit) as exit_info:
@@ -276,8 +272,6 @@ def test_tui_process_dying_after_startup_prints_a_panel_instead_of_a_traceback(
     monkeypatch.setattr(
         cli_main, "_print_error_panel", lambda title, msg: panels.append((title, msg))
     )
-    monkeypatch.setattr(cli_main.posthog, "end", lambda *_args, **_kwargs: None)
-    monkeypatch.setattr(cli_main.scarf, "end", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(report_state_module, "get_global_report_state", lambda: report_state)
 
     with pytest.raises(SystemExit) as exit_info:

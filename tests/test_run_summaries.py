@@ -6,7 +6,7 @@ import json
 import os
 from typing import TYPE_CHECKING
 
-from strix.report.runs import list_run_summaries
+from lamia.report.runs import list_run_summaries
 
 
 if TYPE_CHECKING:

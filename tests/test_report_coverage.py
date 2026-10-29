@@ -1,17 +1,17 @@
-"""Tests for the coverage artifact assembled in strix.report.coverage."""
+"""Tests for the coverage artifact assembled in lamia.report.coverage."""
 
 from __future__ import annotations
 
 import json
 from typing import TYPE_CHECKING, Any
 
-from strix.report.coverage import (
+from lamia.report.coverage import (
     _SKILL_PHRASINGS,
     build_coverage_document,
     read_agent_graph,
     write_coverage,
 )
-from strix.skills import get_available_skills
+from lamia.skills import get_available_skills
 
 
 if TYPE_CHECKING:

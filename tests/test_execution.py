@@ -17,15 +17,15 @@ from agents.run_config import CallModelData, ModelInputData
 from agents.tool_context import ToolContext
 from openai.types.responses import ResponseOutputMessage, ResponseOutputRefusal, ResponseOutputText
 
-from strix.core import execution
-from strix.core.agents import AgentCoordinator, WaitKind
-from strix.core.execution import (
+from lamia.core import execution
+from lamia.core.agents import AgentCoordinator, WaitKind
+from lamia.core.execution import (
     _notify_root_on_budget_reserve,
     notify_parent_on_terminal,
 )
-from strix.core.sessions import seed_initial_input
-from strix.tools.agents_graph.tools import agent_finish, stop_agent
-from strix.tools.finish.tool import finish_scan
+from lamia.core.sessions import seed_initial_input
+from lamia.tools.agents_graph.tools import agent_finish, stop_agent
+from lamia.tools.finish.tool import finish_scan
 
 
 _NO_STREAM_EVENTS: list[Any] = []
@@ -860,7 +860,7 @@ async def test_structured_provider_refusal_fails_interactive_agent(
     refusal = "This request was blocked under the provider's usage policy."
     stream = _StructuredRefusalStream(refusal)
     monkeypatch.setattr(
-        "strix.core.execution.Runner.run_streamed", lambda *_args, **_kwargs: stream
+        "lamia.core.execution.Runner.run_streamed", lambda *_args, **_kwargs: stream
     )
     coordinator = AgentCoordinator()
     await coordinator.register("root", "strix", parent_id=None)
@@ -892,7 +892,7 @@ async def test_structured_provider_refusal_fails_noninteractive_child(
     refusal = "This request was blocked under the provider's usage policy."
     stream = _StructuredRefusalStream(refusal)
     monkeypatch.setattr(
-        "strix.core.execution.Runner.run_streamed", lambda *_args, **_kwargs: stream
+        "lamia.core.execution.Runner.run_streamed", lambda *_args, **_kwargs: stream
     )
     coordinator = AgentCoordinator()
     await coordinator.register("root", "strix", parent_id=None)
@@ -930,7 +930,7 @@ async def test_crashing_noninteractive_child_settles_and_wakes_its_parent(
     def _boom(*_args: Any, **_kwargs: Any) -> Any:
         raise RuntimeError("sandbox died mid-turn")
 
-    monkeypatch.setattr("strix.core.execution.Runner.run_streamed", _boom)
+    monkeypatch.setattr("lamia.core.execution.Runner.run_streamed", _boom)
     coordinator = AgentCoordinator()
     await coordinator.register("root", "strix", parent_id=None)
     await coordinator.register("child", "recon", parent_id="root")

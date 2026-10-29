@@ -41,10 +41,10 @@ security-scan:
   services:
     - docker:dind
   variables:
-    STRIX_LLM: $STRIX_LLM
+    LAMIA_LLM: $LAMIA_LLM
     LLM_API_KEY: $LLM_API_KEY
   script:
-    - curl -sSL https://strix.ai/install | bash
+    - pipx install lamia-agent
     - lamia -n -t ./ --scan-mode quick
 ```
 
@@ -54,13 +54,13 @@ security-scan:
 pipeline {
     agent any
     environment {
-        STRIX_LLM = credentials('lamia-llm')
+        LAMIA_LLM = credentials('lamia-llm')
         LLM_API_KEY = credentials('llm-api-key')
     }
     stages {
         stage('Security Scan') {
             steps {
-                sh 'curl -sSL https://strix.ai/install | bash'
+                sh 'pipx install lamia-agent'
                 sh 'lamia -n -t ./ --scan-mode quick'
             }
         }
@@ -81,7 +81,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Install Lamia
-          command: curl -sSL https://strix.ai/install | bash
+          command: pipx install lamia-agent
       - run:
           name: Run Scan
           command: lamia -n -t ./ --scan-mode quick

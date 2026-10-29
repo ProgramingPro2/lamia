@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-cli_main: Any = importlib.import_module("strix.interface.main")
+cli_main: Any = importlib.import_module("lamia.interface.main")
 
 
 def _stub_settings(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -34,6 +34,7 @@ def test_mcp_config_flag_sets_loader_override(
     _stub_settings(monkeypatch)
     # delenv records "originally absent" so monkeypatch removes whatever the
     # parser sets, keeping the override from leaking into other tests.
+    monkeypatch.delenv("LAMIA_MCP_CONFIG", raising=False)
     monkeypatch.delenv("STRIX_MCP_CONFIG", raising=False)
     monkeypatch.setattr(
         sys, "argv", ["strix", "-t", "https://test.com/", "-n", "--mcp-config", str(config)]
@@ -42,13 +43,14 @@ def test_mcp_config_flag_sets_loader_override(
     args = cli_main.parse_arguments()
 
     assert args.mcp_config == str(config)
-    assert os.environ["STRIX_MCP_CONFIG"] == str(config)
+    assert os.environ["LAMIA_MCP_CONFIG"] == str(config)
 
 
 def test_mcp_config_flag_rejects_missing_file(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     _stub_settings(monkeypatch)
+    monkeypatch.delenv("LAMIA_MCP_CONFIG", raising=False)
     monkeypatch.delenv("STRIX_MCP_CONFIG", raising=False)
     missing = tmp_path / "nope.json"
     monkeypatch.setattr(
@@ -63,6 +65,8 @@ def test_mcp_config_flag_rejects_missing_file(
 
 def test_mcp_server_flags_set_selection_env(monkeypatch: pytest.MonkeyPatch) -> None:
     _stub_settings(monkeypatch)
+    monkeypatch.delenv("LAMIA_MCP_ONLY", raising=False)
+    monkeypatch.delenv("LAMIA_MCP_EXCLUDE", raising=False)
     monkeypatch.delenv("STRIX_MCP_ONLY", raising=False)
     monkeypatch.delenv("STRIX_MCP_EXCLUDE", raising=False)
     monkeypatch.setattr(
@@ -84,5 +88,5 @@ def test_mcp_server_flags_set_selection_env(monkeypatch: pytest.MonkeyPatch) -> 
 
     cli_main.parse_arguments()
 
-    assert os.environ["STRIX_MCP_ONLY"] == "a,b"
-    assert os.environ["STRIX_MCP_EXCLUDE"] == "c"
+    assert os.environ["LAMIA_MCP_ONLY"] == "a,b"
+    assert os.environ["LAMIA_MCP_EXCLUDE"] == "c"

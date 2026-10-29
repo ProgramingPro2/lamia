@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-import strix.skills as skills_mod
-from strix.agents.prompt import _resolve_skills, render_system_prompt
-from strix.skills import (
+import lamia.skills as skills_mod
+from lamia.agents.prompt import _resolve_skills, render_system_prompt
+from lamia.skills import (
     get_all_skill_names,
     get_available_skills,
     load_skills,
@@ -15,7 +15,7 @@ from strix.skills import (
     skill_turn_limit,
     validate_requested_skills,
 )
-from strix.utils.resource_paths import get_strix_resource_path
+from lamia.utils.resource_paths import get_strix_resource_path
 
 
 @pytest.fixture(autouse=True)

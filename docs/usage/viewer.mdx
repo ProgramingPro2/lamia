@@ -7,7 +7,7 @@ Every scan writes its results to disk as it runs. `lamia view` serves those file
 
 ```bash
 lamia view                                    # the most recent run
-lamia view my-run-name                        # a specific run under ./strix_runs
+lamia view my-run-name                        # a specific run under ./lamia_runs
 lamia view --host 0.0.0.0 --port 8080 --no-open
 ```
 
@@ -16,7 +16,7 @@ The UI ships prebuilt with Lamia, so there is no extra install and no JavaScript
 ## Options
 
 <ParamField path="run" type="string">
-  Run name under `./strix_runs`. Defaults to the most recent run.
+  Run name under `./lamia_runs`. Defaults to the most recent run.
 </ParamField>
 
 <ParamField path="--host" type="string" default="127.0.0.1">

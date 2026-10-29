@@ -15,9 +15,9 @@ from openai import (
     RateLimitError,
 )
 
-from strix.config import codex
-from strix.core import execution
-from strix.core.agents import AgentCoordinator
+from lamia.config import codex
+from lamia.core import execution
+from lamia.core.agents import AgentCoordinator
 
 
 def _request() -> httpx.Request:

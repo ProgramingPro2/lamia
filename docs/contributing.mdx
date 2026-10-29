@@ -33,7 +33,7 @@ description: "Contribute to Lamia development"
   </Step>
   <Step title="Configure LLM">
     ```bash
-    export STRIX_LLM="openrouter/z-ai/glm-5.3"
+    export LAMIA_LLM="openrouter/z-ai/glm-5.3"
     export LLM_API_KEY="your-api-key"
     ```
   </Step>
@@ -46,7 +46,7 @@ description: "Contribute to Lamia development"
 
 ## Contributing Skills
 
-Skills are specialized knowledge packages that enhance agent capabilities. They live in `strix/skills/`
+Skills are specialized knowledge packages that enhance agent capabilities. They live in `lamia/skills/`
 
 ### Creating a Skill
 
@@ -87,8 +87,8 @@ make wheel
 ```
 
 The build hook (`scripts/tui_sidecar_hook.py`) requires Go 1.24.x or newer, embeds
-the sidecar as `strix/bin/strix-tui`, and assigns the current platform tag.
-Frozen releases built by `scripts/build.sh` and `strix.spec` also require the
+the sidecar as `lamia/bin/lamia-tui`, and assigns the current platform tag.
+Frozen releases built by `scripts/build.sh` and `lamia.spec` also require the
 sidecar.
 
 ## Reporting Issues
@@ -101,13 +101,6 @@ Include:
 - Full error traceback
 - Steps to reproduce
 
-## Community
+## Reporting bugs
 
-<CardGroup cols={2}>
-  <Card title="Discord" icon="discord" href="https://discord.gg/strix-ai">
-    Join the community for help and discussion.
-  </Card>
-  <Card title="GitHub Issues" icon="github" href="https://github.com/usestrix/strix/issues">
-    Report bugs and request features.
-  </Card>
-</CardGroup>
+Open a GitHub issue on this repository with the details above.

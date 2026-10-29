@@ -8,7 +8,7 @@ from datetime import UTC, datetime, timedelta
 import pytest
 from rich.console import Console
 
-from strix.interface.resume_picker import (
+from lamia.interface.resume_picker import (
     KEY_BACKSPACE,
     KEY_DOWN,
     KEY_END,
@@ -24,7 +24,7 @@ from strix.interface.resume_picker import (
     relative_time,
     translate_key,
 )
-from strix.report.runs import RunSummary
+from lamia.report.runs import RunSummary
 
 
 NOW = datetime(2026, 10, 4, 16, 0, tzinfo=UTC)

@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from strix.core.paths import runtime_state_dir
-from strix.report.state import ReportState
-from strix.tools.coverage.tools import _record_impl, hydrate_coverage_from_disk
+from lamia.core.paths import runtime_state_dir
+from lamia.report.state import ReportState
+from lamia.tools.coverage.tools import _record_impl, hydrate_coverage_from_disk
 
 
 if TYPE_CHECKING:

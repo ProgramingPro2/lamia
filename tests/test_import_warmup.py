@@ -1,7 +1,7 @@
 """The import warm-up thread must never race the main thread into the engine.
 
 Two threads that enter the same package graph from different modules hold
-each other's import locks (warm-up: ``strix.core.runner`` -> ``agents``;
+each other's import locks (warm-up: ``lamia.core.runner`` -> ``agents``;
 main: ``agents.models.interface``). CPython breaks such a cycle by failing one
 of the imports, so the main thread waits for the warm-up before its first
 engine import.
@@ -15,7 +15,7 @@ import textwrap
 import threading
 from typing import TYPE_CHECKING
 
-from strix.llm import warmup
+from lamia.llm import warmup
 
 
 if TYPE_CHECKING:
@@ -37,11 +37,11 @@ def test_strix_report_does_not_import_the_agents_graph() -> None:
         """
         import sys
 
-        import strix.report
+        import lamia.report
 
         agents_modules = [m for m in sys.modules if m == "agents" or m.startswith("agents.")]
         assert not agents_modules, agents_modules
-        assert "strix.report.dedupe" not in sys.modules
+        assert "lamia.report.dedupe" not in sys.modules
         """
     )
     assert result.returncode == 0, result.stderr
@@ -50,11 +50,11 @@ def test_strix_report_does_not_import_the_agents_graph() -> None:
 def test_check_duplicate_resolves_lazily() -> None:
     result = _run(
         """
-        import strix.report
-        from strix.report import check_duplicate
-        from strix.report.dedupe import check_duplicate as direct
+        import lamia.report
+        from lamia.report import check_duplicate
+        from lamia.report.dedupe import check_duplicate as direct
 
-        assert strix.report.check_duplicate is direct is check_duplicate
+        assert lamia.report.check_duplicate is direct is check_duplicate
         """
     )
     assert result.returncode == 0, result.stderr
@@ -65,7 +65,7 @@ def test_wait_for_import_warmup_lets_main_thread_import_the_agents_graph() -> No
         """
         import sys
 
-        from strix.llm.warmup import start_import_warmup, wait_for_import_warmup
+        from lamia.llm.warmup import start_import_warmup, wait_for_import_warmup
 
         # Same shape as the CLI: warm-up starts, then the main thread needs a
         # module from the middle of the agents graph.
@@ -76,7 +76,7 @@ def test_wait_for_import_warmup_lets_main_thread_import_the_agents_graph() -> No
 
         assert "agents" in sys.modules
         assert "agents.models" in sys.modules
-        assert "strix.core.runner" in sys.modules
+        assert "lamia.core.runner" in sys.modules
         """
     )
     assert result.returncode == 0, result.stderr

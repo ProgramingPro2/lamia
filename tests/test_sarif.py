@@ -1,11 +1,11 @@
-"""Tests for the SARIF 2.1.0 emitter in strix.report.sarif."""
+"""Tests for the SARIF 2.1.0 emitter in lamia.report.sarif."""
 
 from __future__ import annotations
 
 import json
 from typing import TYPE_CHECKING, Any
 
-from strix.report.sarif import write_sarif
+from lamia.report.sarif import write_sarif
 
 
 if TYPE_CHECKING:
@@ -38,7 +38,7 @@ def test_write_sarif_basic_shape(tmp_path: Path) -> None:
     assert doc["version"] == "2.1.0"
     assert "2.1.0" in doc["$schema"]
     run = doc["runs"][0]
-    assert run["tool"]["driver"]["name"] == "Strix"
+    assert run["tool"]["driver"]["name"] == "Lamia"
     assert len(run["results"]) == 1
     loc = run["results"][0]["locations"][0]["physicalLocation"]
     assert loc["artifactLocation"]["uri"] == "app.py"
@@ -211,7 +211,7 @@ def test_write_sarif_emits_version_control_provenance(tmp_path: Path) -> None:
         },
     )
     run = _read(tmp_path)["runs"][0]
-    assert run["automationDetails"] == {"id": "strix/acme/widget"}
+    assert run["automationDetails"] == {"id": "lamia/acme/widget"}
     provenance = run["versionControlProvenance"][0]
     assert provenance == {
         "repositoryUri": "https://github.com/acme/widget",

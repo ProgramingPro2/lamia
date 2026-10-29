@@ -13,8 +13,8 @@ import asyncio
 
 from agents.retry import ModelRetryNormalizedError, RetryPolicyContext
 
-from strix.config import codex
-from strix.config.models import DEFAULT_MODEL_RETRY, _retry_statusless_provider_errors
+from lamia.config import codex
+from lamia.config.models import DEFAULT_MODEL_RETRY, _retry_statusless_provider_errors
 
 
 def _context(

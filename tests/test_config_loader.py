@@ -1,4 +1,4 @@
-"""Tests for strix.config.loader: JSON overrides, alias resolution, persistence."""
+"""Tests for lamia.config.loader: JSON overrides, alias resolution, persistence."""
 
 from __future__ import annotations
 
@@ -9,8 +9,8 @@ import pytest
 from pydantic import AliasChoices, Field, ValidationError
 from pydantic.fields import FieldInfo
 
-from strix.config import loader
-from strix.config.settings import ContextSettings
+from lamia.config import loader
+from lamia.config.settings import ContextSettings
 
 
 if TYPE_CHECKING:
@@ -18,7 +18,14 @@ if TYPE_CHECKING:
 
 
 _LLM_ENV_KEYS = [
+    "LAMIA_LLM",
     "STRIX_LLM",
+    "LAMIA_API_TYPE",
+    "LAMIA_REASONING_EFFORT",
+    "LAMIA_IMAGE",
+    "LAMIA_TELEMETRY",
+    "LAMIA_WEB_SEARCH_PROVIDER",
+    "LAMIA_DEDUPE_MODEL",
     "LLM_API_KEY",
     "OPENAI_API_KEY",
     "LLM_API_BASE",

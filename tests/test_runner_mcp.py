@@ -1,7 +1,7 @@
 """The runner attaches MCP connections source-agnostically.
 
 When a caller supplies ``mcp_connection_requests`` the runner attaches those;
-when it does not, the runner reads ``~/.strix/mcp-servers.json`` itself and wraps
+when it does not, the runner reads ``~/.lamia/mcp-servers.json`` itself and wraps
 each config in a bare request. Either way the one shared ``attach_mcp_requests``
 routine does the connecting.
 """
@@ -15,15 +15,15 @@ from typing import Any
 import pytest
 from agents import ModelSettings
 
-import strix.tools.mcp as mcp_pkg
-import strix.tools.notes.tools as notes_tools
-import strix.tools.todo.tools as todo_tools
-from strix.agents import factory
-from strix.core import runner
-from strix.core.agents import AgentCoordinator
-from strix.runtime import session_manager
-from strix.tools.mcp import McpConnectionConfig, McpConnectionRequest
-from strix.tools.mcp import client as mcp_client
+import lamia.tools.mcp as mcp_pkg
+import lamia.tools.notes.tools as notes_tools
+import lamia.tools.todo.tools as todo_tools
+from lamia.agents import factory
+from lamia.core import runner
+from lamia.core.agents import AgentCoordinator
+from lamia.runtime import session_manager
+from lamia.tools.mcp import McpConnectionConfig, McpConnectionRequest
+from lamia.tools.mcp import client as mcp_client
 
 
 _test_mcp_client = importlib.import_module("tests.test_mcp_client")

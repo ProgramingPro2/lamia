@@ -55,15 +55,15 @@ echo -e "\n${BLUE}Cleaning previous builds...${NC}"
 rm -rf build/ dist/
 
 echo -e "\n${BLUE}Building Bubble Tea sidecar...${NC}"
-TUI_BINARY="build/sidecar/strix-tui"
+TUI_BINARY="build/sidecar/lamia-tui"
 if [ "$OS_NAME" = "windows" ]; then
     TUI_BINARY="${TUI_BINARY}.exe"
 fi
 mkdir -p build/sidecar
-(cd strix/interface/tui && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "../../../$TUI_BINARY" ./cmd/strix-tui)
+(cd lamia/interface/tui && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "../../../$TUI_BINARY" ./cmd/lamia-tui)
 
 echo -e "\n${BLUE}Building binary with PyInstaller...${NC}"
-uv run pyinstaller strix.spec --noconfirm
+uv run pyinstaller lamia.spec --noconfirm
 
 RELEASE_DIR="dist/release"
 mkdir -p "$RELEASE_DIR"
@@ -71,12 +71,12 @@ mkdir -p "$RELEASE_DIR"
 BINARY_NAME="strix-${VERSION}-${OS_NAME}-${ARCH_NAME}"
 
 if [ "$OS_NAME" = "windows" ]; then
-    if [ ! -f "dist/strix.exe" ]; then
+    if [ ! -f "dist/lamia.exe" ]; then
         echo -e "${RED}Build failed: Binary not found${NC}"
         exit 1
     fi
     BINARY_NAME="${BINARY_NAME}.exe"
-    cp "dist/strix.exe" "$RELEASE_DIR/$BINARY_NAME"
+    cp "dist/lamia.exe" "$RELEASE_DIR/$BINARY_NAME"
     echo -e "\n${BLUE}Creating zip...${NC}"
     ARCHIVE_NAME="${BINARY_NAME%.exe}.zip"
 

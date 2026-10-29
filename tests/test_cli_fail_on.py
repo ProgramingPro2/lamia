@@ -10,8 +10,8 @@ from typing import Any
 import pytest
 
 
-cli_main: Any = importlib.import_module("strix.interface.main")
-cli_args: Any = importlib.import_module("strix.interface.cli_args")
+cli_main: Any = importlib.import_module("lamia.interface.main")
+cli_args: Any = importlib.import_module("lamia.interface.cli_args")
 
 
 def _stub_settings(monkeypatch: pytest.MonkeyPatch) -> None:
