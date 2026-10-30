@@ -179,6 +179,77 @@ def _finish(
     return codex.exchange_code(code, verifier)
 
 
+class BrowserLogin:
+    """ChatGPT sign-in driven by the TUI instead of ``console.input``.
+
+    The loopback server is the same one ``lamia auth login`` uses. ``poll``
+    does not block. ``complete`` accepts a redirect the user pasted.
+    """
+
+    def __init__(self) -> None:
+        self.verifier, self.challenge = codex.generate_pkce()
+        self.state = codex.create_state()
+        self.url = codex.build_authorize_url(self.challenge, self.state)
+        self.server = _try_start_callback_server()
+        self.done = False
+        self.error: str | None = None
+
+    def poll(self) -> dict[str, Any]:
+        if self.done:
+            return {"status": "authenticated"}
+        if self.error:
+            return {"status": "error", "message": self.error}
+        if self.server is None:
+            return {"status": "pending", "manual": True}
+        result = self.server.wait(0)
+        if result is None:
+            return {"status": "pending", "manual": False}
+        return self._consume(*result, require_state=True)
+
+    def complete(self, pasted: str) -> dict[str, Any]:
+        if self.done:
+            return {"status": "authenticated"}
+        try:
+            code, returned_state = codex.parse_redirect_input(pasted.strip())
+        except codex.CodexAuthError as exc:
+            self.error = str(exc)
+            return {"status": "error", "message": self.error}
+        return self._consume(code, returned_state, None, require_state=False)
+
+    def close(self) -> None:
+        server = self.server
+        self.server = None
+        if server is not None:
+            server.shutdown()
+
+    def _consume(
+        self,
+        code: str | None,
+        returned_state: str | None,
+        error: str | None,
+        *,
+        require_state: bool,
+    ) -> dict[str, Any]:
+        self.close()
+        if error:
+            self.error = error
+            return {"status": "error", "message": error}
+        try:
+            record = _finish(
+                code,
+                returned_state,
+                self.verifier,
+                self.state,
+                require_state=require_state,
+            )
+        except codex.CodexAuthError as exc:
+            self.error = str(exc)
+            return {"status": "error", "message": self.error}
+        codex.save_record(record)
+        self.done = True
+        return {"status": "authenticated"}
+
+
 class _CallbackServer:
     """A one-shot local HTTP server that catches the OAuth redirect."""
 

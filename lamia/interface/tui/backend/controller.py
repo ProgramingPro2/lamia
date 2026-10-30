@@ -10,7 +10,9 @@ from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from lamia.config import load_settings
+from lamia.config import codex, load_settings
+from lamia.config.loader import shell_locks_llm_connection
+from lamia.config.model_catalog import key_hint, model_details
 from lamia.config.settings import DEFAULT_MAX_TURNS
 from lamia.interface.tui.backend.live_view import TuiLiveView
 from lamia.interface.tui.backend.projection import (
@@ -38,6 +40,7 @@ ChangeCallback = Callable[[], None]
 StartCallback = Callable[[], Awaitable[None]]
 VerifyCallback = Callable[[], Awaitable[None]]
 QuitCallback = Callable[[], Awaitable[None]]
+ConnectionCallback = Callable[[], Awaitable[None]]
 
 
 class TuiController:
@@ -54,6 +57,7 @@ class TuiController:
         on_verify: VerifyCallback | None = None,
         on_quit: QuitCallback | None = None,
         on_change: ChangeCallback | None = None,
+        on_connection_saved: ConnectionCallback | None = None,
     ) -> None:
         self.args = args
         self.live_view = live_view or TuiLiveView()
@@ -115,6 +119,9 @@ class TuiController:
         self._on_verify = on_verify
         self._on_quit = on_quit
         self._on_change = on_change
+        self._on_connection_saved = on_connection_saved
+        self._browser_login: Any = None
+        self.shell_locks_connection = shell_locks_llm_connection()
 
     def set_change_callback(self, callback: ChangeCallback) -> None:
         self._on_change = callback
@@ -175,8 +182,26 @@ class TuiController:
     def snapshot(self) -> dict[str, Any]:
         """Return small mutable state; histories are streamed as collections."""
         model = ""
+        configured = False
+        hint = ""
+        reasoning = "high"
+        supports_reasoning = False
+        reasoning_levels: list[str] = []
+        chatgpt_signed_in = False
         with contextlib.suppress(Exception):
-            model = (load_settings().llm.model or "").strip()
+            settings = load_settings()
+            model = (settings.llm.model or "").strip()
+            configured, hint = key_hint(settings.llm.api_key)
+            reasoning = str(settings.llm.reasoning_effort or "high")
+        if model:
+            with contextlib.suppress(Exception):
+                details = model_details(model)
+                supports_reasoning = bool(details.get("supports_reasoning"))
+                levels = details.get("reasoning_levels")
+                if isinstance(levels, list):
+                    reasoning_levels = [str(level) for level in levels]
+        with contextlib.suppress(Exception):
+            chatgpt_signed_in = codex.is_authenticated()
         usage: dict[str, Any] = {}
         if self.report_state is not None:
             usage = dict(self.report_state.get_total_llm_usage())
@@ -200,6 +225,13 @@ class TuiController:
             "scope_mode": self.scope_mode,
             "diff_base": terminal_projection(self.diff_base, max_string=256),
             "model": terminal_projection(model, max_string=256),
+            "key_configured": configured,
+            "key_hint": hint,
+            "shell_locks_connection": self.shell_locks_connection,
+            "reasoning_effort": reasoning,
+            "supports_reasoning": supports_reasoning,
+            "reasoning_levels": reasoning_levels,
+            "chatgpt_signed_in": chatgpt_signed_in,
             "caido_url": terminal_projection(
                 getattr(self.report_state, "caido_url", None), max_string=1024
             ),
@@ -283,6 +315,11 @@ class TuiController:
         ]
 
     async def handle(self, command: str, payload: dict[str, Any]) -> dict[str, Any]:
+        from lamia.interface.tui.backend.setup_settings import (
+            SETTINGS_COMMANDS,
+            dispatch_settings,
+        )
+
         handlers = {
             "setup.add_target": self._add_target,
             "setup.set_instruction": self._set_instruction,
@@ -293,12 +330,23 @@ class TuiController:
             "viewer.open": self._open_viewer,
             "app.quit": self._quit,
         }
-        handler = handlers.get(command)
-        if handler is None:
-            raise ValueError(f"Unknown command: {command}")
-        result = await handler(payload)
+        if command in SETTINGS_COMMANDS:
+            result = await dispatch_settings(self, command, payload)
+            if result is None:
+                raise ValueError(f"Unknown command: {command}")
+        else:
+            handler = handlers.get(command)
+            if handler is None:
+                raise ValueError(f"Unknown command: {command}")
+            result = await handler(payload)
         self.notify_changed()
         return result
+
+    def close_browser_login(self) -> None:
+        login = self._browser_login
+        self._browser_login = None
+        if login is not None:
+            login.close()
 
     async def _add_target(self, payload: dict[str, Any]) -> dict[str, Any]:
         self._require_setup_mutable()
@@ -493,6 +541,7 @@ class TuiController:
             httpd.server_close()
 
     async def _quit(self, _payload: dict[str, Any]) -> dict[str, Any]:
+        self.close_browser_login()
         self.close_viewer()
         if self._on_quit is not None:
             await self._on_quit()

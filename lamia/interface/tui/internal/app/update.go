@@ -13,6 +13,8 @@ func (m Model) updateMain(key tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "f1":
 		m.openModal(modalHelp)
 		return m, nil
+	case "f2":
+		return m, m.openSettings()
 	case "ctrl+c", "ctrl+q":
 		// Nothing to lose on the start screen; quit without confirmation.
 		if m.snapshot.SetupMode {
@@ -419,6 +421,12 @@ func (m Model) updateSetupMouse(msg tea.MouseMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	if msg.Action == tea.MouseActionPress && msg.Button == tea.MouseButtonLeft {
+		view := m.setupView()
+		if labelHitAt(view, "F2 settings", 0, 0, msg.X, msg.Y) ||
+			labelHitAt(view, "f2 settings", 0, 0, msg.X, msg.Y) ||
+			labelHitAt(view, "F2 to set one up", 0, 0, msg.X, msg.Y) {
+			return m, m.openSettings()
+		}
 		m.focus = focusInput
 		m.input.Focus()
 	}
@@ -571,6 +579,9 @@ func clampCycle(value, length int) int {
 }
 
 func (m Model) updateModal(key tea.KeyMsg) (tea.Model, tea.Cmd) {
+	if m.modal == modalSettings {
+		return m.updateSettings(key)
+	}
 	if m.modal == modalHelp {
 		if key.String() != "" {
 			m.closeModal()

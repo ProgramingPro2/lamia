@@ -478,3 +478,29 @@ def test_persist_current_sets_0600_mode(tmp_path: Path, monkeypatch: pytest.Monk
     loader.persist_current()
 
     assert target.stat().st_mode & 0o777 == 0o600
+
+
+def test_save_connection_changes_the_model_without_dropping_the_key(tmp_path: Path) -> None:
+    target = tmp_path / "cli-config.json"
+    target.write_text(
+        json.dumps(
+            {
+                "env": {
+                    "LAMIA_LLM": "old-model",
+                    "LLM_API_KEY": "sk-keep-me",
+                    "LAMIA_TELEMETRY": "0",
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    loader.apply_config_override(target)
+
+    loader.save_llm_connection(model="openai/gpt-4o")
+
+    saved = json.loads(target.read_text(encoding="utf-8"))
+    assert saved["env"]["LAMIA_LLM"] == "openai/gpt-4o"
+    assert saved["env"]["LLM_API_KEY"] == "sk-keep-me"
+    assert saved["env"]["LAMIA_TELEMETRY"] == "0"
+    assert loader.load_settings().llm.api_key == "sk-keep-me"
+    assert loader.load_settings().llm.model == "openai/gpt-4o"

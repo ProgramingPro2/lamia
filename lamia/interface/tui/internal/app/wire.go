@@ -47,6 +47,17 @@ func (m *Model) handleEnvelope(envelope protocol.Envelope) tea.Cmd {
 		} else {
 			m.input.Placeholder = chatPlaceholder
 		}
+		if !m.snapshot.SetupMode && m.modal == modalSettings {
+			m.settings.authWaiting = false
+			m.closeModal()
+		}
+		var onboard tea.Cmd
+		if m.snapshot.SetupMode && strings.TrimSpace(m.snapshot.Model) == "" && !m.settingsPrompted {
+			m.settingsPrompted = true
+			if m.modal == modalNone {
+				onboard = m.openSettings()
+			}
+		}
 		m.selectedAgent = selectedAgentIndex(m.snapshot.Agents, selectedAgentID)
 		m.selectedVuln = min(m.selectedVuln, max(0, len(m.snapshot.Vulnerabilities)-1))
 		if m.modal == modalStop && !m.selectedAgentCanStop() {
@@ -61,7 +72,13 @@ func (m *Model) handleEnvelope(envelope protocol.Envelope) tea.Cmd {
 		m.resizeVulnerabilityViewport()
 		if title := windowTitle(m.snapshot.Targets); title != m.windowTitle {
 			m.windowTitle = title
+			if onboard != nil {
+				return tea.Batch(setTerminalTitle(title), onboard)
+			}
 			return setTerminalTitle(title)
+		}
+		if onboard != nil {
+			return onboard
 		}
 	case "collection_bootstrap":
 		return m.handleCollectionBootstrap(envelope.Payload)
@@ -100,6 +117,14 @@ func (m *Model) handleEnvelope(envelope protocol.Envelope) tea.Cmd {
 			}
 			// Setup-mode errors live in the scrollback (red), like Python; during
 			// a scan they surface on the status line.
+			if result.Command == "setup.list_models" || result.Command == "setup.list_providers" {
+				m.settings.modelsLoading = false
+				m.settings.modelsError = message
+			}
+			if result.Command == "setup.begin_auth" || result.Command == "setup.poll_auth" || result.Command == "setup.complete_auth" {
+				m.settings.authWaiting = false
+				m.settings.authError = message
+			}
 			if m.snapshot.SetupMode {
 				m.setupMsg(message, render.Col(red))
 			} else {
@@ -120,6 +145,8 @@ func (m *Model) handleEnvelope(envelope protocol.Envelope) tea.Cmd {
 			_ = json.Unmarshal(result.Result, &data)
 			m.snapshot.ViewerStatus = data.Status
 			m.snapshot.ViewerURL = data.URL
+		case "setup.list_providers", "setup.list_models", "setup.model_info", "setup.begin_auth", "setup.poll_auth", "setup.complete_auth":
+			return m.applySettingsResult(result.Command, result.Result)
 		}
 	}
 	return nil

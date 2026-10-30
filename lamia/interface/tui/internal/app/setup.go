@@ -445,13 +445,22 @@ func (m Model) setupSummaryView(width int) string {
 			chips = append(chips, chip)
 		}
 	} else {
-		chips = append(chips, render.Col(amber).Render("○ no model")+
-			render.Dim().Render(" · set LAMIA_LLM or configure one in your config"))
+		chips = append(chips, render.Col(amber).Render("○ no model"))
 	}
 	if m.snapshot.MaxBudgetUSD != nil {
 		chips = append(chips, render.Dim().Render(fmt.Sprintf("$%.2f budget", *m.snapshot.MaxBudgetUSD)))
 	}
-	return truncate(strings.Join(chips, render.Dim().Render(" · ")), max(1, width))
+	hintText := "F2 settings"
+	if strings.TrimSpace(m.snapshot.Model) == "" {
+		hintText = "F2 to set one up"
+	}
+	hint := render.Dim().Render(hintText)
+	separator := render.Dim().Render(" · ")
+	room := width - lipgloss.Width(hint) - lipgloss.Width(separator)
+	if len(chips) == 0 || room < 1 {
+		return truncate(hint, max(1, width))
+	}
+	return truncate(strings.Join(chips, separator), max(1, room)) + separator + hint
 }
 
 // maxTargetRows fits the header, four targets and the count of the rest.
@@ -503,16 +512,23 @@ func (m Model) setupHintsView(width int) string {
 	key := lipgloss.NewStyle().Foreground(white).Render
 	label := render.Dim().Render
 	hint := func(k, text string) string { return key(k) + label(" "+text) }
-	left := hint("enter", "launch scan") + label("   ") + hint("ctrl+c", "quit")
+	launch := hint("enter", "launch scan")
+	settings := hint("f2", "settings")
+	quit := hint("ctrl+c", "quit")
+	gap := label("   ")
+	left := launch + gap + settings + gap + quit
 	if lipgloss.Width(left) > inner {
-		left = hint("enter", "launch scan")
+		left = launch + gap + settings
+	}
+	if lipgloss.Width(left) > inner {
+		left = settings
 	}
 	right := label("v" + appVersion)
-	gap := inner - lipgloss.Width(left) - lipgloss.Width(right)
-	if gap < 2 {
+	space := inner - lipgloss.Width(left) - lipgloss.Width(right)
+	if space < 2 {
 		return pad + left
 	}
-	return pad + left + strings.Repeat(" ", gap) + right
+	return pad + left + strings.Repeat(" ", space) + right
 }
 
 // syncMountPrompt raises or clears the working-directory prompt to match the

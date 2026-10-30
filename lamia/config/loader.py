@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any, Union, get_args, get_origin
 from pydantic import AliasChoices, BaseModel
 
 from lamia.config.home import CLI_CONFIG_FILENAME, config_write_path, resolve_config_file
+from lamia.config.model_catalog import REASONING_EFFORTS
 from lamia.config.settings import LlmSettings, Settings
 from lamia.utils.secret_files import write_secret_text
 
@@ -193,13 +194,164 @@ def _drop_stale_llm_connection(env_block: dict[str, Any]) -> dict[str, Any]:
 
 def _read_env_block(path: Path) -> dict[str, Any]:
     """Return the ``env`` block stored in ``path`` with upper-cased keys, or ``{}``."""
+    env_block = _read_config_document(path).get("env", {})
+    if not isinstance(env_block, dict):
+        return {}
+    return {str(k).upper(): v for k, v in env_block.items()}
+
+
+_MODEL_ENV_KEYS = ("LAMIA_LLM", "STRIX_LLM")
+_KEY_ENV_KEYS = ("LLM_API_KEY", "OPENAI_API_KEY")
+_BASE_ENV_KEYS = (
+    "LLM_API_BASE",
+    "OPENAI_API_BASE",
+    "OPENAI_BASE_URL",
+    "LITELLM_BASE_URL",
+    "OLLAMA_API_BASE",
+)
+_REASONING_ENV_KEYS = ("LAMIA_REASONING_EFFORT", "STRIX_REASONING_EFFORT")
+
+
+def shell_locks_llm_connection() -> bool:
+    """Whether the shell exported a model or key that will win on the next process."""
+    return any(os.environ.get(name) for name in (*_MODEL_ENV_KEYS, *_KEY_ENV_KEYS))
+
+
+def save_llm_connection(
+    *,
+    model: str,
+    api_key: str | None = None,
+    api_base: str | None = None,
+    update_key: bool = False,
+    update_base: bool = False,
+) -> None:
+    """Write the model, and optionally the key and base, without dropping the others.
+
+    ``persist_current`` treats a model change as a new provider connection and
+    deletes the stored key. Choosing another model for the same key must not
+    do that, so this updates only the fields the caller names.
+    """
+    chosen = model.strip()
+    if not chosen:
+        raise ValueError("model must be a non-empty string")
+    settings = load_settings()
+    _stage_llm_connection(
+        settings,
+        chosen,
+        api_key=api_key,
+        api_base=api_base,
+        update_key=update_key,
+        update_base=update_base,
+    )
+    doc = _read_config_document(_config_read_path())
+    env = doc.get("env")
+    if not isinstance(env, dict):
+        env = {}
+    env = _without_env_keys(env, _MODEL_ENV_KEYS)
+    env["LAMIA_LLM"] = chosen
+    if update_key:
+        env = _without_env_keys(env, _KEY_ENV_KEYS)
+        if settings.llm.api_key:
+            env["LLM_API_KEY"] = settings.llm.api_key
+    if update_base:
+        env = _without_env_keys(env, _BASE_ENV_KEYS)
+        if settings.llm.api_base:
+            env["LLM_API_BASE"] = settings.llm.api_base
+    doc["env"] = env
+    _write_config_document(doc)
+
+
+def _stage_llm_connection(
+    settings: Settings,
+    model: str,
+    *,
+    api_key: str | None,
+    api_base: str | None,
+    update_key: bool,
+    update_base: bool,
+) -> None:
+    settings.llm.model = model
+    os.environ["LAMIA_LLM"] = model
+    if update_key:
+        _stage_api_key(settings, api_key)
+    if update_base:
+        _stage_api_base(settings, api_base)
+
+
+def _stage_api_key(settings: Settings, api_key: str | None) -> None:
+    cleaned = (api_key or "").strip()
+    settings.llm.api_key = cleaned or None
+    if cleaned:
+        os.environ["LLM_API_KEY"] = cleaned
+        return
+    os.environ.pop("LLM_API_KEY", None)
+    os.environ.pop("OPENAI_API_KEY", None)
+
+
+def _stage_api_base(settings: Settings, api_base: str | None) -> None:
+    cleaned = (api_base or "").strip()
+    settings.llm.api_base = cleaned or None
+    if cleaned:
+        os.environ["LLM_API_BASE"] = cleaned
+        return
+    for name in _BASE_ENV_KEYS:
+        os.environ.pop(name, None)
+
+
+def save_reasoning_effort(effort: str) -> None:
+    """Store reasoning effort on the cached settings and in the config file."""
+    chosen = effort.strip().lower()
+    if chosen not in REASONING_EFFORTS:
+        choices = ", ".join(REASONING_EFFORTS)
+        raise ValueError(f"reasoning_effort must be one of: {choices}")
+    settings = load_settings()
+    settings.llm.reasoning_effort = chosen  # type: ignore[assignment]
+    os.environ["LAMIA_REASONING_EFFORT"] = chosen
+    doc = _read_config_document(_config_read_path())
+    env = doc.get("env")
+    if not isinstance(env, dict):
+        env = {}
+    env = _without_env_keys(env, _REASONING_ENV_KEYS)
+    env["LAMIA_REASONING_EFFORT"] = chosen
+    doc["env"] = env
+    _write_config_document(doc)
+
+
+def load_scan_preferences() -> dict[str, Any]:
+    """The ``scan`` object from the active config file, or ``{}``."""
+    scan = _read_config_document(_config_read_path()).get("scan")
+    return dict(scan) if isinstance(scan, dict) else {}
+
+
+def save_scan_preferences(prefs: dict[str, Any]) -> None:
+    """Merge scan preferences into the config file. The ``env`` block is left as it is."""
+    doc = _read_config_document(_config_read_path())
+    current = doc.get("scan")
+    if not isinstance(current, dict):
+        current = {}
+    current.update(prefs)
+    doc["scan"] = current
+    if not isinstance(doc.get("env"), dict):
+        doc["env"] = {}
+    _write_config_document(doc)
+
+
+def _read_config_document(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return {}
-    env_block = data.get("env", {}) if isinstance(data, dict) else {}
-    if not isinstance(env_block, dict):
-        return {}
-    return {str(k).upper(): v for k, v in env_block.items()}
+    return data if isinstance(data, dict) else {}
+
+
+def _write_config_document(doc: dict[str, Any]) -> None:
+    target = _config_write_path()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    write_secret_text(target, json.dumps(doc, indent=2))
+
+
+def _without_env_keys(env: dict[str, Any], names: tuple[str, ...]) -> dict[str, Any]:
+    blocked = {name.upper() for name in names}
+    return {key: value for key, value in env.items() if str(key).upper() not in blocked}

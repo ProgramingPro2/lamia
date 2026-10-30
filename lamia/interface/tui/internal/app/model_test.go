@@ -349,7 +349,7 @@ func TestStartedSnapshotTransitionsToLiveView(t *testing.T) {
 	model := New(nil)
 	model.width, model.height = 130, 34
 	model.showSplash = false
-	model.handleEnvelope(stateEnvelope(t, 1, protocol.Snapshot{SetupMode: true, ScanState: "setup"}))
+	model.handleEnvelope(stateEnvelope(t, 1, protocol.Snapshot{SetupMode: true, ScanState: "setup", Model: "openai/gpt-4o"}))
 	if view := model.View(); !strings.Contains(view, setupPlaceholder) {
 		t.Fatalf("setup snapshot did not show the start screen: %s", view)
 	}

@@ -512,6 +512,112 @@ async def test_stop_handles_coordinator_rejection_after_stale_active_projection(
 
 
 @pytest.mark.asyncio
+async def test_list_models_returns_the_account_list_without_the_key(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_models(**kwargs: object) -> list[str]:
+        assert kwargs["api_key"] == "sk-test-secret-value"
+        assert kwargs["custom_llm_provider"] == "openrouter"
+        assert kwargs["check_provider_endpoint"] is True
+        return ["openrouter/alpha"]
+
+    monkeypatch.setattr("litellm.get_valid_models", fake_models)
+    monkeypatch.setattr(
+        "litellm.get_model_info",
+        lambda _model: {
+            "supports_function_calling": True,
+            "max_input_tokens": 128000,
+            "max_output_tokens": 8192,
+            "input_cost_per_token": 0.000002,
+            "output_cost_per_token": 0.000008,
+        },
+    )
+    controller = TuiController(args())
+
+    result = await controller.handle(
+        "setup.list_models",
+        {"provider": "openrouter", "api_key": "sk-test-secret-value"},
+    )
+
+    assert result["source"] == "account"
+    assert result["models"] == [{"id": "openrouter/alpha", "tools": True}]
+    assert "sk-test-secret-value" not in str(result)
+    assert "sk-test-secret-value" not in str(controller.snapshot())
+
+
+@pytest.mark.asyncio
+async def test_list_models_falls_back_to_the_catalog(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("litellm.get_valid_models", lambda **_kwargs: [])
+    monkeypatch.setattr("litellm.models_by_provider", {"anthropic": {"claude-test"}})
+    monkeypatch.setattr(
+        "litellm.get_model_info",
+        lambda _model: {"supports_function_calling": False},
+    )
+    controller = TuiController(args())
+
+    result = await controller.handle(
+        "setup.list_models",
+        {"provider": "anthropic", "api_key": "sk-catalog-secret"},
+    )
+
+    assert result["source"] == "catalog"
+    assert result["models"] == [{"id": "anthropic/claude-test", "tools": False}]
+    assert "catalog" in result["note"]
+    assert "sk-catalog-secret" not in str(result)
+
+
+@pytest.mark.asyncio
+async def test_set_options_updates_the_scan_and_rejects_a_bad_mode() -> None:
+    controller = TuiController(args())
+
+    saved = await controller.handle(
+        "setup.set_options",
+        {"scan_mode": "quick", "max_budget_usd": 12.5, "max_turns": 40, "scope_mode": "diff"},
+    )
+
+    assert saved["scan_mode"] == "quick"
+    assert saved["max_budget_usd"] == 12.5
+    assert saved["max_turns"] == 40
+    assert controller.snapshot()["scan_mode"] == "quick"
+    with pytest.raises(ValueError, match="scan_mode"):
+        await controller.handle("setup.set_options", {"scan_mode": "sideways"})
+    with pytest.raises(ValueError, match="max_budget_usd"):
+        await controller.handle("setup.set_options", {"max_budget_usd": -1})
+
+
+@pytest.mark.asyncio
+async def test_setup_changes_are_rejected_once_the_scan_has_started() -> None:
+    namespace = args()
+    namespace.needs_setup = False
+    controller = TuiController(namespace)
+
+    with pytest.raises(RuntimeError, match="no longer"):
+        await controller.handle("setup.set_options", {"scan_mode": "quick"})
+    with pytest.raises(RuntimeError, match="no longer"):
+        await controller.handle(
+            "setup.save_connection",
+            {"model": "openai/gpt-4o", "api_key": "sk-test-secret-value"},
+        )
+
+
+@pytest.mark.asyncio
+async def test_save_connection_keeps_the_key_out_of_the_snapshot() -> None:
+    controller = TuiController(args())
+
+    result = await controller.handle(
+        "setup.save_connection",
+        {"model": "openai/gpt-4o", "api_key": "sk-test-secret-value"},
+    )
+
+    assert result["model"] == "openai/gpt-4o"
+    assert result["key_hint"] == "••••alue"
+    assert controller.snapshot()["model"] == "openai/gpt-4o"
+    assert controller.snapshot()["key_configured"] is True
+    assert "sk-test-secret-value" not in str(result)
+    assert "sk-test-secret-value" not in str(controller.snapshot())
+
+
+@pytest.mark.asyncio
 async def test_unknown_command_is_rejected() -> None:
     controller = TuiController(args())
     with pytest.raises(ValueError, match="Unknown command"):

@@ -54,10 +54,10 @@ class _MarkExplicit(argparse.Action):
 
     def __call__(
         self,
-        parser: argparse.ArgumentParser,
+        _parser: argparse.ArgumentParser,
         namespace: argparse.Namespace,
         values: Any,
-        option_string: str | None = None,
+        _option_string: str | None = None,
     ) -> None:
         setattr(namespace, self.dest, values)
         setattr(namespace, f"{self.dest}_explicit", True)
@@ -260,20 +260,14 @@ Examples:
     parser.add_argument(
         "--config",
         type=str,
-        help=(
-            "Path to a custom config file (JSON) to use instead of "
-            "~/.lamia/cli-config.json"
-        ),
+        help=("Path to a custom config file (JSON) to use instead of ~/.lamia/cli-config.json"),
     )
 
     parser.add_argument(
         "--mcp-config",
         type=str,
         metavar="PATH",
-        help=(
-            "Path to an MCP servers JSON file to use instead of "
-            "~/.lamia/mcp-servers.json."
-        ),
+        help=("Path to an MCP servers JSON file to use instead of ~/.lamia/mcp-servers.json."),
     )
 
     parser.add_argument(

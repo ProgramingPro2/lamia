@@ -83,6 +83,7 @@ class GoTuiRuntime:
             on_start=self.start_from_setup,
             on_verify=self.ensure_model_verified,
             on_quit=self.quit,
+            on_connection_saved=self.note_connection_saved,
         )
         self.server = TuiBackendServer(self.controller)
 
@@ -140,6 +141,16 @@ class GoTuiRuntime:
             self.controller.add_message(f"Model connection failed: {exc}", "error")
             return
         self.controller.add_message("Model connection verified")
+
+    async def note_connection_saved(self) -> None:
+        """A new model was saved from the settings dialog, so verify it again."""
+        self.model_verified = False
+        preflight = self._setup_preflight
+        if preflight is not None and not preflight.done():
+            preflight.cancel()
+            with contextlib.suppress(Exception):
+                await preflight
+        self._setup_preflight = asyncio.create_task(self.check_setup_model())
 
     async def ensure_model_verified(self) -> None:
         """Hold a setup launch until the model has answered once."""

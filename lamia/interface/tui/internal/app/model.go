@@ -64,6 +64,7 @@ const (
 	modalStop
 	modalConfirmMount
 	modalVulnerability
+	modalSettings
 )
 
 type focusMode int
@@ -138,6 +139,8 @@ type Model struct {
 	seenMessages           map[string]bool
 	vulnerabilityCopied    bool
 	vulnerabilityCopyError string
+	settings               settingsState
+	settingsPrompted       bool
 }
 
 var (
@@ -388,6 +391,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.vulnerabilityCopyError = msg.err.Error()
 		}
 		return m, nil
+	case settingsPollMsg:
+		if m.modal != modalSettings || !m.settings.authWaiting || m.client == nil {
+			return m, nil
+		}
+		return m, tea.Batch(send(m.client, "setup.poll_auth", map[string]any{}), scheduleSettingsPoll())
 	case tea.ResumeMsg:
 		// Suspend turns mouse tracking off with the rest of the terminal state,
 		// but the restore brings back only the alt screen, so turn it back on.
