@@ -47,7 +47,7 @@ func (m *Model) handleEnvelope(envelope protocol.Envelope) tea.Cmd {
 		} else {
 			m.input.Placeholder = chatPlaceholder
 		}
-		if !m.snapshot.SetupMode && m.modal == modalSettings {
+		if !m.snapshot.SetupMode && (m.modal == modalSettings || m.modal == modalFile) {
 			m.settings.authWaiting = false
 			m.closeModal()
 		}
@@ -125,6 +125,9 @@ func (m *Model) handleEnvelope(envelope protocol.Envelope) tea.Cmd {
 				m.settings.authWaiting = false
 				m.settings.authError = message
 			}
+			if m.modal == modalSettings && strings.HasPrefix(result.Command, "setup.") {
+				m.settings.modelsError = message
+			}
 			if m.snapshot.SetupMode {
 				m.setupMsg(message, render.Col(red))
 			} else {
@@ -147,6 +150,8 @@ func (m *Model) handleEnvelope(envelope protocol.Envelope) tea.Cmd {
 			m.snapshot.ViewerURL = data.URL
 		case "setup.list_providers", "setup.list_models", "setup.model_info", "setup.begin_auth", "setup.poll_auth", "setup.complete_auth":
 			return m.applySettingsResult(result.Command, result.Result)
+		case "setup.list_mcp", "setup.list_runs", "setup.set_config", "setup.set_mcp_config":
+			return m.applyRunResult(result.Command, result.Result)
 		}
 	}
 	return nil

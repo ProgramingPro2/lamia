@@ -618,6 +618,72 @@ async def test_setup_target_change_preserves_local_targets(
 
 
 @pytest.mark.asyncio
+async def test_setup_copies_files_and_mcp_selection(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    wordlist = tmp_path / "words.txt"
+    mcp_config = tmp_path / "mcp.json"
+    runtime = GoTuiRuntime(args())
+    runtime.controller.workspace_files = [
+        {"source_path": str(wordlist), "workspace_path": "/workspace/words.txt"}
+    ]
+    runtime.controller.mcp_config = str(mcp_config)
+    runtime.controller.mcp_servers = ["github"]
+    runtime.controller.mcp_excluded = ["slack"]
+    prepared: list[argparse.Namespace] = []
+
+    _setup_model(monkeypatch)
+    monkeypatch.setattr(go_tui, "persist_current", lambda: None)
+    monkeypatch.setattr(go_tui, "prepare_run", prepared.append)
+    monkeypatch.setattr(go_tui, "telemetry_start", lambda _args: None)
+    monkeypatch.setattr(runtime, "init_run_state", lambda: None)
+    monkeypatch.setattr(runtime, "start_scan", lambda: None)
+    monkeypatch.delenv("LAMIA_MCP_ONLY", raising=False)
+    monkeypatch.delenv("LAMIA_MCP_EXCLUDE", raising=False)
+    monkeypatch.delenv("LAMIA_MCP_CONFIG", raising=False)
+
+    await runtime.start_from_setup()
+
+    assert prepared[0].workspace_files == runtime.controller.workspace_files
+    assert os.environ["LAMIA_MCP_CONFIG"] == str(mcp_config)
+    assert os.environ["LAMIA_MCP_ONLY"] == "github"
+    assert os.environ["LAMIA_MCP_EXCLUDE"] == "slack"
+
+
+@pytest.mark.asyncio
+async def test_setup_resume_loads_the_prior_run(monkeypatch: pytest.MonkeyPatch) -> None:
+    runtime = GoTuiRuntime(args())
+    runtime.controller.resume_run = "previous-run"
+    loaded: list[str] = []
+
+    def load(candidate: argparse.Namespace) -> None:
+        loaded.append(candidate.resume)
+        candidate.targets_info = [
+            {
+                "type": "web",
+                "details": {"url": "https://example.com"},
+                "original": "https://example.com",
+            }
+        ]
+        candidate.local_sources = []
+        candidate.diff_scope = {"active": False}
+
+    _setup_model(monkeypatch)
+    monkeypatch.setattr(go_tui, "persist_current", lambda: None)
+    monkeypatch.setattr(go_tui, "load_resume_state", load)
+    monkeypatch.setattr(go_tui, "telemetry_start", lambda _args: None)
+    monkeypatch.setattr(runtime, "init_run_state", lambda: None)
+    monkeypatch.setattr(runtime, "start_scan", lambda: None)
+
+    await runtime.start_from_setup()
+
+    assert loaded == ["previous-run"]
+    assert runtime.args.resume == "previous-run"
+    assert runtime.args.run_name == "previous-run"
+
+
+@pytest.mark.asyncio
 async def test_setup_same_basename_uses_combined_workspace_names_on_retry(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -19,6 +19,7 @@ const (
 	settingsKey
 	settingsModel
 	settingsScan
+	settingsRun
 )
 
 type settingsPollMsg struct{}
@@ -58,37 +59,45 @@ type scanDraft struct {
 }
 
 type settingsState struct {
-	step           int
-	fromSummary    bool
-	readOnly       bool
-	summaryCursor  int
-	providers      []providerOption
-	providerCursor int
-	providerFilter string
-	providerID     string
-	models         []modelOption
-	modelCursor    int
-	modelFilter    string
-	modelSource    string
-	modelNote      string
-	modelsLoading  bool
-	modelsError    string
-	details        modelInfo
-	draft          scanDraft
-	editing        string
-	keyCursor      int
-	keyInput       textinput.Model
-	baseInput      textinput.Model
-	budgetInput    textinput.Model
-	turnsInput     textinput.Model
-	diffInput      textinput.Model
-	manualInput    textinput.Model
-	pasteInput     textinput.Model
-	inputsReady    bool
-	authURL        string
-	authWaiting    bool
-	authError      string
-	scanCursor     int
+	step             int
+	fromSummary      bool
+	readOnly         bool
+	summaryCursor    int
+	providers        []providerOption
+	providerCursor   int
+	providerFilter   string
+	providerID       string
+	models           []modelOption
+	modelCursor      int
+	modelFilter      string
+	modelSource      string
+	modelNote        string
+	modelsLoading    bool
+	modelsError      string
+	details          modelInfo
+	draft            scanDraft
+	editing          string
+	keyCursor        int
+	keyInput         textinput.Model
+	baseInput        textinput.Model
+	budgetInput      textinput.Model
+	turnsInput       textinput.Model
+	diffInput        textinput.Model
+	destInput        textinput.Model
+	manualInput      textinput.Model
+	pasteInput       textinput.Model
+	inputsReady      bool
+	authURL          string
+	authWaiting      bool
+	authError        string
+	scanCursor       int
+	runCursor        int
+	runMode          string
+	mcpNames         []string
+	mcpCursor        int
+	runs             []runOption
+	resumeCursor     int
+	pendingWorkspace string
 }
 
 func scheduleSettingsPoll() tea.Cmd {
@@ -174,6 +183,7 @@ func (s *settingsState) ensureInputs() {
 	s.budgetInput = newPlainInput("no cap")
 	s.turnsInput = newPlainInput("500")
 	s.diffInput = newPlainInput("default branch")
+	s.destInput = newPlainInput("filename in /workspace")
 	s.manualInput = newPlainInput("provider/model")
 	s.pasteInput = newPlainInput("paste the redirect URL")
 	s.inputsReady = true
@@ -222,8 +232,18 @@ func (m Model) updateSettings(key tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "enter":
 		return m.commitSettings()
 	case "backspace":
+		if m.settings.step == settingsRun && m.settings.runMode == "" {
+			return m.removeRunRow()
+		}
 		m.trimSettingsFilter()
 		return m, m.detailsForCursor()
+	case " ":
+		if m.settings.step == settingsRun {
+			return m.toggleRunSelection()
+		}
+		if m.appendSettingsFilter(key.String()) {
+			return m, m.detailsForCursor()
+		}
 	default:
 		if m.appendSettingsFilter(key.String()) {
 			return m, m.detailsForCursor()
@@ -257,6 +277,9 @@ func (m Model) updateSettingsEdit(key tea.KeyMsg) (tea.Model, tea.Cmd) {
 			}
 			return m, m.saveModel(id)
 		}
+		if field == "dest" {
+			return m.commitWorkspaceDest()
+		}
 		if !m.commitDraftField(field) {
 			m.settings.editing = field
 			return m, nil
@@ -279,11 +302,18 @@ func (m Model) updateSettingsEdit(key tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.settings.manualInput, cmd = m.settings.manualInput.Update(key)
 	case "paste":
 		m.settings.pasteInput, cmd = m.settings.pasteInput.Update(key)
+	case "dest":
+		m.settings.destInput, cmd = m.settings.destInput.Update(key)
 	}
 	return m, cmd
 }
 
 func (m Model) backSettings() (tea.Model, tea.Cmd) {
+	if m.settings.step == settingsRun && m.settings.runMode != "" {
+		m.settings.runMode = ""
+		m.settings.modelsError = ""
+		return m, nil
+	}
 	if m.settings.fromSummary && m.settings.step != settingsSummary {
 		m.settings.step = settingsSummary
 		m.settings.editing = ""
@@ -334,6 +364,8 @@ func (m *Model) moveSettings(delta int) {
 		m.settings.modelCursor = clampCycle(m.settings.modelCursor+delta, max(1, m.modelChoiceCount()))
 	case settingsScan:
 		m.settings.scanCursor = clampCycle(m.settings.scanCursor+delta, len(m.scanRows()))
+	case settingsRun:
+		m.moveRun(delta)
 	}
 }
 
@@ -386,6 +418,8 @@ func (m Model) commitSettings() (tea.Model, tea.Cmd) {
 		return m, m.saveModel(list[m.settings.modelCursor].ID)
 	case settingsScan:
 		return m.editScanRow()
+	case settingsRun:
+		return m.commitRunRow()
 	}
 	return m, nil
 }
@@ -694,6 +728,7 @@ func (m Model) settingsSteps(width int) string {
 		{settingsKey, "Key"},
 		{settingsModel, "Model"},
 		{settingsScan, "Scan"},
+		{settingsRun, "Run"},
 	}
 	parts := make([]string, 0, len(labels))
 	for _, item := range labels {
@@ -716,6 +751,8 @@ func (m Model) settingsStepBody(width int) string {
 		return m.modelStep(width)
 	case settingsScan:
 		return m.scanStep(width)
+	case settingsRun:
+		return m.runStep(width)
 	default:
 		return m.summaryStep(width)
 	}
@@ -762,6 +799,7 @@ func (m Model) summaryRows() []summaryRow {
 		{settingsKey, "Key", key},
 		{settingsModel, "Model", model},
 		{settingsScan, "Scan", fmt.Sprintf("%s · %s · %d turns · %s", mode, budget, turns, scope)},
+		{settingsRun, "Run", m.runSummary()},
 	}
 }
 
@@ -947,6 +985,8 @@ func (m Model) settingsFooter() string {
 	switch m.settings.step {
 	case settingsScan:
 		return "↑/↓ row    ←/→ change    enter edit    esc back"
+	case settingsRun:
+		return m.runFooter()
 	case settingsProvider, settingsModel:
 		return "↑/↓ move    type to filter    enter select    esc back"
 	default:

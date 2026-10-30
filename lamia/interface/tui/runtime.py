@@ -17,6 +17,7 @@ from lamia.config import load_settings, persist_current
 from lamia.core.agents import AgentCoordinator
 from lamia.core.hooks import BudgetExceededError
 from lamia.core.runner import run_strix_scan
+from lamia.interface.cli_args import load_resume_state
 from lamia.interface.scan_setup import (
     build_targets_info,
     preflight_model_connection,
@@ -182,6 +183,9 @@ class GoTuiRuntime:
         return None
 
     async def start_from_setup(self) -> None:
+        if self.controller.resume_run:
+            await self._resume_from_setup()
+            return
         candidate = deepcopy(self.args)
         candidate.scan_mode = self.controller.scan_mode
         candidate.instruction = self.controller.instruction
@@ -202,6 +206,8 @@ class GoTuiRuntime:
         # A confirmed target-less launch mounts the working directory for the
         # agent to work in, without making it a scan target.
         candidate.workspace_mount = self.controller.workspace_mount
+        candidate.workspace_files = [dict(item) for item in self.controller.workspace_files]
+        self._apply_mcp_selection()
         if targets_changed:
             # Rebuild the full typed set so path canonicalization and local
             # deduplication match the CLI.
@@ -218,6 +224,60 @@ class GoTuiRuntime:
         vars(self.args).update(vars(candidate))
         self.init_run_state()
         self.start_scan()
+
+    async def _resume_from_setup(self) -> None:
+        """Continue a prior run chosen in the TUI, instead of preparing a new one."""
+        if self.controller.targets:
+            raise RuntimeError("Resume cannot be combined with targets added on this screen.")
+        candidate = deepcopy(self.args)
+        candidate.resume = self.controller.resume_run
+        candidate.target = []
+        candidate.target_list = []
+        candidate.scan_mode = self.controller.scan_mode
+        candidate.scan_mode_explicit = True
+        candidate.scope_mode = self.controller.scope_mode
+        candidate.scope_mode_explicit = True
+        candidate.max_turns = self.controller.max_turns
+        candidate.max_turns_explicit = True
+        candidate.max_budget_usd = self.controller.max_budget_usd
+        candidate.max_budget_usd_explicit = True
+        candidate.diff_base = self.controller.diff_base
+        candidate.diff_base_explicit = bool(self.controller.diff_base)
+        if self.controller.typed_instruction.strip() or self.controller.instruction_file:
+            candidate.instruction = self.controller.instruction
+            candidate.user_instruction = self.controller.instruction or None
+            candidate.user_explicit_instruction = self.controller.instruction or None
+        else:
+            candidate.instruction = None
+            candidate.user_instruction = None
+            candidate.user_explicit_instruction = None
+        if self.controller.workspace_files:
+            candidate.workspace_files = [dict(item) for item in self.controller.workspace_files]
+        self._apply_mcp_selection()
+        persist_current()
+        try:
+            load_resume_state(candidate)
+            prepare_run(candidate)
+        except Exception as exc:
+            report_error("scan_preparation_failed", exc)
+            raise
+        telemetry_start(candidate)
+        vars(self.args).update(vars(candidate))
+        self.init_run_state()
+        self.start_scan()
+
+    def _apply_mcp_selection(self) -> None:
+        """Publish the TUI's MCP choice the same way the CLI flags do."""
+        if self.controller.mcp_config:
+            os.environ["LAMIA_MCP_CONFIG"] = self.controller.mcp_config
+        if self.controller.mcp_servers:
+            os.environ["LAMIA_MCP_ONLY"] = ",".join(self.controller.mcp_servers)
+        else:
+            os.environ.pop("LAMIA_MCP_ONLY", None)
+        if self.controller.mcp_excluded:
+            os.environ["LAMIA_MCP_EXCLUDE"] = ",".join(self.controller.mcp_excluded)
+        else:
+            os.environ.pop("LAMIA_MCP_EXCLUDE", None)
 
     def start_scan(self) -> None:
         if self.scan_task is None:

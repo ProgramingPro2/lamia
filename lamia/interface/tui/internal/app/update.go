@@ -15,6 +15,11 @@ func (m Model) updateMain(key tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case "f2":
 		return m, m.openSettings()
+	case "f3":
+		if m.snapshot.SetupMode && !m.snapshot.ScanStarted {
+			return m.openInstructionPicker()
+		}
+		return m, nil
 	case "ctrl+c", "ctrl+q":
 		// Nothing to lose on the start screen; quit without confirmation.
 		if m.snapshot.SetupMode {
@@ -93,7 +98,7 @@ func (m Model) updateMain(key tea.KeyMsg) (tea.Model, tea.Cmd) {
 			value := strings.TrimSpace(m.input.Value())
 			m.input.SetValue("")
 			m.resizeViewport()
-			if value != "" {
+			if value != "" || m.setupCanLaunchEmpty() {
 				return m.submit(value)
 			}
 			return m, nil
@@ -427,6 +432,10 @@ func (m Model) updateSetupMouse(msg tea.MouseMsg) (tea.Model, tea.Cmd) {
 			labelHitAt(view, "F2 to set one up", 0, 0, msg.X, msg.Y) {
 			return m, m.openSettings()
 		}
+		if labelHitAt(view, "Instructions", 0, 0, msg.X, msg.Y) ||
+			labelHitAt(view, "f3 instructions", 0, 0, msg.X, msg.Y) {
+			return m.openInstructionPicker()
+		}
 		m.focus = focusInput
 		m.input.Focus()
 	}
@@ -579,6 +588,9 @@ func clampCycle(value, length int) int {
 }
 
 func (m Model) updateModal(key tea.KeyMsg) (tea.Model, tea.Cmd) {
+	if m.modal == modalFile {
+		return m.updateFilePicker(key)
+	}
 	if m.modal == modalSettings {
 		return m.updateSettings(key)
 	}

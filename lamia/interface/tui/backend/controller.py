@@ -36,6 +36,23 @@ if TYPE_CHECKING:
 
 _STOPPABLE_AGENT_STATUSES = frozenset({"running", "waiting", "budget_paused"})
 
+
+def _workspace_spec(entry: dict[str, Any]) -> str:
+    """Rebuild a ``PATH[:DEST]`` spec from a resolved workspace file."""
+    source = str(entry.get("source_path") or "")
+    dest = str(entry.get("workspace_path") or "")
+    relative = dest.removeprefix("/workspace/") if dest.startswith("/workspace/") else ""
+    if not source:
+        return relative
+    if not relative or relative == Path(source).name:
+        return source
+    return f"{source}:{relative}"
+
+
+def _short_paths(values: list[str]) -> list[str]:
+    return [terminal_projection(value, max_string=256) for value in values[:8]]
+
+
 ChangeCallback = Callable[[], None]
 StartCallback = Callable[[], Awaitable[None]]
 VerifyCallback = Callable[[], Awaitable[None]]
@@ -75,6 +92,29 @@ class TuiController:
         ]
         instruction = args.instruction
         self.instruction = instruction.strip() if isinstance(instruction, str) else ""
+        # The composer note and a chosen instructions file stay separate so a
+        # launch can join them. The CLI folds --instruction-file into
+        # instruction before the TUI starts, so that text begins as the note.
+        self.typed_instruction = self.instruction
+        self.instruction_file = ""
+        self.file_instruction = ""
+        self.target_lists = [
+            str(path) for path in (getattr(args, "target_list", None) or []) if path
+        ]
+        self.target_list_members: dict[str, list[str]] = {}
+        self.workspace_files = [
+            dict(item)
+            for item in (getattr(args, "workspace_files", None) or [])
+            if isinstance(item, dict)
+        ]
+        self.workspace_specs = [_workspace_spec(item) for item in self.workspace_files]
+        self.config_path = str(getattr(args, "config", None) or "")
+        self.mcp_config = str(getattr(args, "mcp_config", None) or "")
+        self.mcp_servers = [str(name) for name in (getattr(args, "mcp_server", None) or []) if name]
+        self.mcp_excluded = [
+            str(name) for name in (getattr(args, "mcp_exclude", None) or []) if name
+        ]
+        self.resume_run = ""
         requested_scan_mode = str(args.scan_mode)
         self.scan_mode = requested_scan_mode if requested_scan_mode in SCAN_MODES else "deep"
         raw_budget = args.max_budget_usd
@@ -219,6 +259,17 @@ class TuiController:
             "working_dir": str(Path.cwd()),
             "pending_mount": self.pending_workspace_mount or "",
             "instruction": terminal_projection(self.instruction, max_string=2 * 1024),
+            "instruction_file": terminal_projection(self.instruction_file, max_string=256),
+            "target_lists": _short_paths(self.target_lists),
+            "workspace_files": _short_paths(self.workspace_specs),
+            "config_path": terminal_projection(self.config_path, max_string=256),
+            "mcp_config": terminal_projection(self.mcp_config, max_string=256),
+            "mcp_servers": [
+                terminal_projection(name, max_string=64) for name in self.mcp_servers[:16]
+            ],
+            "mcp_excluded": [
+                terminal_projection(name, max_string=64) for name in self.mcp_excluded[:16]
+            ],
             "scan_mode": self.scan_mode,
             "max_budget_usd": self.max_budget_usd,
             "max_turns": self.max_turns,
@@ -315,6 +366,7 @@ class TuiController:
         ]
 
     async def handle(self, command: str, payload: dict[str, Any]) -> dict[str, Any]:
+        from lamia.interface.tui.backend.setup_run import RUN_COMMANDS, dispatch_run
         from lamia.interface.tui.backend.setup_settings import (
             SETTINGS_COMMANDS,
             dispatch_settings,
@@ -332,6 +384,10 @@ class TuiController:
         }
         if command in SETTINGS_COMMANDS:
             result = await dispatch_settings(self, command, payload)
+            if result is None:
+                raise ValueError(f"Unknown command: {command}")
+        elif command in RUN_COMMANDS:
+            result = await dispatch_run(self, command, payload)
             if result is None:
                 raise ValueError(f"Unknown command: {command}")
         else:
@@ -360,7 +416,8 @@ class TuiController:
         instruction = payload.get("instruction", "")
         if not isinstance(instruction, str):
             raise TypeError("instruction must be a string")
-        self.instruction = instruction.strip()
+        self.typed_instruction = instruction.strip()
+        self.compose_instruction()
         return {"instruction": self.instruction}
 
     async def _start(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -558,3 +615,12 @@ class TuiController:
     def _require_setup_mutable(self) -> None:
         if not self.setup_mode or self.scan_started or self._start_in_progress:
             raise RuntimeError("Setup can no longer be changed after the scan starts")
+
+    def compose_instruction(self) -> None:
+        """Join a chosen instructions file with the composer note."""
+        file_text = self.file_instruction.strip()
+        typed = self.typed_instruction.strip()
+        if file_text and typed:
+            self.instruction = f"{file_text}\n\n{typed}"
+        else:
+            self.instruction = file_text or typed

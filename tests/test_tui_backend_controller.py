@@ -667,3 +667,112 @@ async def test_existing_viewer_is_reopened_and_closed(
     assert opened == [controller.viewer_url]
     assert server.shutdown_called is True
     assert server.close_called is True
+
+
+@pytest.mark.asyncio
+async def test_instruction_file_is_read_and_joined_with_the_note(tmp_path: Path) -> None:
+    playbook = tmp_path / "playbook.md"
+    playbook.write_text("  Focus on authentication.  \n", encoding="utf-8")
+    controller = TuiController(args())
+
+    loaded = await controller.handle("setup.set_instruction_file", {"path": str(playbook)})
+    assert loaded["instruction"] == "Focus on authentication."
+    assert controller.snapshot()["instruction_file"] == str(playbook)
+
+    noted = await controller.handle("setup.set_instruction", {"instruction": "also check login"})
+    assert noted["instruction"] == "Focus on authentication.\n\nalso check login"
+
+    cleared = await controller.handle("setup.set_instruction_file", {"path": ""})
+    assert cleared["instruction_file"] == ""
+    assert controller.instruction == "also check login"
+
+
+@pytest.mark.asyncio
+async def test_instruction_file_rejects_missing_and_empty_files(tmp_path: Path) -> None:
+    controller = TuiController(args())
+    missing = tmp_path / "missing.md"
+    with pytest.raises(ValueError, match="not an existing file"):
+        await controller.handle("setup.set_instruction_file", {"path": str(missing)})
+
+    empty = tmp_path / "empty.md"
+    empty.write_text("   \n", encoding="utf-8")
+    with pytest.raises(ValueError, match="empty"):
+        await controller.handle("setup.set_instruction_file", {"path": str(empty)})
+
+
+@pytest.mark.asyncio
+async def test_target_list_and_workspace_file_use_the_cli_readers(tmp_path: Path) -> None:
+    targets = tmp_path / "targets.txt"
+    targets.write_text("# skip\nhttps://one.example\n\nhttps://two.example\n", encoding="utf-8")
+    wordlist = tmp_path / "wordlist.txt"
+    wordlist.write_text("admin\n", encoding="utf-8")
+    controller = TuiController(args())
+
+    added = await controller.handle("setup.add_target_list", {"path": str(targets)})
+    assert added["added"] == 2
+    assert controller.targets == ["https://one.example", "https://two.example"]
+    assert controller.snapshot()["target_lists"] == [str(targets)]
+
+    await controller.handle(
+        "setup.add_workspace_file",
+        {"path": str(wordlist), "dest": "lists/wordlist.txt"},
+    )
+    assert controller.workspace_files[0]["workspace_path"] == "/workspace/lists/wordlist.txt"
+
+    await controller.handle("setup.remove_target_list", {"path": str(targets)})
+    assert controller.targets == []
+    await controller.handle("setup.remove_workspace_file", {"path": str(wordlist)})
+    assert controller.workspace_files == []
+
+
+@pytest.mark.asyncio
+async def test_config_and_mcp_selection(tmp_path: Path) -> None:
+    config = tmp_path / "custom.json"
+    config.write_text(
+        '{"env": {}, "scan": {"scan_mode": "quick", "max_turns": 12}}',
+        encoding="utf-8",
+    )
+    mcp = tmp_path / "mcp.json"
+    mcp.write_text(
+        '[{"name": "github", "transport": "http", "url": "https://mcp.example"}]',
+        encoding="utf-8",
+    )
+    controller = TuiController(args())
+
+    configured = await controller.handle("setup.set_config", {"path": str(config)})
+    assert configured["scan_mode"] == "quick"
+    assert configured["max_turns"] == 12
+    assert controller.snapshot()["config_path"] == str(config)
+
+    listed = await controller.handle("setup.set_mcp_config", {"path": str(mcp)})
+    assert listed["names"] == ["github"]
+    await controller.handle("setup.set_mcp_servers", {"names": ["github"]})
+    await controller.handle("setup.set_mcp_exclude", {"names": []})
+    assert controller.mcp_servers == ["github"]
+    assert controller.mcp_excluded == []
+    with pytest.raises(ValueError, match="Unknown MCP connection"):
+        await controller.handle("setup.set_mcp_servers", {"names": ["missing"]})
+
+
+@pytest.mark.asyncio
+async def test_resume_rejects_targets_added_on_this_screen() -> None:
+    controller = TuiController(args())
+    await controller.handle("setup.add_target", {"target": "https://example.com"})
+    with pytest.raises(RuntimeError, match="cannot be combined with targets"):
+        await controller.handle("setup.resume", {"run": "previous"})
+    assert controller.resume_run == ""
+
+
+@pytest.mark.asyncio
+async def test_resume_starts_without_preparing_a_new_scan() -> None:
+    started: list[str] = []
+
+    async def on_start() -> None:
+        started.append("start")
+
+    controller = TuiController(args(), on_start=on_start)
+    result = await controller.handle("setup.resume", {"run": "previous"})
+    assert result == {"resumed": "previous"}
+    assert started == ["start"]
+    assert controller.resume_run == "previous"
+    assert controller.scan_started is True

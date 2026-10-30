@@ -65,6 +65,7 @@ const (
 	modalConfirmMount
 	modalVulnerability
 	modalSettings
+	modalFile
 )
 
 type focusMode int
@@ -141,6 +142,7 @@ type Model struct {
 	vulnerabilityCopyError string
 	settings               settingsState
 	settingsPrompted       bool
+	picker                 filePickerState
 }
 
 var (
@@ -426,7 +428,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.updateMouse(msg)
 	}
 	var cmd tea.Cmd
-	if m.modal == modalNone {
+	switch {
+	case m.modal == modalFile:
+		var pickerCmd tea.Cmd
+		m.picker.files, pickerCmd = m.picker.files.Update(msg)
+		cmd = pickerCmd
+	case m.modal == modalNone:
 		m.input, cmd = m.input.Update(msg)
 	}
 	cmds = append(cmds, cmd)

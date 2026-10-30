@@ -139,6 +139,19 @@ def bounded_state_projection(state: dict[str, Any]) -> dict[str, Any]:
         terminal_projection(target, max_string=64) for target in state["targets"][:8]
     ]
     state["instruction"] = terminal_projection(state["instruction"], max_string=512)
+    state["instruction_file"] = terminal_projection(
+        state.get("instruction_file", ""), max_string=256
+    )
+    state["target_lists"] = [
+        terminal_projection(item, max_string=128) for item in state.get("target_lists", [])[:4]
+    ]
+    state["workspace_files"] = [
+        terminal_projection(item, max_string=128) for item in state.get("workspace_files", [])[:4]
+    ]
+    state["config_path"] = terminal_projection(state.get("config_path", ""), max_string=256)
+    state["mcp_config"] = terminal_projection(state.get("mcp_config", ""), max_string=256)
+    state["mcp_servers"] = list(state.get("mcp_servers", []))[:8]
+    state["mcp_excluded"] = list(state.get("mcp_excluded", []))[:8]
     state["messages"] = [
         {
             **message,
@@ -166,6 +179,13 @@ def bounded_state_projection(state: dict[str, Any]) -> dict[str, Any]:
         "working_dir": terminal_projection(state.get("working_dir", ""), max_string=256),
         "pending_mount": terminal_projection(state.get("pending_mount", ""), max_string=256),
         "instruction": terminal_projection(state["instruction"], max_string=128),
+        "instruction_file": terminal_projection(state.get("instruction_file", ""), max_string=128),
+        "target_lists": list(state.get("target_lists", []))[:4],
+        "workspace_files": list(state.get("workspace_files", []))[:4],
+        "config_path": terminal_projection(state.get("config_path", ""), max_string=128),
+        "mcp_config": terminal_projection(state.get("mcp_config", ""), max_string=128),
+        "mcp_servers": list(state.get("mcp_servers", []))[:8],
+        "mcp_excluded": list(state.get("mcp_excluded", []))[:8],
         "scan_mode": state["scan_mode"],
         "max_budget_usd": state["max_budget_usd"],
         "max_turns": state["max_turns"],

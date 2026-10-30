@@ -42,7 +42,13 @@ func (m *Model) submitSetupPrompt(value string) (tea.Model, tea.Cmd) {
 		targets++
 		commands = append(commands, send(m.client, "setup.add_target", map[string]any{"target": token}))
 	}
-	if len(fields) > targets {
+	// A chosen instructions file is the base. Extra words in the composer are
+	// appended after it; a prompt that is only targets leaves the file as the
+	// whole instruction. Without a file, the prompt itself is the instruction.
+	if strings.TrimSpace(m.snapshot.InstructionFile) != "" {
+		note := instructionNote(value)
+		commands = append(commands, send(m.client, "setup.set_instruction", map[string]any{"instruction": note}))
+	} else if len(fields) > targets {
 		commands = append(commands, send(m.client, "setup.set_instruction", map[string]any{"instruction": value}))
 	}
 	// The backend verifies the model connection before either kind of launch
@@ -69,6 +75,30 @@ func (m *Model) submitSetupPrompt(value string) (tea.Model, tea.Cmd) {
 func (m *Model) answerMountConfirmation(approved bool) tea.Cmd {
 	m.pendingPrompt = ""
 	return send(m.client, "setup.confirm_mount", map[string]any{"approved": approved})
+}
+
+// instructionNote is the composer text that is not itself a target. It is the
+// extra note joined after an instructions file.
+func instructionNote(value string) string {
+	fields := strings.Fields(value)
+	kept := make([]string, 0, len(fields))
+	for _, field := range fields {
+		token := strings.Trim(field, ",;")
+		if looksLikeTarget(token) {
+			continue
+		}
+		kept = append(kept, field)
+	}
+	return strings.TrimSpace(strings.Join(kept, " "))
+}
+
+// setupCanLaunchEmpty is an Enter on a blank composer. A file or a target list
+// already chosen in settings is enough to start; an untouched screen is not.
+func (m Model) setupCanLaunchEmpty() bool {
+	if !m.snapshot.SetupMode || m.snapshot.ScanStarted {
+		return false
+	}
+	return strings.TrimSpace(m.snapshot.InstructionFile) != "" || len(m.snapshot.Targets) > 0
 }
 
 func (m Model) hasTarget(candidate string) bool {
@@ -245,10 +275,11 @@ func setupColumnWidth(terminal int) int {
 // terminal size: the wordmark treatment, whether the tagline is shown, and how
 // many feedback-log rows fit.
 type setupFit struct {
-	width   int
-	logo    int
-	tagline bool
-	logRows int
+	width        int
+	logo         int
+	tagline      bool
+	instructions bool
+	logRows      int
 }
 
 // setupFit picks the richest layout that still fits the terminal. Sections are
@@ -256,10 +287,11 @@ type setupFit struct {
 // only thing on this screen the user has to reach.
 func (m Model) setupFit() setupFit {
 	fit := setupFit{
-		width:   setupColumnWidth(m.width),
-		logo:    logoFull,
-		tagline: true,
-		logRows: setupLogRows(m.setupLog),
+		width:        setupColumnWidth(m.width),
+		logo:         logoFull,
+		tagline:      true,
+		instructions: true,
+		logRows:      setupLogRows(m.setupLog),
 	}
 	if m.width < wordmarkWidth()+2 {
 		fit.logo = logoCompact
@@ -271,6 +303,7 @@ func (m Model) setupFit() setupFit {
 		func(f *setupFit) bool { return trimTo(&f.logRows, 3) },
 		func(f *setupFit) bool { return clearFlag(&f.tagline) },
 		func(f *setupFit) bool { return trimTo(&f.logRows, 0) },
+		func(f *setupFit) bool { return clearFlag(&f.instructions) },
 		func(f *setupFit) bool { return trimTo(&f.logo, logoCompact) },
 		func(f *setupFit) bool { return trimTo(&f.logo, logoNone) },
 	}
@@ -342,7 +375,7 @@ func (m Model) setupBody(fit setupFit) string {
 	if header := m.setupHeaderView(fit); header != "" {
 		parts = append(parts, header)
 	}
-	parts = append(parts, m.setupComposer(fit.width))
+	parts = append(parts, m.setupComposer(fit.width, fit.instructions))
 	if log := m.setupLogView(fit); log != "" {
 		parts = append(parts, log)
 	}
@@ -411,7 +444,7 @@ var wordmarkWidth = sync.OnceValue(func() int {
 // it holds focus. The scan meta and targets live inside the panel, flush under
 // the input, so everything shares one left edge - the way opencode aligns its
 // home prompt.
-func (m Model) setupComposer(width int) string {
+func (m Model) setupComposer(width int, showInstructions bool) string {
 	border := dark
 	if m.focus == focusInput {
 		border = green
@@ -421,6 +454,9 @@ func (m Model) setupComposer(width int) string {
 	inner := max(1, width-4)
 	body := m.highlightInputSelection(m.input.View())
 	body += "\n\n" + m.setupSummaryView(inner)
+	if showInstructions {
+		body += "\n" + m.instructionsView(inner)
+	}
 	if targets := m.targetsView(inner, maxTargetRows); targets != "" {
 		body += "\n" + targets
 	}
@@ -461,6 +497,18 @@ func (m Model) setupSummaryView(width int) string {
 		return truncate(hint, max(1, width))
 	}
 	return truncate(strings.Join(chips, separator), max(1, room)) + separator + hint
+}
+
+// instructionsView is the launch-screen row for a file of hacking instructions.
+// An empty choice stays visible so the option can be found without opening settings.
+func (m Model) instructionsView(width int) string {
+	label := render.Bold(green).Render("Instructions")
+	path := strings.TrimSpace(m.snapshot.InstructionFile)
+	if path == "" {
+		return label + "\n" + render.Dim().Render("▸ none")
+	}
+	row := render.Col(dim).Render("▸ ") + render.Col(white).Render(truncatePath(path, max(1, width-2)))
+	return label + render.Dim().Render(" 1") + "\n" + row
 }
 
 // maxTargetRows fits the header, four targets and the count of the rest.
@@ -514,9 +562,13 @@ func (m Model) setupHintsView(width int) string {
 	hint := func(k, text string) string { return key(k) + label(" "+text) }
 	launch := hint("enter", "launch scan")
 	settings := hint("f2", "settings")
+	instructions := hint("f3", "instructions")
 	quit := hint("ctrl+c", "quit")
 	gap := label("   ")
-	left := launch + gap + settings + gap + quit
+	left := launch + gap + settings + gap + instructions + gap + quit
+	if lipgloss.Width(left) > inner {
+		left = launch + gap + settings + gap + quit
+	}
 	if lipgloss.Width(left) > inner {
 		left = launch + gap + settings
 	}

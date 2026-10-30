@@ -65,6 +65,13 @@ type Snapshot struct {
 	WorkingDir           string           `json:"working_dir"`
 	PendingMount         string           `json:"pending_mount"`
 	Instruction          string           `json:"instruction"`
+	InstructionFile      string           `json:"instruction_file"`
+	TargetLists          []string         `json:"target_lists"`
+	WorkspaceFiles       []string         `json:"workspace_files"`
+	ConfigPath           string           `json:"config_path"`
+	McpConfig            string           `json:"mcp_config"`
+	McpServers           []string         `json:"mcp_servers"`
+	McpExcluded          []string         `json:"mcp_excluded"`
 	ScanMode             string           `json:"scan_mode"`
 	MaxBudgetUSD         *float64         `json:"max_budget_usd"`
 	MaxTurns             int              `json:"max_turns"`

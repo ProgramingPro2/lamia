@@ -192,7 +192,7 @@ func (m Model) modalView() string {
 	switch m.modal {
 	case modalHelp:
 		title := lipgloss.NewStyle().Bold(true).Foreground(green).Width(34).Align(lipgloss.Center).Render("Lamia Help")
-		body := lipgloss.NewStyle().Foreground(textColor).Render("F1        Help\nF2        Settings\nCtrl+O    Open viewer\nCtrl+Q/C  Quit\nESC       Stop Agent\nEnter     Send / expand node\nCtrl+J    Newline in message\nTab       Switch panels\n↑/↓       Navigate tree\nDrag      Select & copy text\nClick     Expand/collapse tool\nClick ▾/⤢ Collapse / zoom panel\nClick »/« Hide / show sidebar")
+		body := lipgloss.NewStyle().Foreground(textColor).Render("F1        Help\nF2        Settings\nF3        Instructions\nCtrl+O    Open viewer\nCtrl+Q/C  Quit\nESC       Stop Agent\nEnter     Send / expand node\nCtrl+J    Newline in message\nTab       Switch panels\n↑/↓       Navigate tree\nDrag      Select & copy text\nClick     Expand/collapse tool\nClick ▾/⤢ Collapse / zoom panel\nClick »/« Hide / show sidebar")
 		content := title + "\n\n" + body
 		return lipgloss.NewStyle().Width(38).Border(lipgloss.RoundedBorder()).BorderForeground(green).Background(black).Padding(1, 2).Render(content)
 	case modalQuit:
@@ -214,6 +214,8 @@ func (m Model) modalView() string {
 		return m.vulnerabilityDetail()
 	case modalSettings:
 		return m.settingsView()
+	case modalFile:
+		return m.filePickerView()
 	}
 	return ""
 }
