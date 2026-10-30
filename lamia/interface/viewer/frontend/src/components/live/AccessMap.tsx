@@ -13,6 +13,7 @@ import {
   useNodesState,
   useEdgesState,
   useReactFlow,
+  useStoreApi,
   type Node,
   type Edge,
   type EdgeProps,
@@ -95,73 +96,135 @@ function edgeCaption(edge: AccessEdgeRecord): string {
   return id ? `${edge.label} · ${id}` : edge.label;
 }
 
+const ORPHAN_GAP = 16;
+const ORPHAN_COLUMN_GAP = 96;
+
+function nodeFrom(asset: AccessNodeRecord): Node {
+  const data: AccessNodeData = {
+    label: asset.label,
+    assetType: asset.type,
+    inScope: asset.in_scope,
+    findingId: findingIdOf(asset),
+  };
+  return {
+    id: asset.id,
+    type: "accessNode",
+    position: { x: 0, y: 0 },
+    data,
+  };
+}
+
+function accessEdge(link: AccessEdgeRecord, openFinding: (id: string) => void): Edge {
+  if (link.type === "contains") {
+    return {
+      id: link.id,
+      source: link.source,
+      target: link.target,
+      focusable: false,
+      interactionWidth: 0,
+      style: { stroke: "#9a8a8a", strokeWidth: 1 },
+    };
+  }
+  const proofGap = link.type === "proof_gap";
+  const stroke = proofGap ? "#fca5a5" : "#ef4444";
+  return {
+    id: link.id,
+    type: "accessEdge",
+    source: link.source,
+    target: link.target,
+    label: edgeCaption(link),
+    interactionWidth: 24,
+    data: { findingId: link.finding_id, openFinding },
+    style: {
+      stroke,
+      strokeWidth: 1.75,
+      strokeDasharray: proofGap ? "6 4" : undefined,
+    },
+    labelStyle: { fill: "#fff1f2", fontSize: 11, fontWeight: 500 },
+    labelBgStyle: { fill: "#140606", fillOpacity: 0.94 },
+    labelBgPadding: [6, 3],
+    labelBgBorderRadius: 4,
+    markerEnd: { type: MarkerType.ArrowClosed, color: stroke, width: 18, height: 18 },
+  };
+}
+
 function layoutMap(
   map: AccessMapData,
   openFinding: (id: string) => void
 ): { nodes: Node[]; edges: Edge[] } {
+  const present = new Set(map.nodes.map((node) => node.id));
+  const links = map.edges.filter((link) => present.has(link.source) && present.has(link.target));
+  const linked = new Set<string>();
+  for (const link of links) {
+    linked.add(link.source);
+    linked.add(link.target);
+  }
+  const connected = map.nodes.filter((node) => linked.has(node.id));
+  const orphans = map.nodes.filter((node) => !linked.has(node.id));
+
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));
   g.setGraph({ rankdir: "LR", nodesep: 48, ranksep: 96 });
 
-  const nodes: Node[] = [];
-  const edges: Edge[] = [];
+  const nodes: Node[] = connected.map((asset) => nodeFrom(asset));
+  const edges: Edge[] = links.map((link) => accessEdge(link, openFinding));
 
-  for (const asset of map.nodes) {
+  for (const asset of connected) {
     g.setNode(asset.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
-    const data: AccessNodeData = {
-      label: asset.label,
-      assetType: asset.type,
-      inScope: asset.in_scope,
-      findingId: findingIdOf(asset),
-    };
-    nodes.push({
-      id: asset.id,
-      type: "accessNode",
-      position: { x: 0, y: 0 },
-      data,
-    });
   }
-
-  for (const link of map.edges) {
-    if (!map.nodes.some((node) => node.id === link.source)) continue;
-    if (!map.nodes.some((node) => node.id === link.target)) continue;
+  for (const link of links) {
     g.setEdge(link.source, link.target);
-    const proofGap = link.type === "proof_gap";
-    const stroke = proofGap ? "#fca5a5" : "#ef4444";
-    edges.push({
-      id: link.id,
-      type: "accessEdge",
-      source: link.source,
-      target: link.target,
-      label: edgeCaption(link),
-      interactionWidth: 24,
-      data: { findingId: link.finding_id, openFinding },
-      style: {
-        stroke,
-        strokeWidth: 1.75,
-        strokeDasharray: proofGap ? "6 4" : undefined,
-      },
-      labelStyle: { fill: "#fff1f2", fontSize: 11, fontWeight: 500 },
-      labelBgStyle: { fill: "#140606", fillOpacity: 0.94 },
-      labelBgPadding: [6, 3],
-      labelBgBorderRadius: 4,
-      markerEnd: { type: MarkerType.ArrowClosed, color: stroke, width: 18, height: 18 },
-    });
+  }
+  if (connected.length > 0) {
+    dagre.layout(g);
   }
 
-  dagre.layout(g);
-
+  let maxRight = 0;
   for (const node of nodes) {
     const pos = g.node(node.id);
-    if (pos) {
-      node.position = {
-        x: pos.x - NODE_WIDTH / 2,
-        y: pos.y - NODE_HEIGHT / 2,
-      };
-    }
+    if (!pos) continue;
+    node.position = {
+      x: pos.x - NODE_WIDTH / 2,
+      y: pos.y - NODE_HEIGHT / 2,
+    };
+    maxRight = Math.max(maxRight, node.position.x + NODE_WIDTH);
   }
 
+  const orphanX = connected.length > 0 ? maxRight + ORPHAN_COLUMN_GAP : 0;
+  orphans.forEach((asset, index) => {
+    const node = nodeFrom(asset);
+    node.position = { x: orphanX, y: index * (NODE_HEIGHT + ORPHAN_GAP) };
+    nodes.push(node);
+  });
+
   return { nodes, edges };
+}
+
+function MeasureNodes({ ids }: { ids: string }) {
+  const store = useStoreApi();
+  useEffect(() => {
+    if (!ids) return undefined;
+    const measure = () => {
+      const { domNode, updateNodeInternals } = store.getState();
+      if (!domNode) return;
+      const updates = new Map<string, { id: string; nodeElement: HTMLDivElement; force: true }>();
+      for (const id of ids.split("\n")) {
+        if (!id) continue;
+        const nodeElement = domNode.querySelector<HTMLDivElement>(
+          `.react-flow__node[data-id="${id}"]`
+        );
+        if (nodeElement) updates.set(id, { id, nodeElement, force: true });
+      }
+      if (updates.size > 0) updateNodeInternals(updates);
+    };
+    const frame = requestAnimationFrame(measure);
+    const timer = window.setTimeout(measure, 50);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
+  }, [ids, store]);
+  return null;
 }
 
 function FitAccess({ count }: { count: number }) {
@@ -229,6 +292,11 @@ interface AccessMapProps {
 export default function AccessMap({ map, onOpenFinding }: AccessMapProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const openFindingRef = useRef(onOpenFinding);
+  openFindingRef.current = onOpenFinding;
+  const openFinding = useCallback((id: string) => {
+    openFindingRef.current(id);
+  }, []);
   const signature = useMemo(
     () =>
       JSON.stringify({
@@ -251,12 +319,12 @@ export default function AccessMap({ map, onOpenFinding }: AccessMapProps) {
       setEdges([]);
       return;
     }
-    const laid = layoutMap(map, onOpenFinding);
+    const laid = layoutMap(map, openFinding);
     setNodes(laid.nodes);
     setEdges(laid.edges);
     // `signature` already covers the map fields that change the layout.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signature, onOpenFinding, setNodes, setEdges]);
+  }, [signature, openFinding, setNodes, setEdges]);
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
@@ -302,6 +370,7 @@ export default function AccessMap({ map, onOpenFinding }: AccessMapProps) {
         className="bg-[#140606]"
       >
         <Background color="#3f1515" gap={20} />
+        <MeasureNodes ids={nodes.map((node) => node.id).join("\n")} />
         <FitAccess count={nodes.length} />
         <SmoothControls />
         <MiniMap

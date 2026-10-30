@@ -141,7 +141,12 @@ def test_closed_coverage_draws_nodes_but_no_access_edge(tmp_path: Path) -> None:
     assert _node(graph, "host:edge.internal")["in_scope"] is True
     assert _node(graph, "app:edge.internal/health")
     assert _node(graph, "app:edge.internal/legacy")
-    assert graph["edges"] == []
+    assert graph["edges"]
+    assert {edge["type"] for edge in graph["edges"]} == {"contains"}
+    assert {(edge["source"], edge["target"]) for edge in graph["edges"]} == {
+        ("host:edge.internal", "app:edge.internal/health"),
+        ("host:edge.internal", "app:edge.internal/legacy"),
+    }
 
 
 def test_note_can_name_a_role_or_store_but_draws_no_edge(tmp_path: Path) -> None:
@@ -236,3 +241,172 @@ def test_empty_run_has_no_devices_and_no_edges(tmp_path: Path) -> None:
     graph = build_access_map(run_dir)
 
     assert graph == {"nodes": [], "edges": []}
+
+
+def test_bare_path_is_contained_by_the_in_scope_host(tmp_path: Path) -> None:
+    run_dir = _run(tmp_path)
+    _write(
+        run_dir / "coverage.json",
+        {
+            "entries": [
+                {
+                    "surface": "https://edge.internal",
+                    "risk_area": "infrastructure fingerprinting",
+                    "outcome": "no_issue_found",
+                },
+                {
+                    "surface": "BidStar module /bidstar/ (proposal generation)",
+                    "risk_area": "attack surface mapping",
+                    "outcome": "no_issue_found",
+                },
+            ]
+        },
+    )
+
+    graph = build_access_map(run_dir)
+
+    assert _node(graph, "app:edge.internal/bidstar")["in_scope"] is True
+    assert not any(node["label"] == "/bidstar" for node in graph["nodes"])
+    assert {
+        (edge["source"], edge["target"]) for edge in graph["edges"] if edge["type"] == "contains"
+    } == {("host:edge.internal", "app:edge.internal/bidstar")}
+
+
+def test_store_stays_with_the_host_named_in_the_same_note(tmp_path: Path) -> None:
+    run_dir = _run(tmp_path)
+    title = (
+        "Pre-outage evidence preservation — MySQL 3306 & SSH 22 verdicts (sandbox.lodestarbpm.com)"
+    )
+    _write(
+        run_dir / ".state" / "notes.json",
+        {
+            "mysql": {
+                "title": title,
+                "category": "general",
+                "content": "Preserved before the outage.",
+            }
+        },
+    )
+
+    graph = build_access_map(run_dir)
+
+    stores = [node for node in graph["nodes"] if node["type"] == "data_store"]
+    assert len(stores) == 1
+    assert "sandbox.lodestarbpm.com" not in stores[0]["label"]
+    assert any(
+        edge["type"] == "contains"
+        and edge["source"] == "host:sandbox.lodestarbpm.com"
+        and edge["target"] == stores[0]["id"]
+        for edge in graph["edges"]
+    )
+
+
+def test_slash_inside_a_sentence_does_not_become_a_node(tmp_path: Path) -> None:
+    run_dir = _run(tmp_path)
+    _write(
+        run_dir / "coverage.json",
+        {
+            "entries": [
+                {
+                    "surface": "UDP/TCP service fingerprinting",
+                    "risk_area": "infrastructure fingerprinting",
+                    "outcome": "no_issue_found",
+                }
+            ]
+        },
+    )
+
+    graph = build_access_map(run_dir)
+
+    assert graph["nodes"] == []
+    assert graph["edges"] == []
+
+
+def test_host_port_follow_up_is_a_service_gap(tmp_path: Path) -> None:
+    run_dir = _run(tmp_path)
+    _write(
+        run_dir / ".state" / "coverage.json",
+        {
+            "mysql": {
+                "surface": "sandbox.lodestarbpm.com:3306 (MySQL 5.1.73-log)",
+                "risk_area": "database authentication",
+                "outcome": "needs_follow_up",
+            }
+        },
+    )
+
+    graph = build_access_map(run_dir)
+
+    assert _node(graph, "host:sandbox.lodestarbpm.com")["type"] == "host"
+    assert _node(graph, "svc:sandbox.lodestarbpm.com:3306")["type"] == "service"
+    assert all("MySQL" not in node["label"] for node in graph["nodes"])
+    edge = _edge(graph, "edge:cov:mysql")
+    assert edge["type"] == "proof_gap"
+    assert edge["source"] == "host:sandbox.lodestarbpm.com"
+    assert edge["target"] == "svc:sandbox.lodestarbpm.com:3306"
+    assert not any(item["type"] == "contains" for item in graph["edges"])
+
+
+def test_queued_title_is_not_a_data_store(tmp_path: Path) -> None:
+    run_dir = _run(tmp_path)
+    _write(
+        run_dir / ".state" / "notes.json",
+        {
+            "plan": {
+                "title": "Auth & ATO path — pre-outage analysis, evidence, and queued test plan",
+                "category": "general",
+                "content": "The word queued is a plan, not a queue.",
+            }
+        },
+    )
+
+    graph = build_access_map(run_dir)
+
+    assert graph["nodes"] == []
+    assert graph["edges"] == []
+
+
+def test_lodestar_slice_links_the_dns_service_and_drops_sentences(tmp_path: Path) -> None:
+    run_dir = _run(tmp_path, "lodestar-slice")
+    _write(
+        run_dir / "vulnerabilities.json",
+        [
+            {
+                "id": "vuln-0001",
+                "title": "Open Recursive DNS Resolver",
+                "target": "sandbox.lodestarbpm.com:53 (UDP/TCP DNS, dnsmasq)",
+                "endpoint": "",
+            }
+        ],
+    )
+    _write(
+        run_dir / ".state" / "coverage.json",
+        {
+            "dns": {
+                "surface": "sandbox.lodestarbpm.com:53 (DNS service fingerprinting)",
+                "risk_area": "infrastructure fingerprinting",
+                "outcome": "no_issue_found",
+            }
+        },
+    )
+    _write(
+        run_dir / ".state" / "notes.json",
+        {
+            "plan": {
+                "title": "Auth & ATO path — pre-outage analysis, evidence, and queued test plan",
+                "category": "general",
+            }
+        },
+    )
+
+    graph = build_access_map(run_dir)
+    labels = [node["label"] for node in graph["nodes"]]
+
+    assert not any("UDP/TCP" in label or "fingerprinting" in label for label in labels)
+    assert not any("queued" in label for label in labels)
+    assert not any(node["type"] == "data_store" for node in graph["nodes"])
+    assert _node(graph, "svc:sandbox.lodestarbpm.com:53")["type"] == "service"
+    edge = _edge(graph, "edge:vuln-0001")
+    assert edge["type"] == "access_gained"
+    assert edge["source"] == "host:sandbox.lodestarbpm.com"
+    assert edge["target"] == "svc:sandbox.lodestarbpm.com:53"

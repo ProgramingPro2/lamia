@@ -13,6 +13,7 @@ export interface AccessNodeData {
 
 const TYPE_LABEL: Record<string, string> = {
   host: "Host",
+  service: "Service",
   app: "App",
   role: "Role",
   data_store: "Data store",

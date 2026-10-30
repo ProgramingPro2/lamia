@@ -5,7 +5,8 @@ notes, and the threat model. A host, app, role, or data store that appears
 in any of those records is shown. Nothing here waits for an operator to
 approve a discovered asset, and nothing here copies proof-of-concept text.
 The arrow keeps a short phrase and the finding id; the finding itself is
-where the detail lives.
+where the detail lives. A contains edge only says which host owns a
+service, app, or store. It is not access.
 """
 
 from __future__ import annotations
@@ -122,6 +123,13 @@ _HOST_TOKEN = re.compile(
     r"\b(?:https?://[^\s,;]+|localhost|(?:\d{1,3}\.){3}\d{1,3}|(?:[a-z0-9-]+\.)+[a-z]{2,})\b",
     re.IGNORECASE,
 )
+_URL_TOKEN = re.compile(r"https?://[^\s,;'\"<>]+", re.IGNORECASE)
+_HOST_PORT_TOKEN = re.compile(
+    r"\b((?:(?:\d{1,3}\.){3}\d{1,3})|(?:[a-z0-9-]+\.)+[a-z]{2,}|localhost):(\d{2,5})\b",
+    re.IGNORECASE,
+)
+# A real path, not a slash inside a word such as UDP/TCP.
+_PATH_TOKEN = re.compile(r"(?<![\w./-])(/[\w.~%:@+-]+(?:/[\w.~%:@+-]+)*|/\?[^\s,;'\"<>)\]]+)")
 _LABEL_LIMIT = 80
 
 Asset = dict[str, str]
@@ -148,6 +156,7 @@ def build_access_map(run_dir: Path) -> dict[str, Any]:
         _add_note(graph, note_id, note)
     for model_id, model in _threat_models(run_dir):
         _add_threat_model(graph, model_id, model)
+    graph.link_contained()
     graph.apply_trust_boundaries()
     return graph.payload()
 
@@ -196,6 +205,88 @@ class _Graph:
         if source not in self.nodes or target not in self.nodes:
             return
         self.edges[edge_id] = edge
+
+    def add_contains(self, source: str, target: str) -> None:
+        """A structural parent edge. Skipped when any edge already joins the pair."""
+        if not source or not target or source == target:
+            return
+        if source not in self.nodes or target not in self.nodes:
+            return
+        for edge in self.edges.values():
+            pair = {str(edge.get("source", "")), str(edge.get("target", ""))}
+            if pair == {source, target}:
+                return
+        edge_id = f"edge:contains:{source}:{target}"
+        self.edges[edge_id] = {
+            "id": edge_id,
+            "type": "contains",
+            "source": source,
+            "target": target,
+            "label": "",
+            "finding_id": None,
+            "status": "contains",
+        }
+
+    def link_contained(self) -> None:
+        """Parent services, apps, and stores that have no access edge yet.
+
+        Closed coverage and notes stay free of access arrows. The host edge
+        is what keeps those assets from sitting as orphan points.
+        """
+        self._adopt_unqualified_paths()
+        hosts = [node for node in self.nodes.values() if node.get("type") == "host"]
+        for node in list(self.nodes.values()):
+            parent = _containing_host(node, hosts)
+            if parent is None:
+                continue
+            self.add_contains(str(parent["id"]), str(node["id"]))
+
+    def _adopt_unqualified_paths(self) -> None:
+        """Hang a bare path off the only in-scope host so it is not an orphan."""
+        parents = [
+            node
+            for node in self.nodes.values()
+            if node.get("type") == "host" and node.get("in_scope") is True
+        ]
+        if len(parents) != 1:
+            return
+        host_label = str(parents[0].get("label", "")).lower()
+        moves: list[tuple[str, str, str]] = []
+        for node in self.nodes.values():
+            if node.get("type") != "app":
+                continue
+            label = str(node.get("label", ""))
+            if not label.startswith("/"):
+                continue
+            if _host_key({"id": "", "type": "app", "label": label}) is not None:
+                continue
+            qualified = f"{host_label}{label}".lower()
+            moves.append((str(node["id"]), f"app:{qualified}", qualified))
+        for old_id, new_id, qualified in moves:
+            old = self.nodes.pop(old_id, None)
+            if old is None:
+                continue
+            target = self.nodes.get(new_id)
+            if target is None:
+                target = {
+                    "id": new_id,
+                    "type": "app",
+                    "label": qualified,
+                    "in_scope": True,
+                    "sources": [],
+                }
+                self.nodes[new_id] = target
+            for source in old.get("sources", []):
+                if isinstance(source, dict):
+                    _add_source(target, str(source.get("kind", "")), str(source.get("id", "")))
+            self._retarget(old_id, new_id)
+
+    def _retarget(self, old_id: str, new_id: str) -> None:
+        for edge in self.edges.values():
+            if edge.get("source") == old_id:
+                edge["source"] = new_id
+            if edge.get("target") == old_id:
+                edge["target"] = new_id
 
     def apply_trust_boundaries(self) -> None:
         if not self.boundaries:
@@ -278,7 +369,9 @@ def _add_coverage(graph: _Graph, entry: dict[str, Any], findings: list[dict[str,
 
 def _add_note(graph: _Graph, note_id: str, note: dict[str, Any]) -> None:
     """A note can name an asset. It never draws an access edge."""
-    graph.add_assets(_note_assets(note), kind="note", source_id=note_id)
+    assets = _note_assets(note)
+    graph.add_assets(assets, kind="note", source_id=note_id)
+    _contain_noted_stores(graph, assets)
 
 
 def _add_threat_model(graph: _Graph, model_id: str, model: dict[str, Any]) -> None:
@@ -306,7 +399,7 @@ def _coverage_assets(surface: str) -> tuple[Asset | None, Asset | None, list[Ass
         right = _parse_assets(sides[1])
         return (
             _prefer(left, "host"),
-            _prefer(right, "app") or _prefer(right, "host"),
+            _child_asset(right) or _prefer(right, "host"),
             [
                 *left,
                 *right,
@@ -314,21 +407,26 @@ def _coverage_assets(surface: str) -> tuple[Asset | None, Asset | None, list[Ass
         )
     assets = _parse_assets(surface)
     assets.extend(_embedded_assets(surface))
-    return _prefer(assets, "host"), _prefer(assets, "app"), _dedupe(assets)
+    return _prefer(assets, "host"), _child_asset(assets), _dedupe(assets)
 
 
 def _pick_edge(
     origin: list[Asset], dest: list[Asset], role: Asset | None
 ) -> tuple[Asset | None, Asset | None]:
     source = _prefer(origin, "host") or _first(origin)
-    target = _prefer(dest, "app") or _prefer(dest, "host") or _last(dest)
+    target = _child_asset(dest) or _prefer(dest, "host") or _last(dest)
     if source and target and source["id"] != target["id"]:
         return source, target
     host = _prefer(origin, "host")
     app = _prefer(origin, "app")
     if host and app and host["id"] != app["id"]:
         return host, app
-    network = target or _prefer(origin, "app") or _prefer(origin, "host")
+    service = _prefer(origin, "service") or _prefer(dest, "service")
+    if host and service and host["id"] != service["id"]:
+        return host, service
+    network = (
+        target or _prefer(origin, "app") or _prefer(origin, "service") or _prefer(origin, "host")
+    )
     if role is not None and network is not None and role["id"] != network["id"]:
         return role, network
     return None, None
@@ -382,17 +480,31 @@ def _parse_assets(text: str, *, host_hint: str | None = None) -> list[Asset]:
     raw = text.strip().strip("`").strip()
     if not raw or _is_personal_name(raw):
         return []
-    if _is_code_path(raw):
-        return [_asset("app", raw, raw)]
-    if raw.startswith("/") and " " not in raw:
-        return _path_asset(raw, host_hint)
-    return _host_assets(raw)
+    if any(char.isspace() for char in raw):
+        return _prose_assets(raw)
+    return _token_assets(raw, host_hint)
+
+
+def _token_assets(raw: str, host_hint: str | None) -> list[Asset]:
+    if raw.lower().startswith(("http://", "https://")):
+        return _host_assets(raw)
+    if raw.startswith(("/", "\\")):
+        return _path_asset(raw.replace("\\", "/"), host_hint)
+    hosted = _host_assets(raw)
+    if hosted or not _is_code_path(raw):
+        return hosted
+    return [_asset("app", raw, raw)]
 
 
 def _path_asset(raw: str, host_hint: str | None) -> list[Asset]:
     path = _strip_decorations(raw)
     if path in {"", "/"}:
+        if path == "/" and host_hint:
+            label = f"{host_hint}/".lower()
+            return [_asset("app", label, label)]
         return []
+    if not path.startswith("/"):
+        path = f"/{path}"
     if host_hint:
         label = f"{host_hint}{path}".lower()
         return [_asset("app", label, label)]
@@ -403,10 +515,21 @@ def _host_assets(raw: str) -> list[Asset]:
     located = _hostname_and_path(raw)
     if located is None:
         return []
-    host_label, path = located
-    assets = [_asset("host", host_label, host_label)]
-    if path:
-        label = f"{host_label}{path}"
+    host, port, path = located
+    return _assets_for_endpoint(host, port, path)
+
+
+def _assets_for_endpoint(host: str, port: int | None, path: str) -> list[Asset]:
+    """A host, plus a service when the port is not the web default, plus a path."""
+    assets = [_asset("host", host, host)]
+    if port is not None and port not in {80, 443} and 0 < port <= 65535:
+        label = f"{host}:{port}"
+        assets.append(_asset("service", label, label))
+    if path == "/":
+        label = f"{host}/"
+        assets.append(_asset("app", label, label))
+    elif path:
+        label = f"{host}{path}".lower()
         assets.append(_asset("app", label, label))
     return assets
 
@@ -414,10 +537,54 @@ def _host_assets(raw: str) -> list[Asset]:
 def _embedded_assets(text: str) -> list[Asset]:
     if " " not in text and "://" not in text:
         return []
+    return _prose_assets(text)
+
+
+def _prose_assets(text: str) -> list[Asset]:
+    """Hosts, ports, and paths mentioned in a sentence. The sentence itself is not an asset."""
+    occupied: list[tuple[int, int]] = []
     assets: list[Asset] = []
+
+    def overlaps(start: int, end: int) -> bool:
+        return any(start < right and end > left for left, right in occupied)
+
+    for match in _URL_TOKEN.finditer(text):
+        token = match.group(0).rstrip(").,")
+        assets.extend(_host_assets(token))
+        occupied.append(match.span())
+    for match in _HOST_PORT_TOKEN.finditer(text):
+        if overlaps(*match.span()):
+            continue
+        port = int(match.group(2))
+        assets.extend(_service_assets(match.group(1), port))
+        occupied.append(match.span())
     for match in _HOST_TOKEN.finditer(text):
-        assets.extend(_parse_assets(match.group(0).rstrip(").,")))
-    return assets
+        if overlaps(*match.span()):
+            continue
+        token = match.group(0).rstrip(").,")
+        hosted = _host_assets(token)
+        if not hosted:
+            continue
+        assets.extend(hosted)
+        occupied.append(match.span())
+
+    host_labels = [asset["label"] for asset in assets if asset["type"] == "host"]
+    unique_hosts = {_host_name(label) for label in host_labels}
+    hint = host_labels[0] if len(unique_hosts) == 1 else None
+    for match in _PATH_TOKEN.finditer(text):
+        if overlaps(*match.span()):
+            continue
+        assets.extend(_path_asset(match.group(1).rstrip(").,"), hint))
+    return _dedupe(assets)
+
+
+def _service_assets(host: str, port: int) -> list[Asset]:
+    cleaned = host.rstrip(".").lower()
+    if not _is_host_name(cleaned):
+        return []
+    if port in {80, 443} or not 0 < port <= 65535:
+        return [_asset("host", cleaned, cleaned)]
+    return _assets_for_endpoint(cleaned, port, "")
 
 
 def _code_assets(finding: dict[str, Any]) -> list[Asset]:
@@ -458,11 +625,17 @@ def _store_from_text(text: str) -> Asset | None:
 
 
 def _asset(kind: str, identity: str, label: str) -> Asset:
-    prefix = {"host": "host", "app": "app", "role": "role", "data_store": "store"}[kind]
+    prefix = {
+        "host": "host",
+        "app": "app",
+        "role": "role",
+        "data_store": "store",
+        "service": "svc",
+    }[kind]
     return {"id": f"{prefix}:{identity}", "type": kind, "label": label}
 
 
-def _hostname_and_path(text: str) -> tuple[str, str] | None:
+def _hostname_and_path(text: str) -> tuple[str, int | None, str] | None:
     raw = text.strip()
     if not raw or any(char.isspace() for char in raw):
         return None
@@ -471,12 +644,8 @@ def _hostname_and_path(text: str) -> tuple[str, str] | None:
     host = (parts.hostname or "").rstrip(".").lower()
     if not _is_host_name(host):
         return None
-    port = parts.port
-    host_label = f"{host}:{port}" if port and port not in {80, 443} else host
     path = _strip_decorations(parts.path or "")
-    if path == "/":
-        path = ""
-    return host_label, path
+    return host, parts.port, path
 
 
 def _is_host_name(host: str) -> bool:
@@ -508,10 +677,13 @@ def _is_ip(host: str) -> bool:
 
 
 def _is_code_path(text: str) -> bool:
+    """A single file token. A sentence that merely contains a slash is not one."""
+    if any(char.isspace() for char in text):
+        return False
     lowered = text.lower()
     if lowered.startswith(("http://", "https://")):
         return False
-    if "/" in text or "\\" in text:
+    if text.startswith(("/", "\\")):
         return True
     return any(lowered.endswith(suffix) for suffix in _CODE_SUFFIXES)
 
@@ -525,9 +697,10 @@ def _is_personal_name(text: str) -> bool:
 
 def _mentions_store(text: str) -> bool:
     lowered = text.lower()
-    if any(word in lowered for word in _STORE_WORDS):
-        return True
-    return bool(re.search(r"(^|[^a-z])db($|[^a-z])", lowered))
+    for word in _STORE_WORDS:
+        if re.search(rf"(?<![a-z0-9]){re.escape(word)}(?![a-z0-9])", lowered):
+            return True
+    return bool(re.search(r"(?<![a-z0-9])db(?![a-z0-9])", lowered))
 
 
 def _strip_decorations(path: str) -> str:
@@ -608,14 +781,58 @@ def _in_scope(asset: Asset, scope_hosts: set[str]) -> bool:
 def _host_key(asset: Asset) -> str | None:
     label = asset["label"].lower()
     if asset["type"] == "host":
-        return label.split(":", 1)[0]
+        return _host_name(label)
+    if asset["type"] == "service":
+        return _host_name(label.rsplit(":", 1)[0])
     if asset["type"] != "app":
         return None
     candidate = label.split("/", 1)[0]
-    bare = candidate.split(":", 1)[0]
-    if _is_host_name(bare) or bare == "localhost":
+    bare = _host_name(candidate.split(":", 1)[0])
+    if bare and (_is_host_name(bare) or bare == "localhost"):
         return bare
     return None
+
+
+def _host_name(label: str) -> str:
+    return label.split(":", 1)[0].rstrip(".")
+
+
+def _containing_host(node: dict[str, Any], hosts: list[dict[str, Any]]) -> dict[str, Any] | None:
+    kind = str(node.get("type", ""))
+    label = str(node.get("label", ""))
+    if kind in {"app", "service"}:
+        key = _host_key({"id": "", "type": kind, "label": label})
+        if key is None:
+            return None
+        for host in hosts:
+            host_key = _host_key({"id": "", "type": "host", "label": str(host.get("label", ""))})
+            if host_key == key:
+                return host
+        return None
+    if kind != "data_store":
+        return None
+    matches = [
+        host for host in hosts if _contains_label(label.lower(), str(host.get("label", "")).lower())
+    ]
+    if len(matches) == 1:
+        return matches[0]
+    return None
+
+
+def _child_asset(assets: list[Asset]) -> Asset | None:
+    return _prefer(assets, "app") or _prefer(assets, "service")
+
+
+def _contain_noted_stores(graph: _Graph, assets: list[Asset]) -> None:
+    """A store named beside one host in the same note belongs to that host."""
+    hosts = [asset for asset in assets if asset["type"] == "host"]
+    host_ids = {asset["id"] for asset in hosts}
+    if len(host_ids) != 1:
+        return
+    parent_id = next(iter(host_ids))
+    for asset in assets:
+        if asset["type"] == "data_store":
+            graph.add_contains(parent_id, asset["id"])
 
 
 def _host_label(assets: list[Asset]) -> str | None:
