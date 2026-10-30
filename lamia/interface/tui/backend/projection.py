@@ -7,7 +7,7 @@ import re
 from typing import Any
 
 
-SCAN_MODES = ("quick", "standard", "deep")
+SCAN_MODES = ("quick", "standard", "deep", "exhaustive")
 SCOPE_MODES = ("auto", "diff", "full")
 MAX_PROJECTION_STRING = 64 * 1024
 MAX_IMAGE_DATA_URI_BYTES = 2 * 1024 * 1024

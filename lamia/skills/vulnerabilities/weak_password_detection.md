@@ -126,7 +126,7 @@ NIST SP 800-63B-4 recommends allowing a maximum of at least 64 characters and re
 ### Service-Level Brute-Force
 
 - HTTP login endpoints: `ffuf` or custom scripts (see Tooling)
-- SSH/FTP/SMB/Telnet and other services: `nmap` NSE `*-brute` scripts, e.g. `nmap -p 22 --script ssh-brute --script-args userdb=users.txt,passdb=passwords.txt target.com`
+- SSH/FTP/SMB/Telnet and other services: `hydra` with a short list and a low `-t`, or `nmap` NSE `*-brute` scripts, e.g. `nmap -p 22 --script ssh-brute --script-args userdb=users.txt,passdb=passwords.txt target.com`
 - Databases (MySQL, PostgreSQL, MongoDB, Redis): weak/default credentials via the matching NSE brute script (`mysql-brute`, `pgsql-brute`, `mongodb-brute`, `redis-brute`) or a custom client script
 - Any protocol lacking a ready script: custom Python
 
@@ -138,6 +138,12 @@ NIST SP 800-63B-4 recommends allowing a maximum of at least 64 characters and re
   `ffuf -w users.txt:USER -w passwords.txt:PASS -u https://target.com/login -X POST -d "username=USER&password=PASS" -fr "Invalid"`
 - JSON body / custom headers via `-H` and a JSON `-d` payload
 - Filter by response size, status code, or regex to identify successes
+
+### hydra (non-HTTP services)
+
+- SSH, FTP, SMB, and database listeners, when the service is not an HTTP form:
+  `hydra -L users.txt -P /usr/share/seclists/Passwords/Common-Credentials/10k-most-common.txt -t 4 -f -o hydra.txt ssh://target`
+- Keep `-t` at 4 or below. Stop on lockout, timeouts, or connection errors. `-f` stops at the first valid login; that login is the proof.
 
 ### nmap NSE (service brute-force)
 
@@ -153,11 +159,7 @@ NIST SP 800-63B-4 recommends allowing a maximum of at least 64 characters and re
 
 ### Wordlists
 
-No password wordlists ship in the sandbox by default — download what you need into `/home/pentester/tools/wordlists` at runtime:
-- Common passwords (e.g. `rockyou.txt`) from its upstream source
-- SecLists `Passwords/` and `Passwords/Default-Credentials/` (vendor defaults) from https://github.com/danielmiessler/SecLists
-- Custom lists from target-specific scraping
-- Breach compilation subsets filtered by target relevance
+SecLists is installed at `/usr/share/seclists`. Start with a short file under `Passwords/Common-Credentials/` or `Passwords/Default-Credentials/`. A custom list scraped from the target is appropriate when it is shorter than those. Do not pull a full breach dump into the sandbox when SecLists already has a shorter list that would prove the issue.
 
 ## Validation
 
@@ -194,7 +196,7 @@ No password wordlists ship in the sandbox by default — download what you need 
 6. Check for concurrent session limits; successful logins may kick out legitimate users
 7. GraphQL batching can test multiple credentials in a single request, bypassing per-request limits
 8. Document the password policy and recommend minimum standards (length appropriate to single-factor/MFA use, breach checking, and resistance to online guessing)
-9. For web logins prefer `ffuf`; for other services use `nmap` NSE `*-brute` scripts or custom scripts with equivalent logic
+9. For web logins prefer `ffuf`. For SSH, FTP, SMB, and databases prefer `hydra` with `-t 4` and `-f`, or an `nmap` NSE `*-brute` script when hydra has no module for that protocol
 10. Combine with MFA testing: weak passwords plus missing MFA is a critical finding
 
 ## Summary

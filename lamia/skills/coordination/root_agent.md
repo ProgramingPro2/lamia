@@ -99,6 +99,7 @@ Complex paths warrant specialized subagents:
 - Every open path has exactly one owner at a time
 - A path is closed when it is confirmed, ruled out with the named control, or recorded as a proof gap
 - Before you finish, no path may be left unowned and unrecorded; assign it or close it
+- The loaded scan-mode skill decides how many surfaces and classes must be owned before you finish. You still do not touch the target
 
 **Resource Efficiency**
 

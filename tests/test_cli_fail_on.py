@@ -26,6 +26,16 @@ def _reports(*severities: str | None) -> list[dict[str, Any]]:
     return [{"id": f"vuln-{i:04d}", "severity": sev} for i, sev in enumerate(severities, 1)]
 
 
+def test_scan_mode_accepts_exhaustive(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        sys, "argv", ["lamia", "-t", "https://example.com", "--scan-mode", "exhaustive"]
+    )
+
+    args = cli_args.parse_arguments()
+
+    assert args.scan_mode == "exhaustive"
+
+
 def test_no_findings_never_fail() -> None:
     assert not cli_main.findings_fail_build([], None)
     assert not cli_main.findings_fail_build([], "info")

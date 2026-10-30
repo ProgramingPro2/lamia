@@ -110,10 +110,12 @@ _SKILL_PHRASINGS: dict[str, tuple[str, ...]] = {
     ),
     "insecure_deserialization": ("deserialization",),
     "insecure_file_uploads": ("file upload",),
+    "ldap_injection": ("ldap injection", "ldap"),
     "llm_prompt_injection": ("prompt injection",),
     "mass_assignment": ("mass assignment", "parameter binding"),
     "nosql_injection": ("nosql",),
     "open_redirect": ("redirect",),
+    "post_exploitation": ("post exploitation",),
     "path_traversal_lfi_rfi": (
         "path traversal",
         "directory traversal",
@@ -135,6 +137,7 @@ _SKILL_PHRASINGS: dict[str, tuple[str, ...]] = {
     "ssti": ("ssti", "template injection"),
     "subdomain_takeover": ("subdomain takeover",),
     "weak_password_detection": ("password", "credential", "brute force"),
+    "xpath_injection": ("xpath injection", "xpath"),
     "xss": ("xss", "cross site scripting", "script injection"),
     "xxe": ("xxe", "xml external entity", "xml entity"),
 }

@@ -205,6 +205,16 @@ RUN npm install -g jshint
 
 USER root
 
+# Exploit and backend tooling for deep and exhaustive scans. These packages are
+# large (Metasploit, SecLists); the matching skills assume they are on PATH.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    metasploit-framework \
+    exploitdb \
+    hydra \
+    seclists \
+    netexec
+
 RUN apt-get autoremove -y && \
     apt-get autoclean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \

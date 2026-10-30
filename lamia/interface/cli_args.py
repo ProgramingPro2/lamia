@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import math
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 from lamia.config import apply_config_override
+from lamia.config.loader import load_scan_preferences
 from lamia.config.settings import DEFAULT_MAX_TURNS
 from lamia.core.paths import RUNS_SEARCH_PHRASE, run_dir_for, runtime_state_dir
 from lamia.interface.scan_setup import attach_workspace_mount, build_targets_info
@@ -44,6 +47,20 @@ def _positive_budget(value: str) -> float:
     if not math.isfinite(budget) or budget <= 0:
         raise argparse.ArgumentTypeError("must be a finite number greater than 0")
     return budget
+
+
+class _MarkExplicit(argparse.Action):
+    """Store a value and record that the flag was present on the command line."""
+
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: Any,
+        option_string: str | None = None,
+    ) -> None:
+        setattr(namespace, self.dest, values)
+        setattr(namespace, f"{self.dest}_explicit", True)
 
 
 def _positive_int(value: str) -> int:
@@ -202,13 +219,15 @@ Examples:
         "-m",
         "--scan-mode",
         type=str,
-        choices=["quick", "standard", "deep"],
-        default="deep",
+        choices=["quick", "standard", "deep", "exhaustive"],
+        default=None,
+        action=_MarkExplicit,
         help=(
             "Scan mode: "
             "'quick' for fast CI/CD checks, "
             "'standard' for routine testing, "
-            "'deep' for thorough security reviews (default). "
+            "'deep' for thorough security reviews (default), "
+            "'exhaustive' to test every applicable class and escalate scanners. "
             "Default: deep."
         ),
     )
@@ -217,7 +236,8 @@ Examples:
         "--scope-mode",
         type=str,
         choices=["auto", "diff", "full"],
-        default="auto",
+        default=None,
+        action=_MarkExplicit,
         help=(
             "Scope mode for code targets: "
             "'auto' enables PR diff-scope in CI/headless runs, "
@@ -229,6 +249,8 @@ Examples:
     parser.add_argument(
         "--diff-base",
         type=str,
+        default=None,
+        action=_MarkExplicit,
         help=(
             "Target branch or commit to compare against (e.g., origin/main). "
             "Defaults to the repository's default branch."
@@ -278,6 +300,7 @@ Examples:
         metavar="USD",
         type=_positive_budget,
         default=None,
+        action=_MarkExplicit,
         help=(
             "Maximum LLM cost in USD (> 0). The scan stops cleanly when this limit is reached. "
             "Graduated wrap-up warnings are sent to all agents as it is approached."
@@ -289,10 +312,12 @@ Examples:
         dest="max_turns",
         metavar="N",
         type=_positive_int,
-        default=DEFAULT_MAX_TURNS,
+        default=None,
+        action=_MarkExplicit,
         help=(
-            "Maximum turns per agent (> 0, default %(default)s). Each agent is force-stopped "
-            "when it reaches this limit, with graduated wrap-up warnings as it is approached."
+            f"Maximum turns per agent (> 0, default {DEFAULT_MAX_TURNS}). Each agent is "
+            "force-stopped when it reaches this limit, with graduated wrap-up warnings "
+            "as it is approached."
         ),
     )
 
@@ -311,6 +336,13 @@ Examples:
         ),
     )
 
+    parser.set_defaults(
+        scan_mode_explicit=False,
+        scope_mode_explicit=False,
+        max_turns_explicit=False,
+        max_budget_usd_explicit=False,
+        diff_base_explicit=False,
+    )
     args = parser.parse_args()
     # Startup-resolved state lives alongside the parsed flags. The full schema
     # is established here so downstream code reads attributes directly.
@@ -389,7 +421,7 @@ Examples:
                 parser.error(resume_run_list_message("--resume needs a run name in headless mode."))
             if not list_run_summaries():
                 parser.error(f"--resume: no runs in {RUNS_SEARCH_PHRASE} to resume")
-            return args
+            return _apply_saved_scan_preferences(args)
         try:
             load_resume_state(args)
         except ResumeError as exc:
@@ -405,13 +437,54 @@ Examples:
             # start screen, where the user gives a target or a bare prompt
             # before the scan starts.
             args.needs_setup = True
-            return args
+            return _apply_saved_scan_preferences(args)
 
         try:
             build_targets_info(args)
         except ValueError as e:
             parser.error(str(e))
 
+    return _apply_saved_scan_preferences(args)
+
+
+_SCAN_MODES = frozenset({"quick", "standard", "deep", "exhaustive"})
+_SCOPE_MODES = frozenset({"auto", "diff", "full"})
+
+
+def _apply_saved_scan_preferences(args: argparse.Namespace) -> argparse.Namespace:
+    """Fill unset scan options from the config file, then the built-in defaults.
+
+    A flag on the command line is already set and is left alone. A resumed run
+    sets scan mode before this runs, so the saved preference does not replace it.
+    """
+    prefs = load_scan_preferences()
+    if args.scan_mode is None:
+        saved = prefs.get("scan_mode")
+        args.scan_mode = saved if saved in _SCAN_MODES else "deep"
+    if args.scope_mode is None:
+        saved_scope = prefs.get("scope_mode")
+        args.scope_mode = saved_scope if saved_scope in _SCOPE_MODES else "auto"
+    if args.max_turns is None:
+        saved_turns = prefs.get("max_turns")
+        if isinstance(saved_turns, int) and not isinstance(saved_turns, bool) and saved_turns > 0:
+            args.max_turns = saved_turns
+        else:
+            args.max_turns = DEFAULT_MAX_TURNS
+    if not args.max_budget_usd_explicit and "max_budget_usd" in prefs:
+        saved_budget = prefs.get("max_budget_usd")
+        if saved_budget is None:
+            args.max_budget_usd = None
+        elif (
+            isinstance(saved_budget, int | float)
+            and not isinstance(saved_budget, bool)
+            and math.isfinite(float(saved_budget))
+            and saved_budget > 0
+        ):
+            args.max_budget_usd = float(saved_budget)
+    if not args.diff_base_explicit:
+        saved_base = prefs.get("diff_base")
+        if isinstance(saved_base, str) and saved_base.strip():
+            args.diff_base = saved_base.strip()
     return args
 
 
@@ -528,7 +601,7 @@ def load_resume_state(args: argparse.Namespace) -> None:
     if state.get("diff_scope"):
         args.diff_scope = state.get("diff_scope")
     persisted_scan_mode = state.get("scan_mode")
-    if persisted_scan_mode and args.scan_mode == "deep":
+    if persisted_scan_mode and not getattr(args, "scan_mode_explicit", False):
         args.scan_mode = persisted_scan_mode
     agents_path = runtime_state_dir(run_dir) / "agents.json"
     if not agents_path.exists():

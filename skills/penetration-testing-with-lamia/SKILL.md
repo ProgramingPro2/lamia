@@ -63,7 +63,7 @@ Key flags:
 | `-t, --target` | URL, repo URL, local path, domain, IP, OpenAPI/Postman spec, or `postman://<uuid>`. Repeatable. |
 | `--target-list PATH` | File of targets, one per line (`#` comments allowed). Repeatable, combines with `-t`. |
 | `-n, --non-interactive` | Headless, exits on completion. Required for agents. |
-| `-m, --scan-mode` | `quick` (minutes) / `standard` (~30 min) / `deep` (hours, default). |
+| `-m, --scan-mode` | `quick` (minutes) / `standard` (~30 min) / `deep` (hours, default) / `exhaustive` (every applicable class, scanner and exploit escalation). |
 | `--instruction` / `--instruction-file` | Credentials, focus areas, scope rules. |
 | `--workspace-file PATH[:DEST]` | Copy a file from this machine into `/workspace` before the scan, for a wordlist, a spec, or notes. Repeatable. |
 | `--max-budget USD` | Hard LLM spend cap; scan wraps up cleanly at the limit. |

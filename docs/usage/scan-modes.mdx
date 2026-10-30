@@ -3,7 +3,7 @@ title: "Scan Modes"
 description: "Choose the right scan depth for your use case"
 ---
 
-Lamia offers three scan modes to balance speed and thoroughness.
+Lamia offers four scan modes to balance speed and thoroughness.
 
 ## Quick
 
@@ -49,8 +49,22 @@ Thorough penetration testing. Best for:
 **White-box behavior**: Runs broad source-aware triage (`semgrep`, AST structural search, secrets, supply-chain checks) and then systematically validates top candidates dynamically.
 
 <Note>
-Deep mode is the default. It explores edge cases, chained vulnerabilities, and complex attack paths.
+Deep mode is the default. It starts with the highest-impact paths, then keeps going until every applicable class on every mapped in-scope surface is closed or the budget runs out.
 </Note>
+
+## Exhaustive
+
+```bash
+lamia --target ./app --scan-mode exhaustive
+```
+
+Maximum coverage. Best for:
+- Full authorized penetration tests
+- Targets where a missed class is more expensive than a longer run
+
+**Duration**: Several hours, bounded by `--max-budget` and `--max-turns`.
+
+After mapping, Lamia spawns class-cluster specialists (injection, access control, authentication, client-side, backend services) and does not rule a class out on the first basic failure. Scanners escalate (sqlmap `--level 5 --risk 3` with a bounded proof read, Nuclei without a severity filter, full port scan, SecLists content discovery). A confirmed service version is checked with `searchsploit` and Metasploit before an exploit module is run, and only against that in-scope host. A foothold is handed to post-exploitation long enough to prove one privilege boundary and clean up. Scope limits still apply: no denial of service, no data destruction, no persistence, and no host the operator did not name.
 
 ## Choosing a Mode
 
@@ -60,3 +74,4 @@ Deep mode is the default. It explores edge cases, chained vulnerabilities, and c
 | Weekly scans | Standard |
 | Before major release | Deep |
 | Bug bounty hunting | Deep |
+| Authorized full-scope pentest | Exhaustive |

@@ -135,6 +135,74 @@ def _coverage_summary(agent_graph: dict[str, Any]) -> dict[str, Any]:
     return summary
 
 
+_BROAD_SCAN_MODES = frozenset({"deep", "exhaustive"})
+
+
+def _current_scan_mode() -> str | None:
+    """Scan mode recorded for this run, or None when no run is open."""
+    from lamia.report.state import get_global_report_state
+
+    state = get_global_report_state()
+    if state is None:
+        return None
+    config = state.scan_config if isinstance(state.scan_config, dict) else {}
+    mode = config.get("scan_mode") or state.run_record.get("scan_mode")
+    if not isinstance(mode, str) or not mode.strip():
+        return None
+    return mode.strip()
+
+
+def _unexamined_details(agent_graph: dict[str, Any]) -> list[str]:
+    gaps = _coverage_summary(agent_graph).get("coverage_gaps")
+    if not isinstance(gaps, list):
+        return []
+    return [gap for gap in gaps if isinstance(gap, str) and gap.strip()]
+
+
+def _unexamined_finish_block(
+    agent_graph: dict[str, Any], *, accept_unexamined: bool
+) -> dict[str, Any] | None:
+    """Refuse a deep or exhaustive finish while assigned classes were never recorded.
+
+    Quick and standard scans keep the warning-only behavior. ``accept_unexamined``
+    is the budget escape hatch: the caller has seen the gaps and is finishing anyway.
+    """
+    mode = _current_scan_mode()
+    if mode not in _BROAD_SCAN_MODES or accept_unexamined:
+        return None
+    gaps = _unexamined_details(agent_graph)
+    if not gaps:
+        return None
+    return {
+        "success": False,
+        "scan_completed": False,
+        "error": (
+            "Cannot finish while assigned risk classes have no coverage entry. "
+            "Dispatch an agent to assess each class, or record a needs_follow_up row. "
+            "If the budget wind-down leaves them untested, call finish_scan again with "
+            "accept_unexamined=true and state in the report that those classes were not tested."
+        ),
+        "coverage_gaps": gaps,
+        "scan_mode": mode,
+    }
+
+
+def _with_unexamined_note(technical_analysis: str, agent_graph: dict[str, Any]) -> str:
+    """Append the untested classes so an accepted finish cannot read as clean."""
+    if _current_scan_mode() not in _BROAD_SCAN_MODES:
+        return technical_analysis
+    gaps = _unexamined_details(agent_graph)
+    if not gaps or "**Unexamined classes**" in technical_analysis:
+        return technical_analysis
+    lines = "\n".join(f"- {gap}" for gap in gaps)
+    note = (
+        "\n\n**Unexamined classes**\n\n"
+        "The following assigned risk classes were not tested before this scan finished:\n\n"
+        f"{lines}\n"
+    )
+    return technical_analysis.rstrip() + note
+
+
 @function_tool(timeout=60)
 async def finish_scan(
     ctx: RunContextWrapper,
@@ -142,6 +210,7 @@ async def finish_scan(
     methodology: str,
     technical_analysis: str,
     recommendations: str,
+    accept_unexamined: bool = False,
 ) -> str:
     """Finalize the scan — persist the customer-facing report.
 
@@ -203,8 +272,14 @@ async def finish_scan(
        should have a coverage entry; anything still open should be a
        ``needs_follow_up`` row, not a silent omission. If a significant
        surface has no entry at all, dispatch an agent to cover it or
-       record it as ``needs_follow_up`` before finishing. The response
-       from this tool reports coverage counts and any unresolved rows.
+       record it as ``needs_follow_up`` before finishing. On a deep or
+       exhaustive scan this tool refuses to finish while any assigned
+       risk class has no coverage entry. Dispatch that class, or record
+       ``needs_follow_up``. Pass ``accept_unexamined=true`` only when
+       the budget wind-down stopped the work; the report then states
+       that those classes were not tested. Quick and standard scans
+       warn instead of refusing. The response from this tool reports
+       coverage counts and any unresolved rows.
 
     **Calling this multiple times overwrites the previous report.**
     Make the single call comprehensive.
@@ -307,6 +382,11 @@ async def finish_scan(
         methodology: Frameworks, scope, and approach.
         technical_analysis: Consolidated findings + systemic themes.
         recommendations: Prioritized, actionable remediation.
+        accept_unexamined: Deep and exhaustive only. Leave false unless
+            assigned risk classes still have no coverage entry and the
+            budget wind-down makes further testing impossible. When true,
+            the saved report states that those classes were not tested.
+            Quick and standard scans ignore this flag.
     """
     inner = ctx.context if isinstance(ctx.context, dict) else {}
     coordinator = coordinator_from_context(inner)
@@ -334,6 +414,13 @@ async def finish_scan(
             default=str,
         )
 
+    agent_graph = await coordinator.snapshot() if coordinator is not None else {}
+    blocked = _unexamined_finish_block(agent_graph, accept_unexamined=accept_unexamined)
+    if blocked is not None:
+        return json.dumps(blocked, ensure_ascii=False, default=str)
+    if accept_unexamined:
+        technical_analysis = _with_unexamined_note(technical_analysis, agent_graph)
+
     result = await asyncio.to_thread(
         _do_finish,
         parent_id=parent_id,
@@ -341,7 +428,7 @@ async def finish_scan(
         methodology=methodology,
         technical_analysis=technical_analysis,
         recommendations=recommendations,
-        agent_graph=await coordinator.snapshot() if coordinator is not None else {},
+        agent_graph=agent_graph,
     )
     if (
         result.get("success")

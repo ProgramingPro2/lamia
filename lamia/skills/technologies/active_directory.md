@@ -209,12 +209,12 @@ Confirm with a version/patch check before firing — these are destructive.
 
 ## Tooling
 
-**None of the AD tools below ship in the sandbox by default** (the image is Kali-rolling but installs only web-focused tooling). Install what the task needs — the sandbox has `pipx`, `pip`, `go`, `git`, and Kali's apt repos. AD testing also requires **network reachability to the target DC/subnet**, which the default web-target sandbox usually lacks; confirm connectivity first.
+**`nxc` (NetExec) is installed in the sandbox image.** Use it directly for LDAP, SMB, WinRM, and MSSQL. The other AD tools below are not in the image. Install what the task needs — the sandbox has `pipx`, `pip`, `go`, `git`, and Kali's apt repos. AD testing also requires **network reachability to the target DC/subnet**, which the default web-target sandbox usually lacks; confirm connectivity first.
 
 ```
 # Python identity toolkit (impacket = GetUserSPNs/GetNPUsers/secretsdump/ntlmrelayx/getST/addcomputer/rbcd)
 pipx install impacket
-pipx install netexec            # nxc — CME successor: ldap/smb/winrm enum, roasting, bloodhound, ntds
+# nxc is already on PATH (netexec in the sandbox image)
 pipx install certipy-ad         # AD CS enum + ESC1-ESC17 abuse, shadow credentials
 pipx install bloodhound-ce      # bloodhound-ce-python collector (BloodHound CE ingestor)
 pipx install coercer            # multi-protocol coercion (MS-EFSR/RPRN/DFSNM/FSRVP)

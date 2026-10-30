@@ -141,6 +141,7 @@ def render_system_prompt(
             include_scope=include_scope,
             report_tool=report_tool,
             coverage_tools=coverage_tools,
+            scan_mode=scan_mode,
             **skill_content,
         )
     except Exception:
