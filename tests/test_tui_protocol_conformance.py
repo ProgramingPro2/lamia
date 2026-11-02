@@ -17,7 +17,7 @@ from lamia.interface.tui.backend.protocol import PROTOCOL_CAPABILITIES, PROTOCOL
 
 GO_PROTOCOL_SOURCE = (
     Path(__file__).resolve().parents[1]
-    / "strix"
+    / "lamia"
     / "interface"
     / "tui"
     / "internal"

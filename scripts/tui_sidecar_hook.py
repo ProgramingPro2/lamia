@@ -45,7 +45,7 @@ class CustomBuildHook(BuildHookInterface):  # type: ignore[type-arg]
                 str(output),
                 "./cmd/lamia-tui",
             ],
-            cwd=root / "strix" / "interface" / "tui",
+            cwd=root / "lamia" / "interface" / "tui",
             env=env,
             check=True,
         )
