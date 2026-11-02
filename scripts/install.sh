@@ -3,7 +3,7 @@
 set -euo pipefail
 
 APP=lamia
-REPO="usestrix/strix"
+REPO="ProgramingPro2/lamia"
 LAMIA_IMAGE="ghcr.io/usestrix/strix-sandbox:1.3.0"
 
 MUTED='\033[0;2m'
@@ -179,7 +179,7 @@ check_docker() {
     echo ""
     if ! command -v docker >/dev/null 2>&1; then
         echo -e "${YELLOW}⚠ Docker not found${NC}"
-        echo -e "${MUTED}Strix requires Docker to run the security sandbox.${NC}"
+        echo -e "${MUTED}Lamia requires Docker to run the security sandbox.${NC}"
         echo -e "${MUTED}Please install Docker: ${NC}https://docs.docker.com/get-docker/"
         echo ""
         return 1

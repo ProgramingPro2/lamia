@@ -7,6 +7,7 @@
 <br/>
 
 <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-3b82f6?style=flat-square" alt="License"></a>
+<a href="https://pypi.org/project/lamia-agent/"><img src="https://img.shields.io/pypi/v/lamia-agent?style=flat-square" alt="PyPI"></a>
 
 </div>
 
@@ -42,8 +43,10 @@ Lamia are autonomous AI penetration testing agents that act just like real hacke
 ### Installation & First Scan
 
 ```bash
-# Install Lamia
+# Install Lamia (pick one)
 pipx install lamia-agent
+# uv tool install lamia-agent
+# curl -fsSL https://raw.githubusercontent.com/ProgramingPro2/lamia/lamia/scripts/install.sh | bash
 
 # Configure your AI provider
 export LAMIA_LLM="vercel_ai_gateway/zai/glm-5.3"   # Vercel AI Gateway
@@ -63,8 +66,9 @@ lamia --target ./app-directory
 # Self-update the standalone binary to the latest release
 lamia --update
 
-# ...or re-run the installer
-pipx install lamia-agent
+# ...or upgrade the package you installed
+pipx upgrade lamia-agent
+# uv tool upgrade lamia-agent
 ```
 
 Installed with pipx, uv, or pip? `lamia --update` prints the matching upgrade command instead (`pipx upgrade lamia-agent`, `uv tool upgrade lamia-agent`, `pip install --upgrade lamia-agent`). Lamia also shows a notice with the right command when a new version is available.

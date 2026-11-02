@@ -16,22 +16,28 @@ concurrency:
 
 jobs:
   python:
+    timeout-minutes: 15
     uses: ./.github/workflows/ci-python.yml
 
   tui:
+    timeout-minutes: 15
     uses: ./.github/workflows/ci-tui.yml
 
   viewer:
+    timeout-minutes: 15
     uses: ./.github/workflows/ci-viewer.yml
 
   package:
+    timeout-minutes: 15
     uses: ./.github/workflows/ci-package.yml
 
   workflows:
+    timeout-minutes: 15
     uses: ./.github/workflows/ci-workflows.yml
 
   ci-passed:
     name: ci-passed
+    timeout-minutes: 15
     if: always()
     needs:
       - python

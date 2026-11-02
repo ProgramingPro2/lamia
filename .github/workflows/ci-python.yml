@@ -8,6 +8,7 @@ permissions:
 
 jobs:
   lock:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
@@ -17,6 +18,7 @@ jobs:
       - run: uv lock --check
 
   ruff:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
@@ -27,6 +29,7 @@ jobs:
       - run: uv run --frozen ruff format --check .
 
   mypy:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
@@ -36,6 +39,7 @@ jobs:
       - run: uv run --frozen mypy lamia/
 
   bandit:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
@@ -46,6 +50,7 @@ jobs:
 
   pytest:
     name: pytest (${{ matrix.python-version }})
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

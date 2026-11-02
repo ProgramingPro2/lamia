@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import json
 import threading
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import TYPE_CHECKING, Any, ClassVar
@@ -98,6 +98,10 @@ MODELS = [
 ]
 
 
+_REQUEST_TIMEOUT_SECONDS = 15
+_SHUTDOWN_WAIT_SECONDS = 2
+
+
 class _Gateway(BaseHTTPRequestHandler):
     scenario: ClassVar[_Scenario]
     requests: ClassVar[list[dict[str, Any]]]
@@ -105,6 +109,12 @@ class _Gateway(BaseHTTPRequestHandler):
 
     def log_message(self, *args: Any) -> None:
         pass
+
+    def setup(self) -> None:
+        super().setup()
+        # A client that stops reading must not leave this handler blocked in
+        # write(); serve_forever cannot observe shutdown until the handler returns.
+        self.request.settimeout(_REQUEST_TIMEOUT_SECONDS)
 
     def do_POST(self) -> None:
         length = int(self.headers.get("Content-Length", 0))
@@ -238,15 +248,37 @@ def _serve(scenario: _Scenario) -> tuple[HTTPServer, type[_Gateway]]:
     return server, handler
 
 
+def _stop_server(server: HTTPServer) -> None:
+    """Stop the gateway without waiting out a handler blocked on its client.
+
+    ``HTTPServer.shutdown()`` blocks until ``serve_forever`` returns. Closing the
+    listening socket unblocks the accept loop, and the wait itself is capped so a
+    stuck handler cannot hold the test thread.
+    """
+    with suppress(OSError):
+        server.socket.close()
+    stopper = threading.Thread(target=server.shutdown, daemon=True)
+    stopper.start()
+    stopper.join(timeout=_SHUTDOWN_WAIT_SECONDS)
+    with suppress(OSError):
+        server.server_close()
+
+
 @pytest.fixture(autouse=True)
 def _reset_settings(monkeypatch: pytest.MonkeyPatch) -> None:
     for key in ("STRIX_LLM", "LLM_DISABLE_STREAMING", "LLM_MAX_TOOL_CALLS_PER_TURN"):
         monkeypatch.delenv(key, raising=False)
+    # A route that never answers should fail this case, not hold the runner.
+    monkeypatch.setenv("LLM_TIMEOUT", str(_REQUEST_TIMEOUT_SECONDS))
+    monkeypatch.setenv("LLM_STREAM_IDLE_TIMEOUT", str(_REQUEST_TIMEOUT_SECONDS))
+    monkeypatch.setenv("LLM_STREAM_FIRST_EVENT_TIMEOUT", str(_REQUEST_TIMEOUT_SECONDS))
+    monkeypatch.setenv("LLM_STREAM_TOTAL_TIMEOUT", str(_REQUEST_TIMEOUT_SECONDS))
     monkeypatch.setattr(loader, "_cached", None)
     monkeypatch.setattr(loader, "_override", None)
     # As ``configure_sdk_model_defaults`` sets it, so routes like ``zai/`` that
     # reject ``parallel_tool_calls`` still get a request out.
     monkeypatch.setattr(litellm, "drop_params", True)
+    monkeypatch.setattr(litellm, "request_timeout", _REQUEST_TIMEOUT_SECONDS, raising=False)
 
 
 @contextmanager
@@ -255,8 +287,7 @@ def _gateway(scenario: _Scenario) -> Iterator[tuple[str, type[_Gateway]]]:
     try:
         yield f"http://127.0.0.1:{server.server_address[1]}/v1", handler
     finally:
-        server.shutdown()
-        server.server_close()
+        _stop_server(server)
 
 
 async def _run(
@@ -279,7 +310,10 @@ async def _run(
         instructions="use the tool",
         tools=[do_thing],
         model=model,
-        model_settings=ModelSettings(parallel_tool_calls=parallel),
+        model_settings=ModelSettings(
+            parallel_tool_calls=parallel,
+            extra_args={"timeout": _REQUEST_TIMEOUT_SECONDS},
+        ),
     )
     result = Runner.run_streamed(
         agent, input="please", max_turns=10, run_config=RunConfig(model_provider=provider)

@@ -75,7 +75,7 @@ Skills focus on deep, specialized knowledge to significantly enhance agent capab
 
 ## 🤝 Contributing
 
-Community contributions are more than welcome — contribute new skills via [pull requests](https://github.com/usestrix/strix/pulls) or [GitHub issues](https://github.com/usestrix/strix/issues) to help expand the collection and improve extensibility for Lamia agents.
+Community contributions are more than welcome — contribute new skills via [pull requests](https://github.com/ProgramingPro2/lamia/pulls) or [GitHub issues](https://github.com/ProgramingPro2/lamia/issues) to help expand the collection and improve extensibility for Lamia agents.
 
 ---
 

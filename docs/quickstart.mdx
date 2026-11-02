@@ -11,14 +11,19 @@ description: "Install Lamia and run your first security scan"
 ## Installation
 
 <Tabs>
-  <Tab title="curl">
+  <Tab title="pipx">
     ```bash
     pipx install lamia-agent
     ```
   </Tab>
-  <Tab title="pipx">
+  <Tab title="uv">
     ```bash
-    pipx install lamia-agent
+    uv tool install lamia-agent
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -fsSL https://raw.githubusercontent.com/ProgramingPro2/lamia/lamia/scripts/install.sh | bash
     ```
   </Tab>
 </Tabs>

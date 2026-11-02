@@ -16,8 +16,8 @@ Thank you for your interest in contributing to Lamia! This guide will help you g
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/usestrix/strix.git
-   cd strix
+   git clone https://github.com/ProgramingPro2/lamia.git
+   cd lamia
    ```
 
 2. **Install development dependencies**

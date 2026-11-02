@@ -8,6 +8,7 @@ permissions:
 
 jobs:
   actionlint:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     env:
       ACTIONLINT_VERSION: 1.7.12
@@ -26,6 +27,7 @@ jobs:
           "$RUNNER_TEMP/actionlint/actionlint" -color
 
   zizmor:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0

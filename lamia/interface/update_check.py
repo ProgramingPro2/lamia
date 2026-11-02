@@ -38,7 +38,7 @@ from lamia.telemetry._common import get_version
 
 logger = logging.getLogger(__name__)
 
-GITHUB_REPO = "usestrix/strix"
+GITHUB_REPO = "ProgramingPro2/lamia"
 PYPI_PACKAGE = "lamia-agent"
 CHECK_INTERVAL_SECONDS = 24 * 60 * 60
 REQUEST_TIMEOUT_SECONDS = 5

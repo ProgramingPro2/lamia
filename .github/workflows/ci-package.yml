@@ -8,6 +8,7 @@ permissions:
 
 jobs:
   wheel:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
@@ -42,6 +43,7 @@ jobs:
         run: /tmp/lamia-smoke/bin/python -c "import google.auth.transport.requests, boto3"
 
   binary:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
