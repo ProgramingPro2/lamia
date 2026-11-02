@@ -34,6 +34,64 @@ Lamia are autonomous AI penetration testing agents that act just like real hacke
 - **Bug Bounty Automation** - Automate bug bounty research and generate PoCs for faster reporting
 - **CI/CD Integration** - Run tests in CI/CD to block vulnerabilities before reaching production
 
+## How Lamia differs
+
+Lamia is a local fork of [Strix](https://github.com/usestrix/strix). The agent graph, sandbox, and offensive toolkit come from that project. These are the parts a Strix user will notice.
+
+| | Lamia | Strix |
+|---|---|---|
+| Where a scan runs | On your machine, with your LLM key and Docker | Local CLI, or the hosted platform at app.strix.ai |
+| Hosted account | None. There is no `lamia cloud` command | `strix cloud` drives scans, findings, and reports on the hosted platform |
+| Reports | `lamia export` and a PDF download in `lamia view` | Hosted report delivery, plus the local run files |
+| Scan modes | `quick`, `standard`, `deep`, `exhaustive` | `quick`, `standard`, `deep` |
+| Deep mode | Stays on every applicable class on mapped in-scope surfaces until the budget runs out | Explores high-value paths, then stops |
+| Viewer | Local dashboard, including an access map of hosts, apps, roles, and data stores | Local dashboard without that map |
+| Interactive setup | F2 in the TUI sets the provider, model, key, and scan options | Flags and environment variables |
+| Human-targeted testing | Allowed only after the operator names the population and the channel | Out of the default agent scope |
+
+### Local only
+
+A scan, the viewer, and the report all stay on the machine that launched them. Lamia does not upload source, findings, or a report to a hosted service.
+
+```bash
+lamia view                              # local dashboard for the latest run
+lamia export                            # PDF of the latest run
+lamia export my-run --format sarif      # also json, csv, markdown
+```
+
+`lamia view` binds to `127.0.0.1` and prints a tokened link. The dashboard reads the run directory from disk. Download PDF writes `lamia-report-<run>.pdf` from that same directory.
+
+### Coverage
+
+`--scan-mode exhaustive` is the fourth depth. After mapping, Lamia spawns class-cluster specialists and escalates scanners (sqlmap at a high level, Nuclei without a severity filter, a full port scan, SecLists content discovery). A confirmed service version is checked with `searchsploit` and Metasploit before an exploit module runs, and only against a host the operator named. Scope limits stay in force: no denial of service, no data destruction, no persistence, and no unnamed host.
+
+Deep mode, the default, also changed. It starts with the highest-impact paths, then keeps going until every applicable class on every mapped in-scope surface is closed or the budget runs out. Agents are instructed to demonstrate the reachable attack path and to score a chain at its end impact, with every link executed.
+
+### Access map
+
+`lamia view` includes an access map built from records the run already wrote: hosts, ports, apps, roles, and data stores. An arrow opens the finding it came from, or marks a gap where the path is not yet proven. Unlinked services stay on the host they belong to.
+
+### Gated social engineering
+
+Human-targeted testing runs only when the operator names both the test population and the channel in the scan instructions. The population has to be a named team, a named list of test accounts, or a named channel. "Employees" is not enough. Targets are the operator's own personnel and test channels. The agent records an open item and does not send anything when either gate is missing.
+
+Pressure limits and stop conditions are part of the same skill: no threats, no personal accounts, and an immediate stop if someone asks whether the message is a test or if the test leaves the named population. The skill does not include message bodies or pretext scripts. Those come from material the operator already approved.
+
+### Scan options in the TUI
+
+Press **F2** on the start screen. First-run onboarding and the settings dialog cover the provider, a masked API key, a filterable model list from that account, scan mode, budget, turn limit, scope, and an instructions file. The same screen accepts a target list, workspace files, a config file, MCP server selection, and resume. A model that cannot call tools stays visible and is skipped by the default highlight, because the agents need tools.
+
+Headless and CI runs still take every option as a flag. See `docs/usage/cli.mdx`.
+
+### Existing Strix installs
+
+Lamia reads a Strix checkout's config and runs so a renamed install keeps its history.
+
+- **Environment.** `LAMIA_*` is the name to set. The matching `STRIX_*` variable still works, and the Lamia name wins when both are set.
+- **Config directory.** New files go to `~/.lamia`. If only `~/.strix` exists, Lamia keeps using it. If both exist, writes go to `~/.lamia` and a missing file is read from `~/.strix`.
+- **Run directory.** New runs go to `lamia_runs/`. If the working tree only has `strix_runs/`, new runs stay there. `lamia view`, `lamia export`, and resume search both directories.
+- **Sandbox image.** The default image is still `ghcr.io/usestrix/strix-sandbox:1.3.0`. Override it with `LAMIA_IMAGE`.
+
 ## Quick Start
 
 **Prerequisites:**

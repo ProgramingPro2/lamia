@@ -36,9 +36,10 @@ The UI ships prebuilt with Lamia, so there is no extra install and no JavaScript
 - **Overview** — run status, target, and a severity breakdown of everything found so far.
 - **Vulnerabilities** — each validated finding with its severity, details, and reproduction steps.
 - **Agent graph** — a live map of the multi-agent team, and what each agent is doing.
+- **Access map** — hosts, apps, roles, and data stores taken from the run's own records. An arrow opens the finding it came from, or marks a path that is not proven yet.
 - **Steering** — send instructions to a live scan to redirect the agents during the run. Steering works only in the dashboard the running scan opens. A standalone `lamia view` has no live scan to steer.
-- **History** — browse past runs on this machine and move between them. Verify your email address in the dashboard to unlock the other runs.
-- **Reports** — generate a shareable report and send it by email. Verify your email address first.
+- **History** — browse past runs on this machine and move between them.
+- **Download PDF** — write `lamia-report-<run>.pdf` from the run directory. The same file is `lamia export`.
 
 ## Sharing The Link
 
