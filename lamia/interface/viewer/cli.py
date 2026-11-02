@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """`lamia view [<run>]` command: serve a run's viewer UI locally."""
 
 from __future__ import annotations

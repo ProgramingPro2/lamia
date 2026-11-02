@@ -1,3 +1,6 @@
+// Copyright 2025 OmniSecure Inc.
+// Modified by the Lamia project from Strix.
+
 // Package render turns chat and tool events into styled terminal output,
 // with one file per tool renderer.
 package render

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for building and encrypting the viewer PDF report."""
 
 from __future__ import annotations

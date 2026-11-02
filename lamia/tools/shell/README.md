@@ -1,3 +1,8 @@
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # shell — `exec_command` + `write_stdin`
 
 SDK-provided shell tools wired per-run from the sandbox session. Every CLI

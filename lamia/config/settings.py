@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Lamia application settings — pydantic-settings powered."""
 
 from __future__ import annotations

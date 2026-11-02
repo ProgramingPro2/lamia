@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """``LAMIA_DOCKER_SANDBOX_DEVICES`` passes host devices through to the sandbox container."""
 
 from __future__ import annotations

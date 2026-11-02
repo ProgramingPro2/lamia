@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the model-stream idle watchdog.
 
 A turn that streams a few tokens and then goes silent is not covered by the

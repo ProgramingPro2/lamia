@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Historical SDK session loading for the TUI."""
 
 from __future__ import annotations

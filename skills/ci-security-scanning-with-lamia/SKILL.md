@@ -6,6 +6,11 @@ metadata:
   author: Lamia
 ---
 
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # Set up Lamia in CI/CD
 
 Run a diff-scoped scan as a pipeline step. It stays in your infrastructure, uses your own LLM key, and needs Docker on the runner. The scan fails the build on validated findings and emits SARIF 2.1.0.

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for LLM_EXTRA_BODY: extra fields merged into every LLM request body."""
 
 from __future__ import annotations

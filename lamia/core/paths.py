@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Run directory path helpers.
 
 New runs are written to ``lamia_runs``. An existing tree that only has

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """``budget_policy="pause"``: agents park before a paid call and never hear about budgets."""
 
 from __future__ import annotations

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Validation for URLs printed or opened on behalf of a remote service."""
 
 from __future__ import annotations

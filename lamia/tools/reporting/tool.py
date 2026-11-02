@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Reporting tools — file vuln findings (with dedup + CVSS) and read them back.
 
 ``create_vulnerability_report`` / ``create_dependency_report`` file findings;

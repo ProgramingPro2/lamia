@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the model retry policy used by every agent model call.
 
 The SDK's built-in ``http_status`` policy only retries errors that carry a known

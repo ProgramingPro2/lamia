@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Background pre-import of the heavy scan dependencies.
 
 The scan engine's import graph (the agents SDK, OpenAI client, LiteLLM, the

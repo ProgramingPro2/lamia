@@ -1,3 +1,8 @@
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # Contributing to Lamia
 
 Thank you for your interest in contributing to Lamia! This guide will help you get started with development and contributions.

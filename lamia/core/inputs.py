@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Pure input builders for Strix scan runs."""
 
 from __future__ import annotations

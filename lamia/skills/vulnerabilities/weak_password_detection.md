@@ -3,6 +3,11 @@ name: weak-password-detection
 description: Weak password detection, credential stuffing, and brute-force testing using common passwords, system-generated credentials, and HTTP fuzzing / NSE brute-force tooling
 ---
 
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # Weak Password Detection / Credential Brute-Force
 
 Weak or default credentials remain one of the most prevalent and high-impact vulnerabilities. This skill covers systematic detection of weak passwords through dictionary attacks, credential stuffing, system-generated password prediction, and brute-force tooling.

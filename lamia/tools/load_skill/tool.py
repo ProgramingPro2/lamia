@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """``load_skill`` — fetch skill reference material into the conversation."""
 
 from __future__ import annotations

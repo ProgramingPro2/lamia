@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for restored report fields, SCA tool, and report formatting guidance."""
 
 from __future__ import annotations

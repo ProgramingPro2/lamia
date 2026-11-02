@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Provider-agnostic conversation compaction.
 
 When an agent's session grows past the model's usable context window, older

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Scan bootstrap shared by the CLI entry point and the TUI setup flow.
 
 Target resolution, run preparation, model preflight, and start-of-run

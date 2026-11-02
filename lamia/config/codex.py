@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """ChatGPT (Codex) subscription auth: OAuth login, token refresh, and the OpenAI
 client that routes inference through the ChatGPT backend.
 

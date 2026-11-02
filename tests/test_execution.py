@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the scan-wide budget-stop signal on the agent coordinator."""
 
 from __future__ import annotations

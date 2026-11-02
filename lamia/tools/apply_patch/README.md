@@ -1,3 +1,8 @@
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # apply_patch
 
 SDK-provided file patching tool — the agent's only first-class way to edit

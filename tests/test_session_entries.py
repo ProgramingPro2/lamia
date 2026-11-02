@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for how local sources reach the sandbox: bind mounts or manifest upload."""
 
 from __future__ import annotations

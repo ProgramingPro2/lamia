@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Fast regression tests for MCP failure handling and lifecycle resilience."""
 
 from __future__ import annotations

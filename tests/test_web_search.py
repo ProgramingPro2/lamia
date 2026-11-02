@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for web_search/web_get_contents provider selection and the Exa backend."""
 
 from __future__ import annotations

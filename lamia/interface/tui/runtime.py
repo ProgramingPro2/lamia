@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Launch and supervise the Bubble Tea TUI."""
 
 from __future__ import annotations

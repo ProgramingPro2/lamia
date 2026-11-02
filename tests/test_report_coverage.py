@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the coverage artifact assembled in lamia.report.coverage."""
 
 from __future__ import annotations

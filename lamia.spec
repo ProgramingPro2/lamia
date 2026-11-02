@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 # -*- mode: python ; coding: utf-8 -*-
 
 import sys

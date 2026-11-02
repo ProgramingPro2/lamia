@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for collapsing repeated waits queued inside one model turn.
 
 An orchestrator that writes out its whole poll loop ahead of time queues

@@ -6,6 +6,11 @@ metadata:
   author: Lamia
 ---
 
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # Fix Lamia findings and verify
 
 Turn validated Lamia findings into minimal, correct fixes — and prove they work by re-scanning.

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """StrixDockerSandboxClient.delete() best-effort teardown.
 
 delete() kills the sandbox container before delegating to the SDK's delete().

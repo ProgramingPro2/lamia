@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Integration of the ``api_spec`` target type into detection, staging, and inputs."""
 
 from __future__ import annotations

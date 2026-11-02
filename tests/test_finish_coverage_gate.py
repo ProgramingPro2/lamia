@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """finish_scan confronts the root agent with the coverage the runtime can see."""
 
 from __future__ import annotations

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Per-run coverage ledger — mirrored to {state_dir}/coverage.json.
 
 Findings answer "what did we find". Coverage answers "what did we look at,

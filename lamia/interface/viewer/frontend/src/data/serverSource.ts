@@ -1,3 +1,6 @@
+/* Copyright 2025 OmniSecure Inc.
+   Modified by the Lamia project from Strix. */
+
 import type { Vulnerability } from "@/types/issues";
 import {
   parseRunJson,

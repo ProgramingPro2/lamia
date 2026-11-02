@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Local web viewer for Lamia runs.
 
 Serves a prebuilt single-page app that renders a run (live or finished) read

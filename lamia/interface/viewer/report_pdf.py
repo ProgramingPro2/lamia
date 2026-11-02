@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Build and encrypt a branded PDF report for a run.
 
 The layout mirrors the Lamia cloud pentest report (cover page, executive

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Shared Caido proxy helpers and sandbox-importable ``caido_api`` module."""
 
 from __future__ import annotations

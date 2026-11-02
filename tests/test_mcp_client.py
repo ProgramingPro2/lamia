@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the generic MCP dispatch model.
 
 Connections are connected without being registered as agent tools; their live

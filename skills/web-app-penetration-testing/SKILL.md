@@ -6,6 +6,11 @@ metadata:
   author: Lamia
 ---
 
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # Pentest a web application
 
 Black-box (and optionally source-assisted) penetration testing of a running web app with Lamia's autonomous agents. Every reported finding is validated with a working exploit, so there are no signature-based false positives to triage.

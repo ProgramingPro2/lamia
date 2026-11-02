@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for spec recognition and base-URL extraction in lamia.utils.api_spec."""
 
 from __future__ import annotations

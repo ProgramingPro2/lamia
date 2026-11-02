@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Per-run notes storage — mirrored to {state_dir}/notes.json."""
 
 from __future__ import annotations

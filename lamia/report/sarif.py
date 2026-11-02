@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """SARIF 2.1.0 output for Strix vulnerability reports.
 
 Builds a GitHub code-scanning compatible SARIF document from Strix findings

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Guard against the Python and Go protocol constants drifting apart.
 
 The wire protocol is declared twice — ``lamia/interface/tui/backend/protocol.py``

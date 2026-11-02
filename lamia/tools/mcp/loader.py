@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Read the user's MCP servers from the Lamia config directory.
 
 A user lists the MCP servers they want the agent to reach in a small JSON

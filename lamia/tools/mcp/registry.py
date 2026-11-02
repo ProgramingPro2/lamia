@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Per-run registry of the MCP connections a scan may reach.
 
 Replaces per-tool registration. The old model turned every tool of every

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """SDK-native LLM usage aggregation for scan reports."""
 
 from __future__ import annotations

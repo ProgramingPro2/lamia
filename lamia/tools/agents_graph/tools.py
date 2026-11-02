@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Multi-agent graph tools backed by AgentCoordinator."""
 
 from __future__ import annotations

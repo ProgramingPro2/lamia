@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for keeping replayed tool-call arguments valid JSON.
 
 A model that emits a tool call with malformed ``arguments`` fails that one

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Inline arrow-key picker for ``lamia --resume`` with no run name.
 
 Draws a short list in the normal terminal (no alternate screen), redraws it in

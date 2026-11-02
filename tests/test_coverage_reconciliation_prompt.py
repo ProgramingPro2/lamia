@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """The root agent must follow up open coverage rows before finishing."""
 
 from __future__ import annotations

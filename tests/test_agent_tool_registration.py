@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for scan-agent tool registration in factory."""
 
 from __future__ import annotations

@@ -1,0 +1,19 @@
+Lamia
+Copyright 2025 OmniSecure Inc.
+
+Lamia is a modified distribution of Strix (https://github.com/usestrix/strix).
+Files whose contents differ from Strix carry this notice:
+
+    Copyright 2025 OmniSecure Inc.
+    Modified by the Lamia project from Strix.
+
+Files left byte-for-byte as Strix wrote them are not marked. Files added by
+the Lamia project, and not adapted from a Strix file, are not marked.
+
+These changed files cannot carry an in-file comment. They were modified from
+Strix and remain under the copyright notice above:
+
+    docs/docs.json
+    lamia/interface/tui/go.sum
+    lamia/interface/viewer/frontend/package.json
+    uv.lock

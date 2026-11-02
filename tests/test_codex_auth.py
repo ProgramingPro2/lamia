@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for ChatGPT (Codex) subscription auth: PKCE, token handling, store."""
 
 from __future__ import annotations

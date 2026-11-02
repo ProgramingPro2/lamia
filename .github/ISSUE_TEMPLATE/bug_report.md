@@ -7,6 +7,11 @@ assignees: ''
 
 ---
 
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 

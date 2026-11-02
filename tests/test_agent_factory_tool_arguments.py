@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for tool-argument shape coercion in the agent factory."""
 
 from __future__ import annotations

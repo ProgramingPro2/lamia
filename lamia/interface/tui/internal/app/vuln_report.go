@@ -1,3 +1,6 @@
+// Copyright 2025 OmniSecure Inc.
+// Modified by the Lamia project from Strix.
+
 package app
 
 // Markdown clipboard report for the vulnerability detail dialog, porting

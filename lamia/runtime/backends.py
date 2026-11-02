@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Sandbox backend registry — selected via LAMIA_RUNTIME_BACKEND (default: docker)."""
 
 from __future__ import annotations

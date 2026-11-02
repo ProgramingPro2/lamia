@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """`lamia auth` — ChatGPT subscription sign-in (login / status / logout).
 
 Signing in only stores OAuth tokens (``~/.lamia/subscription-auth.json``); model

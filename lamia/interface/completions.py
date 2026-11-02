@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Shell completion scripts and candidates for the Lamia CLI."""
 
 from __future__ import annotations

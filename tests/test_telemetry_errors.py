@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Exception props stay local: a category and class name, never a message."""
 
 from __future__ import annotations

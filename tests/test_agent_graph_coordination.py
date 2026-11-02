@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for parent/child coordination once a non-interactive child has finished.
 
 A non-interactive agent's loop returns after its terminal state, so nothing will

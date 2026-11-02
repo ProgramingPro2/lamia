@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Launch the interactive terminal interface."""
 
 from __future__ import annotations

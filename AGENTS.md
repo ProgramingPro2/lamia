@@ -1,3 +1,8 @@
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # Lamia — Agent Guide
 
 Lamia is an open-source autonomous AI pentesting tool. This file is for AI coding agents that want to **use** Lamia (run security scans) or **contribute** to it.

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for tool-call id presence and uniqueness.
 
 Providers that number tool calls per turn (``exec_command:0``, ``:1``, ...)

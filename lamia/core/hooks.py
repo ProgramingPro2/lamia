@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """SDK run hooks used by Strix orchestration."""
 
 from __future__ import annotations

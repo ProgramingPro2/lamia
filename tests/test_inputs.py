@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for pure input builders in lamia.core.inputs."""
 
 from __future__ import annotations

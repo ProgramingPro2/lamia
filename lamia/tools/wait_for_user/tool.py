@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """``wait_for_user`` — hand control back to the user and wait for their reply."""
 
 from __future__ import annotations

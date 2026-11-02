@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the SARIF 2.1.0 emitter in lamia.report.sarif."""
 
 from __future__ import annotations

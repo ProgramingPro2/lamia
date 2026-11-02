@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Connect to MCP servers so a run can reach their tools on demand.
 
 Given one :class:`McpConnectionConfig` per server, :func:`connect_mcp_servers`

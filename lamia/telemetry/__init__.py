@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Telemetry hooks.
 
 ``LAMIA_TELEMETRY`` and ``STRIX_TELEMETRY`` are still accepted by settings.

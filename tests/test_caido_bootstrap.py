@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """A bootstrap that dies mid-setup must not leave its transport behind.
 
 The bootstrap now runs concurrently with the scan start, so teardown can

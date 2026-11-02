@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 # ---------------------------------------------------------------------------
 # Builder stage: compile the Go tools here so the Go toolchain (~225MB) and the
 # module/build caches never reach the runtime image. The resulting binaries are

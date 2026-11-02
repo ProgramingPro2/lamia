@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for stripping the markdown code fence off stored code fields."""
 
 from __future__ import annotations

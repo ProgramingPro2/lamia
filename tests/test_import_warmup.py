@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """The import warm-up thread must never race the main thread into the engine.
 
 Two threads that enter the same package graph from different modules hold

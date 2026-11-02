@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Every parameter of every scan-agent tool carries a description in its JSON schema.
 
 The model only sees a parameter's docstring text through the schema. An ``Args:``

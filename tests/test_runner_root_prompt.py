@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for root scan prompt options in run_strix_scan.
 
 Verify that ``root_instructions_override`` and ``extra_system_prompt_context``

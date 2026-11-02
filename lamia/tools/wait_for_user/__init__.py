@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Hand-the-turn-to-the-user tool for interactive sessions."""
 
 from lamia.tools.wait_for_user.tool import wait_for_user

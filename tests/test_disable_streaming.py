@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for LLM_DISABLE_STREAMING: serve the streamed run loop without SSE.
 
 A gateway that rejects ``stream:true`` (or delivers SSE unreliably) breaks the

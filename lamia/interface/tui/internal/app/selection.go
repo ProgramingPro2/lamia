@@ -1,3 +1,6 @@
+// Copyright 2025 OmniSecure Inc.
+// Modified by the Lamia project from Strix.
+
 package app
 
 // In-app text selection for the chat trace, in the tmux copy-mode style:

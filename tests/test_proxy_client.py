@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the shared Caido client lifecycle and proxy call serialization.
 
 Covers the caching + serialization guarantees of ``caido_api.call_with_client``

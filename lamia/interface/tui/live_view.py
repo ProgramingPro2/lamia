@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """TUI-owned projection of SDK session history and stream events."""
 
 from __future__ import annotations

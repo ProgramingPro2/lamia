@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Go-TUI event projection layered on the shared base projection."""
 
 from __future__ import annotations

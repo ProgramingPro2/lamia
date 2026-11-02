@@ -1,3 +1,6 @@
+/* Copyright 2025 OmniSecure Inc.
+   Modified by the Lamia project from Strix. */
+
 import React, { useCallback, useEffect, useState } from "react";
 import {
   AlertTriangle,

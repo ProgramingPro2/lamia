@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """The startup model check has its own short timeout; scan requests keep LLM_TIMEOUT."""
 
 from __future__ import annotations

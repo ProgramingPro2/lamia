@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Summaries of saved runs, for pickers and listings."""
 
 from __future__ import annotations

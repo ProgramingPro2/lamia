@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Wire-safe projections of runtime state for the TUI backend."""
 
 from __future__ import annotations

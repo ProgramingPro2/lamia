@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Model-aware token budgets, resolved from LiteLLM model metadata with a
 large configurable fallback for models LiteLLM doesn't map.
 """

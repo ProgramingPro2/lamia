@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Stable, privacy-safe identity for this Lamia CLI installation."""
 
 from __future__ import annotations

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the local run viewer (lamia.interface.viewer) and its path helpers."""
 
 from __future__ import annotations

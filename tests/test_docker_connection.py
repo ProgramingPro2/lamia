@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Docker endpoint resolution and the panel printed when the daemon is unreachable."""
 
 from __future__ import annotations

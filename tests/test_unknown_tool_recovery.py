@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for surviving a hallucinated tool name.
 
 Models regularly invent tool names that Strix does not register (``read_file``

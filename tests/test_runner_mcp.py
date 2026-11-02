@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """The runner attaches MCP connections source-agnostically.
 
 When a caller supplies ``mcp_connection_requests`` the runner attaches those;

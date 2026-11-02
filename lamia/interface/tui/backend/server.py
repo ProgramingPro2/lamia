@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Private framed IPC connection used by the Go TUI."""
 
 from __future__ import annotations

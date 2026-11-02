@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Local HTTP server that serves the viewer SPA and a run's data from disk.
 
 Design notes:

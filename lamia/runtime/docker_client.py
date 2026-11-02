@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """StrixDockerSandboxClient — preserves the image's ENTRYPOINT and adds
 NET_ADMIN/NET_RAW capabilities + host-gateway.
 

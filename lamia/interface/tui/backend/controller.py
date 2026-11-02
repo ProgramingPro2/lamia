@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """UI-independent state and command controller for interactive Lamia clients."""
 
 from __future__ import annotations

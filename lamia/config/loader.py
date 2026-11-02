@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Settings loader, override switch, and disk persistence."""
 
 from __future__ import annotations

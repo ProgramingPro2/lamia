@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 
 set -euo pipefail
 

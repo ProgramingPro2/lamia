@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Own each MCP connection's live session on its own supervising task.
 
 The bug this fixes: the streamable-HTTP transport (the ``mcp`` SDK) opens an

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Update notifications and self-update for the lamia CLI.
 
 Follows the pattern used by tools like gh, uv, and pip: a background,

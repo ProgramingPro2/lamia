@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """STRIDE-leg tagging in the SARIF emitter (lamia.report.sarif).
 
 Every finding's SARIF rule (and, by inheritance via ``ruleId``, its results)

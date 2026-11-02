@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Run-scoped threat models — mirrored to ``{state_dir}/threat_models.json``.
 
 A threat model is the scan's shared answer to who the attacker is, where the

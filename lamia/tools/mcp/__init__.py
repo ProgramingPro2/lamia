@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Generic MCP client: connect MCP servers and reach their tools on demand."""
 
 from __future__ import annotations

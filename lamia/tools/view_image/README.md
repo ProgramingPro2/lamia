@@ -1,3 +1,8 @@
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # view_image
 
 SDK-provided tool that loads an image from the sandbox workspace and

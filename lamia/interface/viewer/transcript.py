@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Build the JSON payloads the viewer SPA consumes from a run directory."""
 
 from __future__ import annotations

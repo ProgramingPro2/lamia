@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """``finish_scan`` — root-agent termination + executive report persistence."""
 
 from __future__ import annotations

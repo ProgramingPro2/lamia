@@ -6,6 +6,11 @@ metadata:
   author: Lamia
 ---
 
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # Run a Lamia pentest
 
 Lamia runs autonomous AI pentesting agents that dynamically exploit a target and only report findings validated with a working proof-of-concept. It runs on your machine in a Docker sandbox with your own LLM key.

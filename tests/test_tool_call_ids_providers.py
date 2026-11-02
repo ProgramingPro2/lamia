@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tool-call id repair across provider routes, models, and streaming modes.
 
 Every model Strix resolves goes through ``StrixProvider``, which picks the

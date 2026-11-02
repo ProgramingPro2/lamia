@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the ``wait_for_user`` yield tool."""
 
 from __future__ import annotations

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the `strix auth` CLI: subcommand routing and provider naming."""
 
 from __future__ import annotations

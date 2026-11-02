@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for graceful handling of persistent RateLimitError in run_strix_scan."""
 
 from __future__ import annotations

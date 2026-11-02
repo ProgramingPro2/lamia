@@ -3,6 +3,11 @@ name: severity-calibration
 description: Qualitative rubric for what actually deserves high/critical severity, and an acceptance checklist to apply before rating a finding
 ---
 
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # Severity Calibration
 
 CVSS gives you a number once you have chosen the metrics. This skill is

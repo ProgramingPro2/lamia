@@ -1,3 +1,6 @@
+/* Copyright 2025 OmniSecure Inc.
+   Modified by the Lamia project from Strix. */
+
 import type { ComponentType } from "react";
 import type { ToolRendererProps } from "@/types/events";
 import {

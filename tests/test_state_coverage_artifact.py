@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """coverage.json is a deliverable artifact, not runtime state."""
 
 from __future__ import annotations

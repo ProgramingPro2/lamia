@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the /api/runs gating and the ?run= resolver (pure functions)."""
 
 from __future__ import annotations

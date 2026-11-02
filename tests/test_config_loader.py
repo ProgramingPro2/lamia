@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for lamia.config.loader: JSON overrides, alias resolution, persistence."""
 
 from __future__ import annotations

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tool package.
 
 Host-side SDK function tools live in ``<family>/tool[s].py`` and are

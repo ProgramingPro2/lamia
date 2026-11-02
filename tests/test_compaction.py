@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for provider-agnostic conversation compaction."""
 
 from __future__ import annotations

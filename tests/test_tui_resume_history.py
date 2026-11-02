@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Resumed history must attribute only typed messages to the user.
 
 Guidance the system feeds an agent is injected as a user turn, so replayed

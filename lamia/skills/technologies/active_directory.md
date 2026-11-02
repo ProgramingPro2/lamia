@@ -3,6 +3,11 @@ name: active_directory
 description: Active Directory / Kerberos domain testing covering roasting, delegation abuse, AD CS (ESC1-ESC17), NTLM coercion+relay, DACL abuse, and credential dumping
 ---
 
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # Active Directory
 
 Active Directory compromise usually comes from misconfiguration, not memory-corruption bugs: a roastable service account, a delegation flag, a vulnerable certificate template, or an over-permissive ACL turns a single low-priv domain user into Domain Admin. Almost every step needs valid domain credentials (or a foothold to coerce them), and almost every path ends at DCSync or a forged ticket. Test the identity layer — Kerberos, LDAP, NTLM, SMB, AD CS — not the marketing website in front of it.

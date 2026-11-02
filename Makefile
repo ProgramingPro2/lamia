@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 .PHONY: help install dev-install format lint format-check lint-check type-check security check-all clean pre-commit setup-dev dev viewer wheel tui-build tui-test tui-lint
 
 TUI_BINARY := build/sidecar/lamia-tui$(if $(filter Windows_NT,$(OS)),.exe)

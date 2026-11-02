@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for local-source collection and mount policy in interface.utils."""
 
 from __future__ import annotations

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the concurrent Caido bootstrap handle."""
 
 from __future__ import annotations

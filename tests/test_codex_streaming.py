@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Regression test for the ChatGPT Codex backend's streaming requirement.
 
 The backend rejects non-streamed requests with ``{"detail": "Stream must be set

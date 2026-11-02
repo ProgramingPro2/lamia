@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Command-line argument parsing for the ``lamia`` scan entrypoint."""
 
 from __future__ import annotations

@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Per-scan sandbox session lifecycle."""
 
 from __future__ import annotations

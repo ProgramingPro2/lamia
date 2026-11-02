@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Execution loop for addressable SDK-backed Strix agents."""
 
 from __future__ import annotations

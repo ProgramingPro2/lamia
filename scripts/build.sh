@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

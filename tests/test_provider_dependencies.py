@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Vertex AI and Bedrock support ship with every install, not as extras."""
 
 from __future__ import annotations

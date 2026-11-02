@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Security-focused web research tools (Exa or Perplexity)."""
 
 from __future__ import annotations

@@ -3,6 +3,11 @@ name: deep
 description: Full-penetration assessment that closes every applicable class on every mapped in-scope surface
 ---
 
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # Deep Testing Mode
 
 Full-penetration assessment. Depth is closing every applicable class on every mapped in-scope surface, starting with the paths that reach real impact. The deliverable is still a demonstrated attack path: entry, foothold, privilege boundary crossed, data or action reached, evidence captured. Closing the highest-value paths does not end the target.

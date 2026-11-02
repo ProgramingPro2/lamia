@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """``coverage.json`` — the negative space of a scan, with provenance.
 
 A findings list answers "what is wrong". It cannot answer "what did you

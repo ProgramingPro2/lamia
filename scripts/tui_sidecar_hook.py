@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Hatchling build hook that compiles and bundles the Go TUI sidecar."""
 
 from __future__ import annotations

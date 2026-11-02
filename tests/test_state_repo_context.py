@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for SARIF repository-context derivation in lamia.report.state."""
 
 from __future__ import annotations

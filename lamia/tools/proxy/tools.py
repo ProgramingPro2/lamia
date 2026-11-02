@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Caido proxy host-side @function_tool wrappers around caido_api.py."""
 
 from __future__ import annotations

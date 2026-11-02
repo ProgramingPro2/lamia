@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Subscription runs track tokens but report zero cost."""
 
 from __future__ import annotations

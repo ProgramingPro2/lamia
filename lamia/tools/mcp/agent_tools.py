@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """The generic MCP discovery and dispatch tools every agent carries.
 
 Under the generic-dispatch model an agent does not get one tool per MCP tool.

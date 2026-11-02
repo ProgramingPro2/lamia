@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for the per-response tool-call cap.
 
 A degenerate generation can emit hundreds of tool calls in one assistant

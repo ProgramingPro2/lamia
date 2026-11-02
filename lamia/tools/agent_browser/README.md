@@ -1,3 +1,8 @@
+<!--
+Copyright 2025 OmniSecure Inc.
+Modified by the Lamia project from Strix.
+-->
+
 # agent-browser
 
 Browser automation CLI installed in the sandbox image. Driven by the agent

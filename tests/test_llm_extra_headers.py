@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Tests for LLM_EXTRA_HEADERS: custom default headers on OpenAI-compatible endpoints."""
 
 from __future__ import annotations

@@ -1,3 +1,6 @@
+/* Copyright 2025 OmniSecure Inc.
+   Modified by the Lamia project from Strix. */
+
 import { History, ChevronRight, Terminal } from "lucide-react";
 import type { RunListEntry, RunsPayload, RunSeverityCounts } from "@/data/serverSource";
 import { runTitle } from "@/lib/target-utils";

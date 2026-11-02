@@ -1,3 +1,6 @@
+# Copyright 2025 OmniSecure Inc.
+# Modified by the Lamia project from Strix.
+
 """Launch, authenticate, and supervise the Go TUI sidecar process."""
 
 from __future__ import annotations
